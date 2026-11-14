@@ -7,7 +7,9 @@ public final class Button {
         /** The main action (ATAK: blue). */
         PRIMARY,
         /** Any other action. */
-        NORMAL
+        NORMAL,
+        /** The chosen option of a set (ATAK: purple). */
+        SELECTED
     }
 
     public final String action;

@@ -1,0 +1,419 @@
+
+=== card NUC 1 10 kt (civil, wind)
+  text 17 bold TEXT | NUC 1 10 kt
+  text 13 bold NUC | Nuclear detonation 10 kt, surface burst
+  text 12 bold AMBER | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter.
+  text 12 bold BLUE pad=8/2 | DO NOW
+  text 13 bold TEXT | 1  GET INSIDE, STAY INSIDE, STAY TUNED. This is the most important protective action (FEMA).
+  text 13 TEXT | 2  Get inside a basement or the middle of a large, dense building (concrete or brick). It is best to be in a shelter when fallout arrives; any shelter is better than staying outside.
+  text 13 TEXT | 3  Fallout will likely take 10 minutes or more to arrive: use them to reach the best shelter close by. Cars and light buildings give little protection.
+  text 13 TEXT | 4  Stay inside for 12-24 hours unless officials say otherwise, or fire, collapse or a medical emergency forces you to move.
+  text 13 TEXT | 5  Stay tuned: AM/FM radio is best; TV, phone or internet if they work.
+  text 13 TEXT | 6  If you were outside when fallout fell: remove or change the outer layer of clothing and footwear and brush or wipe exposed skin.
+  text 12 DIM | If you see an intense, unexpected flash: take cover at once, away from windows. The blast wave can follow by seconds.
+  buttons margin=6 | nbc1 "NBC 1 NUC REPORT…" PRIMARY w=1 bold
+  text 14 TEXT pad=6/0 slot=you | 
+  text 12 DIM slot=team | 
+  text 12 bold BLUE pad=8/2 | RINGS (each an outer bound)
+  key TALL bar=#FFFF5252 #FFFF5252 | Severe Damage Zone: 0.50 mi (0.80 km) | Few buildings standing, few survivors, dangerous radiation outdoors. People inside large structures may survive and should keep sheltering for the first 24 hours if it is safe to stay.
+  key TALL bar=#FFFF9100 #FFFF9100 | Moderate Damage Zone: 1.0 mi (1.6 km) | Heavy building damage, rubble, downed poles and fires. Many serious injuries: early medical help saves lives. Evacuate when it is safe, first where fire threatens.
+  key TALL bar=#FFFFEA00 #FFFFEA00 | Light Damage Zone: 3.0 mi (4.8 km) | Most windows shattered. Injuries mostly from flying glass and debris, highly survivable.
+  key TALL bar=#FF18FFFF #FF18FFFF | Burns (2nd degree): 1.1 mi (1.8 km), dashed | Second-degree burns likely to bare skin with a direct view of the fireball (clear day). Any shade or clothing protects; haze shortens and snow or a cloud layer above can lengthen this distance.
+  key TALL bar=#FF8C9EFF #FF8C9EFF | Initial radiation 100 rad: 0.98 mi (1.6 km) | Unshielded outdoor dose from the first minute: radiation sickness possible inside this ring. It is received at once, so it is not a reason to move; buildings cut it.
+  key TALL bar=#FFE0E0E0 #FFE0E0E0 | 50-mile Get Inside area: 50 mi (80 km), dotted | FEMA: give the Get Inside message to everyone within 50 miles until fallout areas are identified.
+  text 12 bold BLUE pad=8/2 | FALLOUT PICTURE
+  buttons | pic_civil "CIVIL\nFEMA / Glasstone" SELECTED w=1 | pic_military "MILITARY\nFM 3-3-1 Zones I / II" NORMAL w=1
+  text 13 TEXT | Fallout drifts toward 180° (wind from 0° at 15 mph). The idealized 10 R/h (H+1) contour reaches about 67.6 mi (109 km) downwind. Real fallout follows the winds aloft.
+  key SHORT bar=#FF4A148C #FFE1BEE7 | 3,000 R/h at H+1: 2.7 mi (4.3 km) downwind
+  key SHORT bar=#FF6A1B9A #FFE1BEE7 | 1,000 R/h at H+1: 5.1 mi (8.2 km) downwind
+  key SHORT bar=#FF7B1FA2 #FFE1BEE7 | 300 R/h at H+1: 12.7 mi (20.4 km) downwind
+  key SHORT bar=#FF8E24AA #FFE1BEE7 | 100 R/h at H+1: 25.1 mi (40.4 km) downwind
+  key SHORT bar=#FF9C27B0 #FFE1BEE7 | 30 R/h at H+1: 45.1 mi (72.6 km) downwind
+  key SHORT bar=#FFAB47BC #FFE1BEE7 | 10 R/h at H+1: 67.6 mi (109 km) downwind
+  key SHORT bar=#FFBA68C8 #FFE1BEE7 | 3 R/h at H+1: 84.6 mi (136 km) downwind
+  key SHORT bar=#FFCE93D8 #FFE1BEE7 | 1 R/h at H+1: 113 mi (181 km) downwind
+  text 12 DIM | Idealized contours (Glasstone Table 9.93, 100% fission). Dose rates fall about tenfold for every sevenfold increase in time: 100 R/h at H+1 is about 10 R/h at H+7 and 1 R/h at H+49. Lack of visible fallout does not mean no fallout.
+  text 12 bold BLUE pad=8/2 | CHANGE WIND
+  widget wind
+  buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
+  buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
+  buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
+  buttons | why "Why these distances?" NORMAL w=1
+  buttons | what_to_do "What to do (FEMA)" NORMAL w=1
+  text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled. Burns, radiation, fallout: Glasstone & Dolan 1977.
+  text 12 DIM | • Reference distances for planning, not a prediction of any real event. Actual damage depends on yield, burst height, terrain, buildings and weather.
+  text 12 DIM | • Blast zones are about ±20%, burns ±25%, initial radiation within a factor of 0.5-2 (Glasstone & Dolan).
+  text 12 DIM | • Air burst: every ring is drawn at its own outer bound over all burst heights. No single burst produces all of them at once.
+  text 12 DIM | • Fallout contours are idealized averages, not a forecast. Rain or snow can create hot spots anywhere. Only a meter tells you the dose rate.
+  text 11 DIM pad=4/4 | Model BLAST-NUC 2026-11. Nuclear detonation 10 kt, surface burst. Preset: Improvised device, 10 kT (FEMA's main scenario) (10 kT; FEMA Planning Guidance, 3rd ed. (2022)). Placed by ALPHA-1, 011452Z NOV 26.
+nbc3Text: null
+you, no fix:
+  text 14 DIM pad=6/0 slot=you | YOU: no GPS position yet.
+you 0,0:
+  text 14 RED pad=6/0 slot=you | YOU: 0.00 mi (0.00 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside the idealized 3000 R/h (H+1) fallout contour. Get inside the best shelter close by and stay inside.
+you 500,0:
+  text 14 RED pad=6/0 slot=you | YOU: 0.31 mi (0.50 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside the idealized 100 R/h (H+1) fallout contour; fallout could arrive about 1 min after the detonation. Get inside the best shelter close by and stay inside.
+you 0,2000:
+  text 14 RED pad=6/0 slot=you | YOU: 1.2 mi (2.0 km) from ground zero: in the Light Damage Zone.\nInside the idealized 1 R/h (H+1) fallout contour. Get inside the best shelter close by and stay inside.
+you 3000,3000:
+  text 14 RED pad=6/0 slot=you | YOU: 2.6 mi (4.2 km) from ground zero: in the Light Damage Zone.\nGet inside the best shelter close by and stay inside.
+you 10000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 6.2 mi (10.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you -10000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 6.2 mi (10.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you 30000,5000:
+  text 14 AMBER pad=6/0 slot=you | YOU: 18.9 mi (30.4 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you 80000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 49.7 mi (80.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+team none:
+  text 12 DIM slot=team | Team: no other contacts on the map.
+team all:
+  text 12 RED slot=team | Team on the map: 4 inside the damage zones, 3 inside a fallout contour (of 8).
+
+=== card NUC 2 10 kt (military, surface wind)
+  text 17 bold TEXT | NUC 2 10 kt
+  text 13 bold NUC | Nuclear detonation 10 kt, surface burst
+  text 12 bold AMBER | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter.
+  text 12 bold BLUE pad=8/2 | DO NOW
+  text 13 bold TEXT | 1  GET INSIDE, STAY INSIDE, STAY TUNED. This is the most important protective action (FEMA).
+  text 13 TEXT | 2  Get inside a basement or the middle of a large, dense building (concrete or brick). It is best to be in a shelter when fallout arrives; any shelter is better than staying outside.
+  text 13 TEXT | 3  Fallout will likely take 10 minutes or more to arrive: use them to reach the best shelter close by. Cars and light buildings give little protection.
+  text 13 TEXT | 4  Stay inside for 12-24 hours unless officials say otherwise, or fire, collapse or a medical emergency forces you to move.
+  text 13 TEXT | 5  Stay tuned: AM/FM radio is best; TV, phone or internet if they work.
+  text 13 TEXT | 6  If you were outside when fallout fell: remove or change the outer layer of clothing and footwear and brush or wipe exposed skin.
+  text 12 DIM | If you see an intense, unexpected flash: take cover at once, away from windows. The blast wave can follow by seconds.
+  buttons margin=6 | nbc1 "NBC 1 NUC REPORT…" PRIMARY w=1 bold
+  text 14 TEXT pad=6/0 slot=you | 
+  text 12 DIM slot=team | 
+  text 12 bold BLUE pad=8/2 | RINGS (each an outer bound)
+  key TALL bar=#FFFF5252 #FFFF5252 | Severe Damage Zone: 0.50 mi (0.80 km) | Few buildings standing, few survivors, dangerous radiation outdoors. People inside large structures may survive and should keep sheltering for the first 24 hours if it is safe to stay.
+  key TALL bar=#FFFF9100 #FFFF9100 | Moderate Damage Zone: 1.0 mi (1.6 km) | Heavy building damage, rubble, downed poles and fires. Many serious injuries: early medical help saves lives. Evacuate when it is safe, first where fire threatens.
+  key TALL bar=#FFFFEA00 #FFFFEA00 | Light Damage Zone: 3.0 mi (4.8 km) | Most windows shattered. Injuries mostly from flying glass and debris, highly survivable.
+  key TALL bar=#FF18FFFF #FF18FFFF | Burns (2nd degree): 1.1 mi (1.8 km), dashed | Second-degree burns likely to bare skin with a direct view of the fireball (clear day). Any shade or clothing protects; haze shortens and snow or a cloud layer above can lengthen this distance.
+  key TALL bar=#FF8C9EFF #FF8C9EFF | Initial radiation 100 rad: 0.98 mi (1.6 km) | Unshielded outdoor dose from the first minute: radiation sickness possible inside this ring. It is received at once, so it is not a reason to move; buildings cut it.
+  key TALL bar=#FFE0E0E0 #FFE0E0E0 | 50-mile Get Inside area: 50 mi (80 km), dotted | FEMA: give the Get Inside message to everyone within 50 miles until fallout areas are identified.
+  text 12 bold BLUE pad=8/2 | FALLOUT PICTURE
+  buttons | pic_civil "CIVIL\nFEMA / Glasstone" NORMAL w=1 | pic_military "MILITARY\nFM 3-3-1 Zones I / II" SELECTED w=1
+  text 13 TEXT | Effective downwind 180° at 24 km/h. Zone I 18 km (11.0 mi), Zone II 35 km (22.0 mi) downwind, 40° sector, cloud radius 4.2 km (yield group CHARLIE). Arrival arcs every 24 km (H+1 … H+1). From a surface wind estimate (not an EDM): rough.
+  key SHORT bar=#FFFF1744 #FFFF8A80 | Zone I: 18 km
+  text 12 DIM | Zone I: immediate operational concern. Exposed, unprotected personnel may receive 125 cGy or more in a relatively short time (less than 4 hours after the actual arrival of fallout). Casualties and major disruption may occur in parts of this zone.
+  key SHORT bar=#FFFFC400 #FFFFE57F | Zone II: 35 km
+  text 12 DIM | Zone II: secondary hazard. The total dose to exposed, unprotected personnel is not expected to reach 125 cGy within 4 hours of arrival, but may reach 75 cGy or more within the first 24 hours.
+  key SHORT bar=#FFFFFFFF TEXT | Dashed arcs: estimated arrival H+1, H+2 …
+  text 12 DIM | Arrival may be as early as half the estimate. No fallout by twice the estimate (or 12 h) means none expected.
+  text 12 TEXT mono | NBC3 NUC (Blast simplified prediction; ALFA from CBRN cell)\nDELTA/011452ZNOV2026//\nFOXTROT/16SGH1234567890/EE//\nHOTEL/SURF//\nNOVEMBER/10//\nPAPAB/024KPH/018KM/05KM/160DGT/200DGT//
+  buttons | copy_nbc3 "Copy NBC 3 NUC text" NORMAL w=1
+  text 12 DIM | • Military planning zones for troops, built on mission doses, not public safety: civilians shelter anyway (FEMA).
+  text 12 DIM | • The prediction is an estimate only. Its boundaries are not dose-rate contours, and not every point inside will get dangerous fallout; even in Zone I units may not be affected (FM 3-11.3).
+  text 12 DIM | • Uses the effective downwind (winds through the cloud), from an EDM. A surface wind is only a rough substitute.
+  text 12 DIM | • Based on legacy public doctrine (FM 3-3-1, 1994; FM 3-11.3, 2009). Current manuals (TM 3-11.32, ATP-45) are restricted and may differ.
+  buttons | how_zones "How Zones I and II are drawn" NORMAL w=1
+  text 12 DIM | Effective downwind message (EDM) line for this yield's group (CHARLIE): 6 digits dddsss, 9 digits with angle, or 3 digits (Zone I km, winds below 8 km/h).
+  widget edm
+  text 12 bold BLUE pad=8/2 | OR A SURFACE WIND (rough guide)
+  widget wind
+  buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
+  buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
+  buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
+  buttons | why "Why these distances?" NORMAL w=1
+  buttons | what_to_do "What to do (FEMA)" NORMAL w=1
+  text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled. Burns, radiation, fallout: Glasstone & Dolan 1977.
+  text 12 DIM | • Reference distances for planning, not a prediction of any real event. Actual damage depends on yield, burst height, terrain, buildings and weather.
+  text 12 DIM | • Blast zones are about ±20%, burns ±25%, initial radiation within a factor of 0.5-2 (Glasstone & Dolan).
+  text 12 DIM | • Air burst: every ring is drawn at its own outer bound over all burst heights. No single burst produces all of them at once.
+  text 12 DIM | • Fallout contours are idealized averages, not a forecast. Rain or snow can create hot spots anywhere. Only a meter tells you the dose rate.
+  text 11 DIM pad=4/4 | Model BLAST-NUC 2026-11. Nuclear detonation 10 kt, surface burst. Preset: Improvised device, 10 kT (FEMA's main scenario) (10 kT; FEMA Planning Guidance, 3rd ed. (2022)). Placed by ALPHA-1, 011452Z NOV 26.
+nbc3Text: NBC3 NUC (Blast simplified prediction; ALFA from CBRN cell)\nDELTA/011452ZNOV2026//\nFOXTROT/16SGH1234567890/EE//\nHOTEL/SURF//\nNOVEMBER/10//\nPAPAB/024KPH/018KM/05KM/160DGT/200DGT//
+you, no fix:
+  text 14 DIM pad=6/0 slot=you | YOU: no GPS position yet.
+you 0,0:
+  text 14 RED pad=6/0 slot=you | YOU: 0.00 mi (0.00 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside Zone I of the military prediction. Get inside the best shelter close by and stay inside.
+you 500,0:
+  text 14 RED pad=6/0 slot=you | YOU: 0.31 mi (0.50 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside Zone I of the military prediction; estimated fallout arrival H+1 min (may be as early as H+1 min). Get inside the best shelter close by and stay inside.
+you 0,2000:
+  text 14 RED pad=6/0 slot=you | YOU: 1.2 mi (2.0 km) from ground zero: in the Light Damage Zone.\nInside Zone I of the military prediction. Get inside the best shelter close by and stay inside.
+you 3000,3000:
+  text 14 RED pad=6/0 slot=you | YOU: 2.6 mi (4.2 km) from ground zero: in the Light Damage Zone.\nGet inside the best shelter close by and stay inside.
+you 10000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 6.2 mi (10.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you -10000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 6.2 mi (10.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you 30000,5000:
+  text 14 AMBER pad=6/0 slot=you | YOU: 18.9 mi (30.4 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you 80000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 49.7 mi (80.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+team none:
+  text 12 DIM slot=team | Team: no other contacts on the map.
+team all:
+  text 12 RED slot=team | Team on the map: 4 inside the damage zones (of 8).
+
+=== card NUC 3 10 kt (military, EDM)
+  text 17 bold TEXT | NUC 3 10 kt
+  text 13 bold NUC | Nuclear detonation 10 kt, surface burst
+  text 12 bold AMBER | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter.
+  text 12 bold BLUE pad=8/2 | DO NOW
+  text 13 bold TEXT | 1  GET INSIDE, STAY INSIDE, STAY TUNED. This is the most important protective action (FEMA).
+  text 13 TEXT | 2  Get inside a basement or the middle of a large, dense building (concrete or brick). It is best to be in a shelter when fallout arrives; any shelter is better than staying outside.
+  text 13 TEXT | 3  Fallout will likely take 10 minutes or more to arrive: use them to reach the best shelter close by. Cars and light buildings give little protection.
+  text 13 TEXT | 4  Stay inside for 12-24 hours unless officials say otherwise, or fire, collapse or a medical emergency forces you to move.
+  text 13 TEXT | 5  Stay tuned: AM/FM radio is best; TV, phone or internet if they work.
+  text 13 TEXT | 6  If you were outside when fallout fell: remove or change the outer layer of clothing and footwear and brush or wipe exposed skin.
+  text 12 DIM | If you see an intense, unexpected flash: take cover at once, away from windows. The blast wave can follow by seconds.
+  buttons margin=6 | nbc1 "NBC 1 NUC REPORT…" PRIMARY w=1 bold
+  text 14 TEXT pad=6/0 slot=you | 
+  text 12 DIM slot=team | 
+  text 12 bold BLUE pad=8/2 | RINGS (each an outer bound)
+  key TALL bar=#FFFF5252 #FFFF5252 | Severe Damage Zone: 0.50 mi (0.80 km) | Few buildings standing, few survivors, dangerous radiation outdoors. People inside large structures may survive and should keep sheltering for the first 24 hours if it is safe to stay.
+  key TALL bar=#FFFF9100 #FFFF9100 | Moderate Damage Zone: 1.0 mi (1.6 km) | Heavy building damage, rubble, downed poles and fires. Many serious injuries: early medical help saves lives. Evacuate when it is safe, first where fire threatens.
+  key TALL bar=#FFFFEA00 #FFFFEA00 | Light Damage Zone: 3.0 mi (4.8 km) | Most windows shattered. Injuries mostly from flying glass and debris, highly survivable.
+  key TALL bar=#FF18FFFF #FF18FFFF | Burns (2nd degree): 1.1 mi (1.8 km), dashed | Second-degree burns likely to bare skin with a direct view of the fireball (clear day). Any shade or clothing protects; haze shortens and snow or a cloud layer above can lengthen this distance.
+  key TALL bar=#FF8C9EFF #FF8C9EFF | Initial radiation 100 rad: 0.98 mi (1.6 km) | Unshielded outdoor dose from the first minute: radiation sickness possible inside this ring. It is received at once, so it is not a reason to move; buildings cut it.
+  key TALL bar=#FFE0E0E0 #FFE0E0E0 | 50-mile Get Inside area: 50 mi (80 km), dotted | FEMA: give the Get Inside message to everyone within 50 miles until fallout areas are identified.
+  text 12 bold BLUE pad=8/2 | FALLOUT PICTURE
+  buttons | pic_civil "CIVIL\nFEMA / Glasstone" NORMAL w=1 | pic_military "MILITARY\nFM 3-3-1 Zones I / II" SELECTED w=1
+  text 13 TEXT | Effective downwind 270° at 30 km/h. Zone I 19 km (11.8 mi), Zone II 38 km (23.6 mi) downwind, 40° sector, cloud radius 4.2 km (yield group CHARLIE). Arrival arcs every 30 km (H+1 … H+1). From an EDM.
+  key SHORT bar=#FFFF1744 #FFFF8A80 | Zone I: 19 km
+  text 12 DIM | Zone I: immediate operational concern. Exposed, unprotected personnel may receive 125 cGy or more in a relatively short time (less than 4 hours after the actual arrival of fallout). Casualties and major disruption may occur in parts of this zone.
+  key SHORT bar=#FFFFC400 #FFFFE57F | Zone II: 38 km
+  text 12 DIM | Zone II: secondary hazard. The total dose to exposed, unprotected personnel is not expected to reach 125 cGy within 4 hours of arrival, but may reach 75 cGy or more within the first 24 hours.
+  key SHORT bar=#FFFFFFFF TEXT | Dashed arcs: estimated arrival H+1, H+2 …
+  text 12 DIM | Arrival may be as early as half the estimate. No fallout by twice the estimate (or 12 h) means none expected.
+  text 12 TEXT mono | NBC3 NUC (Blast simplified prediction; ALFA from CBRN cell)\nDELTA/011452ZNOV2026//\nFOXTROT/16SGH1234567890/EE//\nHOTEL/SURF//\nNOVEMBER/10//\nPAPAB/030KPH/019KM/05KM/250DGT/290DGT//
+  buttons | copy_nbc3 "Copy NBC 3 NUC text" NORMAL w=1
+  text 12 DIM | • Military planning zones for troops, built on mission doses, not public safety: civilians shelter anyway (FEMA).
+  text 12 DIM | • The prediction is an estimate only. Its boundaries are not dose-rate contours, and not every point inside will get dangerous fallout; even in Zone I units may not be affected (FM 3-11.3).
+  text 12 DIM | • Uses the effective downwind (winds through the cloud), from an EDM. A surface wind is only a rough substitute.
+  text 12 DIM | • Based on legacy public doctrine (FM 3-3-1, 1994; FM 3-11.3, 2009). Current manuals (TM 3-11.32, ATP-45) are restricted and may differ.
+  buttons | how_zones "How Zones I and II are drawn" NORMAL w=1
+  text 12 DIM | Effective downwind message (EDM) line for this yield's group (CHARLIE): 6 digits dddsss, 9 digits with angle, or 3 digits (Zone I km, winds below 8 km/h).
+  widget edm
+  text 12 bold BLUE pad=8/2 | OR A SURFACE WIND (rough guide)
+  widget wind
+  buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
+  buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
+  buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
+  buttons | why "Why these distances?" NORMAL w=1
+  buttons | what_to_do "What to do (FEMA)" NORMAL w=1
+  text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled. Burns, radiation, fallout: Glasstone & Dolan 1977.
+  text 12 DIM | • Reference distances for planning, not a prediction of any real event. Actual damage depends on yield, burst height, terrain, buildings and weather.
+  text 12 DIM | • Blast zones are about ±20%, burns ±25%, initial radiation within a factor of 0.5-2 (Glasstone & Dolan).
+  text 12 DIM | • Air burst: every ring is drawn at its own outer bound over all burst heights. No single burst produces all of them at once.
+  text 12 DIM | • Fallout contours are idealized averages, not a forecast. Rain or snow can create hot spots anywhere. Only a meter tells you the dose rate.
+  text 11 DIM pad=4/4 | Model BLAST-NUC 2026-11. Nuclear detonation 10 kt, surface burst. Preset: Improvised device, 10 kT (FEMA's main scenario) (10 kT; FEMA Planning Guidance, 3rd ed. (2022)). Placed by ALPHA-1, 011452Z NOV 26.
+nbc3Text: NBC3 NUC (Blast simplified prediction; ALFA from CBRN cell)\nDELTA/011452ZNOV2026//\nFOXTROT/16SGH1234567890/EE//\nHOTEL/SURF//\nNOVEMBER/10//\nPAPAB/030KPH/019KM/05KM/250DGT/290DGT//
+you, no fix:
+  text 14 DIM pad=6/0 slot=you | YOU: no GPS position yet.
+you 0,0:
+  text 14 RED pad=6/0 slot=you | YOU: 0.00 mi (0.00 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside Zone I of the military prediction. Get inside the best shelter close by and stay inside.
+you 500,0:
+  text 14 RED pad=6/0 slot=you | YOU: 0.31 mi (0.50 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside Zone I of the military prediction. Get inside the best shelter close by and stay inside.
+you 0,2000:
+  text 14 RED pad=6/0 slot=you | YOU: 1.2 mi (2.0 km) from ground zero: in the Light Damage Zone.\nInside Zone I of the military prediction. Get inside the best shelter close by and stay inside.
+you 3000,3000:
+  text 14 RED pad=6/0 slot=you | YOU: 2.6 mi (4.2 km) from ground zero: in the Light Damage Zone.\nGet inside the best shelter close by and stay inside.
+you 10000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 6.2 mi (10.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you -10000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 6.2 mi (10.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nInside Zone I of the military prediction; estimated fallout arrival H+20 min (may be as early as H+10 min). Get inside the best shelter close by and stay inside.
+you 30000,5000:
+  text 14 AMBER pad=6/0 slot=you | YOU: 18.9 mi (30.4 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you 80000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 49.7 mi (80.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+team none:
+  text 12 DIM slot=team | Team: no other contacts on the map.
+team all:
+  text 12 RED slot=team | Team on the map: 4 inside the damage zones (of 8).
+
+=== card NUC 4 455 kt (air burst, no wind)
+  text 17 bold TEXT | NUC 4 455 kt
+  text 13 bold NUC | Nuclear detonation 455 kt, air burst (envelope)
+  text 12 bold AMBER | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter.
+  text 12 bold BLUE pad=8/2 | DO NOW
+  text 13 bold TEXT | 1  GET INSIDE, STAY INSIDE, STAY TUNED. This is the most important protective action (FEMA).
+  text 13 TEXT | 2  Get inside a basement or the middle of a large, dense building (concrete or brick). It is best to be in a shelter when fallout arrives; any shelter is better than staying outside.
+  text 13 TEXT | 3  Fallout will likely take 10 minutes or more to arrive: use them to reach the best shelter close by. Cars and light buildings give little protection.
+  text 13 TEXT | 4  Stay inside for 12-24 hours unless officials say otherwise, or fire, collapse or a medical emergency forces you to move.
+  text 13 TEXT | 5  Stay tuned: AM/FM radio is best; TV, phone or internet if they work.
+  text 13 TEXT | 6  If you were outside when fallout fell: remove or change the outer layer of clothing and footwear and brush or wipe exposed skin.
+  text 12 DIM | If you see an intense, unexpected flash: take cover at once, away from windows. The blast wave can follow by seconds.
+  buttons margin=6 | nbc1 "NBC 1 NUC REPORT…" PRIMARY w=1 bold
+  text 14 TEXT pad=6/0 slot=you | 
+  text 12 DIM slot=team | 
+  text 12 bold BLUE pad=8/2 | RINGS (each an outer bound)
+  key TALL bar=#FFFF5252 #FFFF5252 | Severe Damage Zone: 2.8 mi (4.5 km) | Few buildings standing, few survivors, dangerous radiation outdoors. People inside large structures may survive and should keep sheltering for the first 24 hours if it is safe to stay.
+  key TALL bar=#FFFF9100 #FFFF9100 | Moderate Damage Zone: 6.0 mi (9.6 km) | Heavy building damage, rubble, downed poles and fires. Many serious injuries: early medical help saves lives. Evacuate when it is safe, first where fire threatens.
+  key TALL bar=#FFFFEA00 #FFFFEA00 | Light Damage Zone: 21.4 mi (34.5 km) | Most windows shattered. Injuries mostly from flying glass and debris, highly survivable.
+  key TALL bar=#FF18FFFF #FF18FFFF | Burns (2nd degree): 6.5 mi (10.5 km), dashed | Second-degree burns likely to bare skin with a direct view of the fireball (clear day). Any shade or clothing protects; haze shortens and snow or a cloud layer above can lengthen this distance.
+  key TALL bar=#FF8C9EFF #FF8C9EFF | Initial radiation 100 rad: 1.7 mi (2.7 km) | Unshielded outdoor dose from the first minute: radiation sickness possible inside this ring. It is received at once, so it is not a reason to move; buildings cut it.
+  key TALL bar=#FFE0E0E0 #FFE0E0E0 | 50-mile Get Inside area: 50 mi (80 km), dotted | FEMA: give the Get Inside message to everyone within 50 miles until fallout areas are identified.
+  text 12 bold BLUE pad=8/2 | FALLOUT PICTURE
+  buttons | pic_civil "CIVIL\nFEMA / Glasstone" SELECTED w=1 | pic_military "MILITARY\nFM 3-3-1 Zones I / II" NORMAL w=1
+  text 13 TEXT | Air burst: little local fallout is expected, but rain or snow can still bring it down, and the area near ground zero may be radioactive. Shelter anyway until told otherwise.
+  text 12 bold BLUE pad=8/2 | ADD WIND
+  widget wind
+  buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
+  buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
+  buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
+  buttons | why "Why these distances?" NORMAL w=1
+  buttons | what_to_do "What to do (FEMA)" NORMAL w=1
+  text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled, times Glasstone's air-burst envelope ratio. Burns, radiation, fallout: Glasstone & Dolan 1977.
+  text 12 DIM | • Reference distances for planning, not a prediction of any real event. Actual damage depends on yield, burst height, terrain, buildings and weather.
+  text 12 DIM | • Blast zones are about ±20%, burns ±25%, initial radiation within a factor of 0.5-2 (Glasstone & Dolan).
+  text 12 DIM | • Air burst: every ring is drawn at its own outer bound over all burst heights. No single burst produces all of them at once.
+  text 12 DIM | • Fallout contours are idealized averages, not a forecast. Rain or snow can create hot spots anywhere. Only a meter tells you the dose rate.
+  text 11 DIM pad=4/4 | Model BLAST-NUC 2026-11. Nuclear detonation 455 kt, air burst (envelope). Preset: US W88 (Trident II) (455 kt; Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1). Placed by ALPHA-1, 011452Z NOV 26.
+nbc3Text: null
+you, no fix:
+  text 14 DIM pad=6/0 slot=you | YOU: no GPS position yet.
+you 0,0:
+  text 14 RED pad=6/0 slot=you | YOU: 0.00 mi (0.00 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Get inside the best shelter close by and stay inside.
+you 500,0:
+  text 14 RED pad=6/0 slot=you | YOU: 0.31 mi (0.50 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Get inside the best shelter close by and stay inside.
+you 0,2000:
+  text 14 RED pad=6/0 slot=you | YOU: 1.2 mi (2.0 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Get inside the best shelter close by and stay inside.
+you 3000,3000:
+  text 14 RED pad=6/0 slot=you | YOU: 2.6 mi (4.2 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Get inside the best shelter close by and stay inside.
+you 10000,0:
+  text 14 RED pad=6/0 slot=you | YOU: 6.2 mi (10.0 km) from ground zero: in the Light Damage Zone.\nInside the burn ring. Get inside the best shelter close by and stay inside.
+you -10000,0:
+  text 14 RED pad=6/0 slot=you | YOU: 6.2 mi (10.0 km) from ground zero: in the Light Damage Zone.\nInside the burn ring. Get inside the best shelter close by and stay inside.
+you 30000,5000:
+  text 14 RED pad=6/0 slot=you | YOU: 18.9 mi (30.4 km) from ground zero: in the Light Damage Zone.\nGet inside the best shelter close by and stay inside.
+you 80000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 49.7 mi (80.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+team none:
+  text 12 DIM slot=team | Team: no other contacts on the map.
+team all:
+  text 12 RED slot=team | Team on the map: 7 inside the damage zones (of 8).
+
+=== card NUC 5 16 kt CLEARED (observer report, ended)
+  text 17 bold DIM | NUC 5 16 kt CLEARED
+  text 13 bold DIM | Nuclear detonation 16 kt, surface burst · ENDED
+  text 12 bold AMBER | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter.
+  text 12 bold BLUE pad=8/2 | DO NOW
+  text 13 bold TEXT | 1  GET INSIDE, STAY INSIDE, STAY TUNED. This is the most important protective action (FEMA).
+  text 13 TEXT | 2  Get inside a basement or the middle of a large, dense building (concrete or brick). It is best to be in a shelter when fallout arrives; any shelter is better than staying outside.
+  text 13 TEXT | 3  Fallout will likely take 10 minutes or more to arrive: use them to reach the best shelter close by. Cars and light buildings give little protection.
+  text 13 TEXT | 4  Stay inside for 12-24 hours unless officials say otherwise, or fire, collapse or a medical emergency forces you to move.
+  text 13 TEXT | 5  Stay tuned: AM/FM radio is best; TV, phone or internet if they work.
+  text 13 TEXT | 6  If you were outside when fallout fell: remove or change the outer layer of clothing and footwear and brush or wipe exposed skin.
+  text 12 DIM | If you see an intense, unexpected flash: take cover at once, away from windows. The blast wave can follow by seconds.
+  buttons margin=6 | nbc1 "NBC 1 NUC REPORT… (edit)" PRIMARY w=1 bold
+  text 14 TEXT pad=6/0 slot=you | 
+  text 12 DIM slot=team | 
+  text 12 bold BLUE pad=8/2 | RINGS (each an outer bound)
+  key TALL bar=DIM DIM | Severe Damage Zone: 0.58 mi (0.94 km) | Few buildings standing, few survivors, dangerous radiation outdoors. People inside large structures may survive and should keep sheltering for the first 24 hours if it is safe to stay.
+  key TALL bar=DIM DIM | Moderate Damage Zone: 1.2 mi (1.9 km) | Heavy building damage, rubble, downed poles and fires. Many serious injuries: early medical help saves lives. Evacuate when it is safe, first where fire threatens.
+  key TALL bar=DIM DIM | Light Damage Zone: 3.5 mi (5.6 km) | Most windows shattered. Injuries mostly from flying glass and debris, highly survivable.
+  key TALL bar=DIM DIM | Burns (2nd degree): 1.4 mi (2.2 km), dashed | Second-degree burns likely to bare skin with a direct view of the fireball (clear day). Any shade or clothing protects; haze shortens and snow or a cloud layer above can lengthen this distance.
+  key TALL bar=DIM DIM | Initial radiation 100 rad: 1.0 mi (1.7 km) | Unshielded outdoor dose from the first minute: radiation sickness possible inside this ring. It is received at once, so it is not a reason to move; buildings cut it.
+  key TALL bar=DIM DIM | 50-mile Get Inside area: 50 mi (80 km), dotted | FEMA: give the Get Inside message to everyone within 50 miles until fallout areas are identified.
+  text 12 bold BLUE pad=8/2 | FALLOUT PICTURE
+  buttons | pic_civil "CIVIL\nFEMA / Glasstone" SELECTED w=1 | pic_military "MILITARY\nFM 3-3-1 Zones I / II" NORMAL w=1
+  text 13 TEXT | Fallout drifts toward 90° (wind from 270° at 10 mph). The idealized 10 R/h (H+1) contour reaches about 69.6 mi (112 km) downwind. Real fallout follows the winds aloft.
+  key SHORT bar=DIM DIM | 3,000 R/h at H+1: 2.8 mi (4.4 km) downwind
+  key SHORT bar=DIM DIM | 1,000 R/h at H+1: 5.2 mi (8.4 km) downwind
+  key SHORT bar=DIM DIM | 300 R/h at H+1: 13.1 mi (21.0 km) downwind
+  key SHORT bar=DIM DIM | 100 R/h at H+1: 25.8 mi (41.6 km) downwind
+  key SHORT bar=DIM DIM | 30 R/h at H+1: 46.4 mi (74.7 km) downwind
+  key SHORT bar=DIM DIM | 10 R/h at H+1: 69.6 mi (112 km) downwind
+  key SHORT bar=DIM DIM | 3 R/h at H+1: 87.1 mi (140 km) downwind
+  key SHORT bar=DIM DIM | 1 R/h at H+1: 116 mi (187 km) downwind
+  text 12 DIM | Idealized contours (Glasstone Table 9.93, 100% fission). Dose rates fall about tenfold for every sevenfold increase in time: 100 R/h at H+1 is about 10 R/h at H+7 and 1 R/h at H+49. Lack of visible fallout does not mean no fallout.
+  text 12 bold BLUE pad=8/2 | CHANGE WIND
+  widget wind
+  buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
+  buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
+  buttons | status "Reopen" NORMAL w=1 | delete "Delete…" NORMAL w=1
+  buttons | why "Why these distances?" NORMAL w=1
+  buttons | what_to_do "What to do (FEMA)" NORMAL w=1
+  text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled. Burns, radiation, fallout: Glasstone & Dolan 1977.
+  text 12 DIM | • Reference distances for planning, not a prediction of any real event. Actual damage depends on yield, burst height, terrain, buildings and weather.
+  text 12 DIM | • Blast zones are about ±20%, burns ±25%, initial radiation within a factor of 0.5-2 (Glasstone & Dolan).
+  text 12 DIM | • Air burst: every ring is drawn at its own outer bound over all burst heights. No single burst produces all of them at once.
+  text 12 DIM | • Fallout contours are idealized averages, not a forecast. Rain or snow can create hot spots anywhere. Only a meter tells you the dose rate.
+  text 11 DIM pad=4/4 | Model BLAST-NUC 2026-11. Nuclear detonation 16 kt, surface burst. Placed by ALPHA-1, 011452Z NOV 26. Ended by BRAVO-2 011552Z NOV 26.
+nbc3Text: null
+you, no fix:
+  text 14 DIM pad=6/0 slot=you | YOU: no GPS position yet.
+you 0,0:
+  text 14 DIM pad=6/0 slot=you | Incident marked ended. YOU: 0.00 mi (0.00 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside the idealized 3000 R/h (H+1) fallout contour. Get inside the best shelter close by and stay inside.
+you 500,0:
+  text 14 DIM pad=6/0 slot=you | Incident marked ended. YOU: 0.31 mi (0.50 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside the idealized 3000 R/h (H+1) fallout contour; fallout could arrive about 2 min after the detonation. Get inside the best shelter close by and stay inside.
+you 0,2000:
+  text 14 DIM pad=6/0 slot=you | Incident marked ended. YOU: 1.2 mi (2.0 km) from ground zero: in the Light Damage Zone.\nInside the burn ring. Inside the idealized 3 R/h (H+1) fallout contour; fallout could arrive about 1 min after the detonation. Get inside the best shelter close by and stay inside.
+you 3000,3000:
+  text 14 DIM pad=6/0 slot=you | Incident marked ended. YOU: 2.6 mi (4.2 km) from ground zero: in the Light Damage Zone.\nInside the idealized 1 R/h (H+1) fallout contour; fallout could arrive about 11 min after the detonation. Get inside the best shelter close by and stay inside.
+you 10000,0:
+  text 14 DIM pad=6/0 slot=you | Incident marked ended. YOU: 6.2 mi (10.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nInside the idealized 300 R/h (H+1) fallout contour; fallout could arrive about 37 min after the detonation. Get inside the best shelter close by and stay inside.
+you -10000,0:
+  text 14 DIM pad=6/0 slot=you | Incident marked ended. YOU: 6.2 mi (10.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you 30000,5000:
+  text 14 DIM pad=6/0 slot=you | Incident marked ended. YOU: 18.9 mi (30.4 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nInside the idealized 1 R/h (H+1) fallout contour; fallout could arrive about 1.9 h after the detonation. Get inside the best shelter close by and stay inside.
+you 80000,0:
+  text 14 DIM pad=6/0 slot=you | Incident marked ended. YOU: 49.7 mi (80.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nInside the idealized 10 R/h (H+1) fallout contour; fallout could arrive about 5.0 h after the detonation. Get inside the best shelter close by and stay inside.
+team none:
+  text 12 DIM slot=team | Team: no other contacts on the map.
+team all:
+  text 12 DIM slot=team | Team on the map: 4 inside the damage zones, 7 inside a fallout contour (of 8).
+
+=== card NUC 6 10 kt (unknown model)
+  text 17 bold TEXT | NUC 6 10 kt
+  text 13 bold NUC | Nuclear detonation 10 kt, surface burst
+  text 12 bold AMBER | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter.
+  text 12 AMBER | This build doesn't have model BLAST-NUC 2030-01. Showing the distances the sender drew; fallout is not drawn.
+  text 12 bold BLUE pad=8/2 | DO NOW
+  text 13 bold TEXT | 1  GET INSIDE, STAY INSIDE, STAY TUNED. This is the most important protective action (FEMA).
+  text 13 TEXT | 2  Get inside a basement or the middle of a large, dense building (concrete or brick). It is best to be in a shelter when fallout arrives; any shelter is better than staying outside.
+  text 13 TEXT | 3  Fallout will likely take 10 minutes or more to arrive: use them to reach the best shelter close by. Cars and light buildings give little protection.
+  text 13 TEXT | 4  Stay inside for 12-24 hours unless officials say otherwise, or fire, collapse or a medical emergency forces you to move.
+  text 13 TEXT | 5  Stay tuned: AM/FM radio is best; TV, phone or internet if they work.
+  text 13 TEXT | 6  If you were outside when fallout fell: remove or change the outer layer of clothing and footwear and brush or wipe exposed skin.
+  text 12 DIM | If you see an intense, unexpected flash: take cover at once, away from windows. The blast wave can follow by seconds.
+  buttons margin=6 | nbc1 "NBC 1 NUC REPORT…" PRIMARY w=1 bold
+  text 14 TEXT pad=6/0 slot=you | 
+  text 12 DIM slot=team | 
+  text 12 bold BLUE pad=8/2 | RINGS (each an outer bound)
+  key TALL bar=#FFFF5252 #FFFF5252 | Severe Damage Zone: 0.50 mi (0.81 km) | Few buildings standing, few survivors, dangerous radiation outdoors. People inside large structures may survive and should keep sheltering for the first 24 hours if it is safe to stay.
+  key TALL bar=#FFFF9100 #FFFF9100 | Moderate Damage Zone: 1.00 mi (1.6 km) | Heavy building damage, rubble, downed poles and fires. Many serious injuries: early medical help saves lives. Evacuate when it is safe, first where fire threatens.
+  key TALL bar=#FFFFEA00 #FFFFEA00 | Light Damage Zone: 3.0 mi (4.8 km) | Most windows shattered. Injuries mostly from flying glass and debris, highly survivable.
+  key TALL bar=#FF18FFFF #FF18FFFF | Burns (2nd degree): 1.1 mi (1.8 km), dashed | Second-degree burns likely to bare skin with a direct view of the fireball (clear day). Any shade or clothing protects; haze shortens and snow or a cloud layer above can lengthen this distance.
+  key TALL bar=#FF8C9EFF #FF8C9EFF | Initial radiation 100 rad: 0.98 mi (1.6 km) | Unshielded outdoor dose from the first minute: radiation sickness possible inside this ring. It is received at once, so it is not a reason to move; buildings cut it.
+  key TALL bar=#FFE0E0E0 #FFE0E0E0 | 50-mile Get Inside area: 50 mi (80 km), dotted | FEMA: give the Get Inside message to everyone within 50 miles until fallout areas are identified.
+  text 12 bold BLUE pad=8/2 | FALLOUT PICTURE
+  buttons | pic_civil "CIVIL\nFEMA / Glasstone" SELECTED w=1 | pic_military "MILITARY\nFM 3-3-1 Zones I / II" NORMAL w=1
+  text 13 TEXT | Fallout drifts toward 180° (wind from 0° at 15 mph). The idealized 10 R/h (H+1) contour reaches about 67.6 mi (109 km) downwind. Real fallout follows the winds aloft.
+  buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
+  buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
+  buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
+  buttons | why "Why these distances?" NORMAL w=1
+  buttons | what_to_do "What to do (FEMA)" NORMAL w=1
+  text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled. Burns, radiation, fallout: Glasstone & Dolan 1977.
+  text 12 DIM | • Reference distances for planning, not a prediction of any real event. Actual damage depends on yield, burst height, terrain, buildings and weather.
+  text 12 DIM | • Blast zones are about ±20%, burns ±25%, initial radiation within a factor of 0.5-2 (Glasstone & Dolan).
+  text 12 DIM | • Air burst: every ring is drawn at its own outer bound over all burst heights. No single burst produces all of them at once.
+  text 12 DIM | • Fallout contours are idealized averages, not a forecast. Rain or snow can create hot spots anywhere. Only a meter tells you the dose rate.
+  text 11 DIM pad=4/4 | Model BLAST-NUC 2030-01. Nuclear detonation 10 kt, surface burst. Preset: Improvised device, 10 kT (FEMA's main scenario) (10 kT; FEMA Planning Guidance, 3rd ed. (2022)). Placed by ALPHA-1, 011452Z NOV 26.
+nbc3Text: null
+you, no fix:
+  text 14 DIM pad=6/0 slot=you | YOU: no GPS position yet.
+you 0,0:
+  text 14 RED pad=6/0 slot=you | YOU: 0.00 mi (0.00 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Get inside the best shelter close by and stay inside.
+you 500,0:
+  text 14 RED pad=6/0 slot=you | YOU: 0.31 mi (0.50 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Get inside the best shelter close by and stay inside.
+you 0,2000:
+  text 14 RED pad=6/0 slot=you | YOU: 1.2 mi (2.0 km) from ground zero: in the Light Damage Zone.\nGet inside the best shelter close by and stay inside.
+you 3000,3000:
+  text 14 RED pad=6/0 slot=you | YOU: 2.6 mi (4.2 km) from ground zero: in the Light Damage Zone.\nGet inside the best shelter close by and stay inside.
+you 10000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 6.2 mi (10.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you -10000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 6.2 mi (10.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you 30000,5000:
+  text 14 AMBER pad=6/0 slot=you | YOU: 18.9 mi (30.4 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+you 80000,0:
+  text 14 AMBER pad=6/0 slot=you | YOU: 49.7 mi (80.0 km) from ground zero: outside the damage zones, inside the 50-mile Get Inside area.\nGet inside the best shelter close by and stay inside.
+team none:
+  text 12 DIM slot=team | Team: no other contacts on the map.
+team all:
+  text 12 RED slot=team | Team on the map: 4 inside the damage zones (of 8).

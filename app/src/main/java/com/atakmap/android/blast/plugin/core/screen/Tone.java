@@ -19,5 +19,7 @@ public enum Tone {
     /** Section headings. */
     BLUE,
     /** Military ordnance (UXO): the cordon and its threat line. */
-    ORANGE
+    ORANGE,
+    /** Nuclear reference: the threat line. */
+    NUC
 }

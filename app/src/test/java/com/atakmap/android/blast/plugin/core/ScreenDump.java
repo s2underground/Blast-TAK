@@ -3,6 +3,8 @@ package com.atakmap.android.blast.plugin.core;
 import com.atakmap.android.blast.plugin.core.screen.Button;
 import com.atakmap.android.blast.plugin.core.screen.Buttons;
 import com.atakmap.android.blast.plugin.core.screen.Item;
+import com.atakmap.android.blast.plugin.core.screen.KeyRow;
+import com.atakmap.android.blast.plugin.core.screen.Widget;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
 import com.atakmap.android.blast.plugin.core.screen.Text;
@@ -56,11 +58,19 @@ final class ScreenDump {
                 sb.append(" margin=").append(bs.marginTopDp);
             for (Button b : bs.buttons)
                 sb.append(" | ").append(b.action).append(" \"")
-                        .append(b.label).append("\" ").append(b.kind)
+                        .append(b.label.replace("\n", "\\n")).append("\" ").append(b.kind)
                         .append(" w=").append(Golden.num(b.weight, 2))
                         .append(b.bold ? " bold" : "");
             return sb.toString();
         }
+        if (it instanceof KeyRow) {
+            KeyRow k = (KeyRow) it;
+            return "  key " + k.kind + " bar=" + k.bar + " " + k.titleInk
+                    + " | " + k.title + (k.meaning == null ? ""
+                            : " | " + k.meaning);
+        }
+        if (it instanceof Widget)
+            return "  widget " + ((Widget) it).id;
         return "  ? " + it.getClass().getSimpleName();
     }
 }

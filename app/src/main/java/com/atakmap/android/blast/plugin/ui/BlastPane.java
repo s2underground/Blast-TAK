@@ -32,7 +32,11 @@ import com.atakmap.android.blast.plugin.atak.Exporter;
 import com.atakmap.android.blast.plugin.core.screen.Buttons;
 import com.atakmap.android.blast.plugin.core.screen.CardActions;
 import com.atakmap.android.blast.plugin.core.screen.UxoCard;
+import com.atakmap.android.blast.plugin.core.screen.Ink;
 import com.atakmap.android.blast.plugin.core.screen.Item;
+import com.atakmap.android.blast.plugin.core.screen.KeyRow;
+import com.atakmap.android.blast.plugin.core.screen.NucCard;
+import com.atakmap.android.blast.plugin.core.screen.Widget;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
 import com.atakmap.android.blast.plugin.core.screen.StandoffCard;
@@ -1463,20 +1467,7 @@ public final class BlastPane {
 
     /** Ring colours for text on the dark card (brighter than the map). */
     private static int ringTextColor(NucText.Ring ring) {
-        switch (ring) {
-            case SDZ:
-                return 0xFFFF5252;
-            case MDZ:
-                return 0xFFFF9100;
-            case LDZ:
-                return 0xFFFFEA00;
-            case BURN:
-                return 0xFF18FFFF;
-            case RAD:
-                return 0xFF8C9EFF;
-            default:
-                return 0xFFE0E0E0;
-        }
+        return NucCard.ringInk(ring);
     }
 
     /** One legend row: colour bar, coloured name and distance, meaning. */
@@ -1621,95 +1612,10 @@ public final class BlastPane {
         }
     }
 
-    /** Card section: civil / military picture and the fallout legend. */
-    private void addFalloutSection(LinearLayout card, final Marker m,
-            final NucRecord r, boolean grey) {
-        card.addView(sub("FALLOUT PICTURE"));
-        LinearLayout pic = horizontal();
-        Button civ = button("CIVIL\nFEMA / Glasstone", r.mil.on ? BTN : NUC_SEL);
-        Button mil = button("MILITARY\nFM 3-3-1 Zones I / II",
-                r.mil.on ? NUC_SEL : BTN);
-        civ.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NucRecord cur = BlastStore.readNuc(m);
-                if (cur != null && cur.mil.on)
-                    saveNuc(m, cur.withMil(cur.mil.withOn(false)), null);
-            }
-        });
-        mil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NucRecord cur = BlastStore.readNuc(m);
-                if (cur != null && !cur.mil.on)
-                    saveNuc(m, cur.withMil(cur.mil.withOn(true)), null);
-            }
-        });
-        pic.addView(civ, weight());
-        pic.addView(mil, weight());
-        card.addView(pic);
-        card.addView(text(NucText.falloutLine(r), 13, TEXT, false));
-        if (r.drawsFallout()) {
-            int[] fr = NucModel.FALLOUT_RATES;
-            for (int k = 0; k < fr.length; k++)
-                card.addView(swatchRow(grey ? DIM : NucText.FALLOUT_STROKE[k],
-                        Formats.thousands(fr[k]) + " R/h at H+1: "
-                                + NucText.dist(NucModel.contour(r.yieldKt,
-                                        fr[k], r.windMph).downwindM)
-                                + " downwind", grey ? DIM : 0xFFE1BEE7));
-            card.addView(text("Idealized contours (Glasstone Table 9.93, "
-                    + "100% fission). Dose rates fall about tenfold for every "
-                    + "sevenfold increase in time: 100 R/h at H+1 is about 10 "
-                    + "R/h at H+7 and 1 R/h at H+49. Lack of visible fallout "
-                    + "does not mean no fallout.", 12, DIM, false));
-        }
-        final NucMil.Prediction p = r.drawsMilitary() ? r.militaryPrediction()
-                : null;
-        if (p != null) {
-            card.addView(swatchRow(grey ? DIM : NucText.ZONE_I_STROKE,
-                    "Zone I: " + Math.round(p.zoneIKm) + " km", grey ? DIM
-                            : 0xFFFF8A80));
-            card.addView(text(NucReports.ZONE_I, 12, DIM, false));
-            card.addView(swatchRow(grey ? DIM : NucText.ZONE_II_STROKE,
-                    "Zone II: " + Math.round(p.zoneIIKm) + " km", grey ? DIM
-                            : 0xFFFFE57F));
-            card.addView(text(NucReports.ZONE_II, 12, DIM, false));
-            if (!p.arrivalHours().isEmpty())
-                card.addView(swatchRow(grey ? DIM : NucText.ARC_STROKE,
-                        "Dashed arcs: estimated arrival H+1, H+2 …", TEXT));
-            card.addView(text("Arrival may be as early as half the estimate. "
-                    + "No fallout by twice the estimate (or 12 h) means none "
-                    + "expected.", 12, DIM, false));
-            final String nbc3 = NucReports.nbc3(r, p, mgrs10(m.getPoint()));
-            TextView t3 = text(nbc3, 12, TEXT, false);
-            t3.setTypeface(Typeface.MONOSPACE);
-            card.addView(t3);
-            Button c3 = button("Copy NBC 3 NUC text", BTN);
-            c3.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    copy(nbc3);
-                }
-            });
-            card.addView(c3, full());
-            for (String c : NucReports.CAVEATS)
-                card.addView(text("• " + c, 12, DIM, false));
-            Button how = button("How Zones I and II are drawn", BTN);
-            how.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showTab(true, NucReference.MIL);
-                }
-            });
-            card.addView(how, full());
-        }
-        if (r.mil.on && r.isKnownModel()) {
-            card.addView(text("Effective downwind message (EDM) line for "
-                    + "this yield's group"
-                    + (NucMil.group(r.yieldKt) == null ? ""
-                            : " (" + NucMil.group(r.yieldKt) + ")")
-                    + ": 6 digits dddsss, 9 digits with angle, or 3 digits "
-                    + "(Zone I km, winds below 8 km/h).", 12, DIM, false));
+    /** The nuclear card's host widgets: EDM entry and the wind picker. */
+    private void nucWidget(String id, LinearLayout card, final Marker m,
+            final NucRecord r) {
+        if (NucCard.WIDGET_EDM.equals(id)) {
             LinearLayout el = horizontal();
             el.setGravity(Gravity.CENTER_VERTICAL);
             final EditText edm = inlineNumber("e.g. 090016", 9);
@@ -1732,10 +1638,7 @@ public final class BlastPane {
             });
             el.addView(apply, weight());
             card.addView(el);
-        }
-        if (r.isKnownModel()) {
-            card.addView(sub(r.mil.on ? "OR A SURFACE WIND (rough guide)"
-                    : r.hasWind() ? "CHANGE WIND" : "ADD WIND"));
+        } else if (NucCard.WIDGET_WIND.equals(id)) {
             new WindPicker(card, r.windFromDeg, r.windMph, new WindListener() {
                 @Override
                 public void onWind(double fromDeg, double mph) {
@@ -1743,20 +1646,6 @@ public final class BlastPane {
                 }
             });
         }
-    }
-
-    private View swatchRow(int barColor, String label, int textColor) {
-        LinearLayout row = horizontal();
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        View bar = new View(plugin);
-        bar.setBackgroundColor(barColor);
-        LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(dp(8),
-                dp(18));
-        bl.setMargins(0, dp(2), dp(8), dp(2));
-        row.addView(bar, bl);
-        row.addView(text(label, 13, textColor, true), new LinearLayout
-                .LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        return row;
     }
 
     /** Toggle buttons: tap to select, tap again to clear (if allowed). */
@@ -2006,117 +1895,67 @@ public final class BlastPane {
     private void buildNucCard(final Marker m, final NucRecord r) {
         zoneCard.setVisibility(View.VISIBLE);
         zoneCard.addView(selectedHeader());
-        LinearLayout card = vertical();
+        final LinearLayout card = vertical();
         card.setBackgroundColor(CARD);
         int p = dp(8);
         card.setPadding(p, p, p, p);
         zoneCard.addView(card);
-        boolean grey = r.isCleared();
+        // The core decides what the card says; this only renders it.
+        java.util.Map<String, TextView> slots = render(NucCard.card(r,
+                ATAKUtilities.getDisplayName(m), mgrs10(m.getPoint())), card,
+                new ScreenAction() {
+                    @Override
+                    public void run(String action) {
+                        nucAction(action, m);
+                    }
+                }, new WidgetMaker() {
+                    @Override
+                    public void make(String id, LinearLayout into) {
+                        nucWidget(id, into, m, r);
+                    }
+                });
+        youText = slots.get(NucCard.SLOT_YOU);
+        teamText = slots.get(NucCard.SLOT_TEAM);
+    }
 
-        card.addView(text(ATAKUtilities.getDisplayName(m), 17,
-                grey ? DIM : TEXT, true));
-        card.addView(text(NucText.threat(r) + (grey ? " · ENDED" : ""), 13,
-                grey ? DIM : NUC_COLOR, true));
-        card.addView(text(NucText.BANNER, 12, AMBER, true));
-        if (!r.isKnownModel())
-            card.addView(text("This build doesn't have model " + r.modelId
-                    + " " + r.modelEd + ". Showing the distances the sender "
-                    + "drew; fallout is not drawn.", 12, AMBER, false));
-        else if (r.receivedMismatch)
-            card.addView(text("The sender's distances differ from this "
-                    + "build's for the same model. This build's are drawn. "
-                    + "Check with the sender.", 12, RED, false));
-
-        card.addView(sub("DO NOW"));
-        int i = 1;
-        for (String line : NucText.DO_NOW) {
-            card.addView(text(i + "  " + line, 13, TEXT, i == 1));
-            i++;
-        }
-        card.addView(text(NucText.FLASH, 12, DIM, false));
-        Button nbc1 = button(r.obs.isEmpty() ? "NBC 1 NUC REPORT…"
-                : "NBC 1 NUC REPORT… (edit)", SEND);
-        nbc1.setTypeface(Typeface.DEFAULT_BOLD);
-        nbc1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    /** What the nuclear card's buttons do (ids from NucCard / CardActions). */
+    private void nucAction(String action, Marker m) {
+        switch (action) {
+            case NucCard.NBC1:
                 promptNbc1(m);
+                break;
+            case NucCard.PIC_CIVIL:
+            case NucCard.PIC_MILITARY: {
+                boolean mil = NucCard.PIC_MILITARY.equals(action);
+                NucRecord cur = BlastStore.readNuc(m);
+                if (cur != null && cur.mil.on != mil)
+                    saveNuc(m, cur.withMil(cur.mil.withOn(mil)), null);
+                break;
             }
-        });
-        LinearLayout.LayoutParams nl = full();
-        nl.setMargins(0, dp(6), 0, 0);
-        card.addView(nbc1, nl);
-
-        youText = text("", 14, TEXT, false);
-        youText.setPadding(0, dp(6), 0, 0);
-        card.addView(youText);
-        teamText = text("", 12, DIM, false);
-        card.addView(teamText);
-
-        card.addView(sub("RINGS (each an outer bound)"));
-        for (NucText.Ring ring : NucText.Ring.values())
-            card.addView(legendRow(ring, ring == NucText.Ring.GET_INSIDE
-                    ? "50 mi (80 km), dotted" : NucText.dist(ring.radiusM(r))
-                            + (ring == NucText.Ring.BURN ? ", dashed" : ""),
-                    NucText.meaning(ring), grey));
-
-        addFalloutSection(card, m, r, grey);
-
-        LinearLayout a1 = horizontal();
-        Button sendAll = button("SEND TO ALL", SEND);
-        sendAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmSendNuc(m);
+            case NucCard.COPY_NBC3: {
+                NucRecord cur = BlastStore.readNuc(m);
+                String t = cur == null ? null
+                        : NucCard.nbc3Text(cur, mgrs10(m.getPoint()));
+                if (t != null)
+                    copy(t);
+                break;
             }
-        });
-        Button sendTo = button("Send to…", BTN);
-        sendTo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Marker l = live(m);
-                if (l != null)
-                    sharing.sendTo(l);
-            }
-        });
-        Button fly = button("Fly to", BTN);
-        fly.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goTo(m);
-            }
-        });
-        a1.addView(sendAll, new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1.4f));
-        a1.addView(sendTo, weight());
-        a1.addView(fly, weight());
-        LinearLayout.LayoutParams al = full();
-        al.setMargins(0, dp(6), 0, 0);
-        card.addView(a1, al);
-        addCommonActions(card, m, grey);
-
-        Button why = button("Why these distances?", BTN);
-        why.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            case NucCard.HOW_ZONES:
+                showTab(true, NucReference.MIL);
+                break;
+            case NucCard.WHY:
                 showTab(true, NucReference.RINGS);
-            }
-        });
-        card.addView(why, full());
-        Button what = button("What to do (FEMA)", BTN);
-        what.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case NucCard.WHAT_TO_DO:
                 showTab(true, NucReference.ACTIONS);
-            }
-        });
-        card.addView(what, full());
-        card.addView(text(NucText.basis(r), 12, DIM, false));
-        for (String c : NucText.CAVEATS)
-            card.addView(text("• " + c, 12, DIM, false));
-        TextView prov = text(NucText.provenance(r), 11, DIM, false);
-        prov.setPadding(0, dp(4), 0, dp(4));
-        card.addView(prov);
+                break;
+            case CardActions.SEND_ALL:
+                // Nuclear sending is deliberate: confirm first.
+                confirmSendNuc(m);
+                break;
+            default:
+                standoffAction(action, m);
+        }
     }
 
     private void confirmSendNuc(Marker card) {
@@ -2166,21 +2005,7 @@ public final class BlastPane {
         Marker self = ATAKUtilities.findSelf(mapView);
         GeoPoint sp = selfPoint();
         double[] en = gz == null || sp == null ? null : eastNorth(gz, sp);
-        NucText.Where w = en == null ? null : NucText.where(r, en[0], en[1]);
-        if (w == null) {
-            youText.setText("YOU: no GPS position yet.");
-            youText.setTextColor(DIM);
-        } else {
-            String s = "YOU: " + w.headline() + "\n" + w.detail();
-            if (r.isCleared())
-                s = "Incident marked ended. " + s;
-            youText.setText(s);
-            youText.setTextColor(r.isCleared() ? DIM
-                    : w.zone != null && w.zone != NucText.Ring.GET_INSIDE
-                            || w.falloutRate > 0 ? RED
-                                    : w.zone == NucText.Ring.GET_INSIDE ? AMBER
-                                            : GREEN);
-        }
+        apply(youText, NucCard.you(r, en));
         if (teamText != null && gz != null) {
             List<double[]> pts = new ArrayList<>();
             try {
@@ -2197,14 +2022,7 @@ public final class BlastPane {
             } catch (RuntimeException e) {
                 Log.w(TAG, "contact scan failed", e);
             }
-            int[] n = NucText.count(r, pts.toArray(new double[0][]));
-            teamText.setText(n[2] == 0 ? "Team: no other contacts on the map."
-                    : "Team on the map: " + n[0] + " inside the damage zones"
-                            + (r.drawsFallout() ? ", " + n[1]
-                                    + " inside a fallout contour" : "")
-                            + " (of " + n[2] + ").");
-            teamText.setTextColor((n[0] > 0 || n[1] > 0) && !r.isCleared()
-                    ? RED : DIM);
+            apply(teamText, NucCard.team(r, pts.toArray(new double[0][])));
         }
     }
 
@@ -2250,47 +2068,6 @@ public final class BlastPane {
                 // every card.
                 standoffAction(action, m);
         }
-    }
-
-    /** Rename / Export / Clear / Delete, shared by both kinds of card. */
-    private void addCommonActions(LinearLayout card, final Marker m,
-            boolean cleared) {
-        LinearLayout aRename = horizontal();
-        Button ren = button("Rename…", BTN);
-        ren.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                promptRename(m);
-            }
-        });
-        Button exp = button("Export…", BTN);
-        exp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                promptExport(m);
-            }
-        });
-        aRename.addView(ren, weight());
-        aRename.addView(exp, weight());
-        card.addView(aRename);
-        LinearLayout a2 = horizontal();
-        Button clear = button(cleared ? "Reopen" : "Mark cleared", BTN);
-        clear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmStatus(m);
-            }
-        });
-        Button del = button("Delete…", BTN);
-        del.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmDelete(m);
-            }
-        });
-        a2.addView(clear, weight());
-        a2.addView(del, weight());
-        card.addView(a2);
     }
 
     /** UXO sending is deliberate: confirm before broadcasting. */
@@ -3128,9 +2905,20 @@ public final class BlastPane {
                 return BLUE;
             case ORANGE:
                 return ORANGE;
+            case NUC:
+                return NUC_COLOR;
             default:
                 return TEXT;
         }
+    }
+
+    private static int color(Ink k) {
+        return k.tone != null ? color(k.tone) : k.argb;
+    }
+
+    /** Builds a host widget for a {@code Widget} item. */
+    private interface WidgetMaker {
+        void make(String id, LinearLayout into);
     }
 
     /**
@@ -3139,6 +2927,12 @@ public final class BlastPane {
      */
     private java.util.Map<String, TextView> render(Screen screen,
             LinearLayout into, final ScreenAction actions) {
+        return render(screen, into, actions, null);
+    }
+
+    private java.util.Map<String, TextView> render(Screen screen,
+            LinearLayout into, final ScreenAction actions,
+            WidgetMaker widgets) {
         java.util.Map<String, TextView> slots = new java.util.HashMap<>();
         for (Item it : screen.items()) {
             if (it instanceof Text) {
@@ -3171,14 +2965,17 @@ public final class BlastPane {
                                     ViewGroup.LayoutParams.WRAP_CONTENT,
                                     l.weight(i)));
                 into.addView(line);
+            } else if (it instanceof KeyRow) {
+                into.addView(keyRow((KeyRow) it));
+            } else if (it instanceof Widget) {
+                if (widgets != null)
+                    widgets.make(((Widget) it).id, into);
             } else if (it instanceof Buttons) {
                 Buttons bs = (Buttons) it;
                 LinearLayout row = bs.buttons.size() == 1 ? null : horizontal();
                 for (final com.atakmap.android.blast.plugin.core.screen.Button b
                         : bs.buttons) {
-                    Button v = button(b.label, b.kind
-                            == com.atakmap.android.blast.plugin.core.screen.Button.Kind.PRIMARY
-                                    ? SEND : BTN);
+                    Button v = button(b.label, buttonColor(b.kind));
                     if (b.bold)
                         v.setTypeface(Typeface.DEFAULT_BOLD);
                     v.setOnClickListener(new View.OnClickListener() {
@@ -3211,6 +3008,48 @@ public final class BlastPane {
             }
         }
         return slots;
+    }
+
+    private static int buttonColor(
+            com.atakmap.android.blast.plugin.core.screen.Button.Kind k) {
+        switch (k) {
+            case PRIMARY:
+                return SEND;
+            case SELECTED:
+                return NUC_SEL;
+            default:
+                return BTN;
+        }
+    }
+
+    /** A map key line (TALL: rings; SHORT: fallout bands, zones). */
+    private View keyRow(KeyRow k) {
+        LinearLayout row = horizontal();
+        View bar = new View(plugin);
+        bar.setBackgroundColor(color(k.bar));
+        if (k.kind == KeyRow.Kind.TALL) {
+            row.setPadding(0, dp(3), 0, dp(3));
+            LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(
+                    dp(8), ViewGroup.LayoutParams.MATCH_PARENT);
+            bl.setMargins(0, 0, dp(8), 0);
+            row.addView(bar, bl);
+            LinearLayout tx = vertical();
+            tx.addView(text(k.title, 14, color(k.titleInk), true));
+            if (k.meaning != null)
+                tx.addView(text(k.meaning, 12, DIM, false));
+            row.addView(tx, new LinearLayout.LayoutParams(0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        } else {
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(
+                    dp(8), dp(18));
+            bl.setMargins(0, dp(2), dp(8), dp(2));
+            row.addView(bar, bl);
+            row.addView(text(k.title, 13, color(k.titleInk), true),
+                    new LinearLayout.LayoutParams(0,
+                            ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        }
+        return row;
     }
 
     /** Update a live slot's TextView from a core Text. */

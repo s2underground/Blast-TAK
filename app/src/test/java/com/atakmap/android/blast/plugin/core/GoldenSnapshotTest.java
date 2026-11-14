@@ -60,6 +60,11 @@ public class GoldenSnapshotTest {
     }
 
     @Test
+    public void nucCard() {
+        Golden.check("nuclear-card.txt", nucCardSnapshot());
+    }
+
+    @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
     }
@@ -78,6 +83,7 @@ public class GoldenSnapshotTest {
             Golden.check("reference.txt", referenceSnapshot());
             Golden.check("standoff-card.txt", standoffCardSnapshot());
             Golden.check("uxo-card.txt", uxoCardSnapshot());
+            Golden.check("nuclear-card.txt", nucCardSnapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);
@@ -448,6 +454,65 @@ public class GoldenSnapshotTest {
             sb.append("hotel ").append(b).append(": ")
                     .append(NucReports.hotel(b)).append("\n");
         return sb.toString();
+    }
+
+    /** Refactor step 4c: the nuclear card as the core describes it. */
+    static String nucCardSnapshot() {
+        StringBuilder sb = new StringBuilder();
+        NucModel.Burst S = NucModel.Burst.SURFACE, A = NucModel.Burst.AIR;
+        double nan = Double.NaN;
+        NucRecord civ = NucRecord.create(10, S, "FEMA_10", 0, 15, BY, T)
+                .withNumber(1);
+        NucRecord mil = civ.withMil(new NucRecord.Mil(true, nan, nan, false))
+                .withNumber(2);
+        List<Object[]> cards = new ArrayList<>();
+        cards.add(new Object[] { "civil, wind", civ });
+        cards.add(new Object[] { "military, surface wind", mil });
+        cards.add(new Object[] { "military, EDM", mil.withEdm(NucMil.parseEdm(
+                "270030")).withNumber(3) });
+        cards.add(new Object[] { "air burst, no wind", NucRecord.create(455,
+                A, "US_W88", nan, nan, BY, T).withNumber(4) });
+        cards.add(new Object[] { "observer report, ended", NucRecord.create(
+                16, S, "", 270, 10, BY, T).withObs(new NucRecord.Obs(LAT + 0.1,
+                        LON - 0.1, 135, 22, 12, "", "", "", "", "AA"))
+                .cleared("BRAVO-2", NOW).withNumber(5) });
+        NucRecord unknown = NucCodec.decode(withEd(NucCodec.encode(civ),
+                "2030-01"));
+        cards.add(new Object[] { "unknown model", unknown.withNumber(6) });
+        for (Object[] cs : cards) {
+            NucRecord r = (NucRecord) cs[1];
+            String name = Names.withStatus(Names.initialNuc(r.number,
+                    NucPresets.yieldLabel(r.yieldKt)), r.isCleared());
+            sb.append("\n=== card ").append(name).append(" (").append(cs[0])
+                    .append(")\n");
+            sb.append(ScreenDump.dump(com.atakmap.android.blast.plugin.core
+                    .screen.NucCard.card(r, name, GRID)));
+            sb.append("nbc3Text: ").append(String.valueOf(com.atakmap.android
+                    .blast.plugin.core.screen.NucCard.nbc3Text(r, GRID))
+                    .replace("\n", "\\n")).append("\n");
+            sb.append("you, no fix:\n").append(ScreenDump.item(com.atakmap
+                    .android.blast.plugin.core.screen.NucCard.you(r, null)))
+                    .append("\n");
+            for (double[] en : EN)
+                sb.append("you ").append(Golden.num(en[0], 0)).append(",")
+                        .append(Golden.num(en[1], 0)).append(":\n")
+                        .append(ScreenDump.item(com.atakmap.android.blast
+                                .plugin.core.screen.NucCard.you(r, en)))
+                        .append("\n");
+            sb.append("team none:\n").append(ScreenDump.item(com.atakmap
+                    .android.blast.plugin.core.screen.NucCard.team(r,
+                            new double[0][]))).append("\n");
+            sb.append("team all:\n").append(ScreenDump.item(com.atakmap
+                    .android.blast.plugin.core.screen.NucCard.team(r, EN)))
+                    .append("\n");
+        }
+        return sb.toString();
+    }
+
+    private static java.util.Map<String, String> withEd(
+            java.util.Map<String, String> a, String ed) {
+        a.put("ed", ed);
+        return a;
     }
 
     private static Object[] c(String label, NucRecord r, double lat,
