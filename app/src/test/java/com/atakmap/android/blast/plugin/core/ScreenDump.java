@@ -2,6 +2,9 @@ package com.atakmap.android.blast.plugin.core;
 
 import com.atakmap.android.blast.plugin.core.screen.Button;
 import com.atakmap.android.blast.plugin.core.screen.Buttons;
+import com.atakmap.android.blast.plugin.core.screen.Check;
+import com.atakmap.android.blast.plugin.core.screen.Choice;
+import com.atakmap.android.blast.plugin.core.screen.Input;
 import com.atakmap.android.blast.plugin.core.screen.Item;
 import com.atakmap.android.blast.plugin.core.screen.KeyRow;
 import com.atakmap.android.blast.plugin.core.screen.Widget;
@@ -35,6 +38,8 @@ final class ScreenDump {
                 sb.append(" icon=").append(t.icon);
             if (t.mono)
                 sb.append(" mono");
+            if (t.selectable)
+                sb.append(" selectable");
             if (t.slot != null)
                 sb.append(" slot=").append(t.slot);
             sb.append(" | ").append(t.text.replace("\n", "\\n"));
@@ -68,6 +73,26 @@ final class ScreenDump {
             return "  key " + k.kind + " bar=" + k.bar + " " + k.titleInk
                     + " | " + k.title + (k.meaning == null ? ""
                             : " | " + k.meaning);
+        }
+        if (it instanceof Input) {
+            Input in = (Input) it;
+            return "  input " + in.id + (in.numeric ? " numeric" : "")
+                    + " max=" + in.maxLength + " | " + in.label + " = ["
+                    + in.value + "]";
+        }
+        if (it instanceof Check) {
+            Check c = (Check) it;
+            return "  check " + c.id + " " + c.checked + " | " + c.label;
+        }
+        if (it instanceof Choice) {
+            Choice c = (Choice) it;
+            StringBuilder sb = new StringBuilder("  choice " + c.id + " per="
+                    + c.perRow + " sel=[" + c.selected + "] "
+                    + (c.clearable ? "clearable " : "") + c.selectedKind);
+            for (int i = 0; i < c.size(); i++)
+                sb.append(" | ").append(c.code(i)).append("=")
+                        .append(c.label(i));
+            return sb.toString();
         }
         if (it instanceof Widget)
             return "  widget " + ((Widget) it).id;

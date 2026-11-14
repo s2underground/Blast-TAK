@@ -29,7 +29,15 @@ import android.widget.Toast;
 import com.atakmap.android.blast.plugin.R;
 import com.atakmap.android.blast.plugin.atak.BlastStore;
 import com.atakmap.android.blast.plugin.atak.Exporter;
+import com.atakmap.android.blast.plugin.core.port.Magnetic;
 import com.atakmap.android.blast.plugin.core.screen.Buttons;
+import com.atakmap.android.blast.plugin.core.screen.Check;
+import com.atakmap.android.blast.plugin.core.screen.Choice;
+import com.atakmap.android.blast.plugin.core.screen.FormValues;
+import com.atakmap.android.blast.plugin.core.screen.Input;
+import com.atakmap.android.blast.plugin.core.screen.Nbc1Form;
+import com.atakmap.android.blast.plugin.core.screen.PolarForm;
+import com.atakmap.android.blast.plugin.core.screen.UxoReportForm;
 import com.atakmap.android.blast.plugin.core.screen.CardActions;
 import com.atakmap.android.blast.plugin.core.screen.UxoCard;
 import com.atakmap.android.blast.plugin.core.screen.Ink;
@@ -1648,34 +1656,12 @@ public final class BlastPane {
         }
     }
 
-    /** Toggle buttons: tap to select, tap again to clear (if allowed). */
-    private void bindChoice(final List<Button> bs, final String[] codes,
-            final String[] value, final boolean clearable,
-            final Runnable onChange) {
-        for (int i = 0; i < bs.size(); i++) {
-            final int k = i;
-            bs.get(i).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    value[0] = clearable && codes[k].equals(value[0]) ? ""
-                            : codes[k];
-                    for (int j = 0; j < bs.size(); j++)
-                        tint(bs.get(j), codes[j].equals(value[0]) ? NUC_SEL
-                                : BTN);
-                    onChange.run();
-                }
-            });
-            tint(bs.get(i), codes[i].equals(value[0]) ? NUC_SEL : BTN);
-        }
-    }
-
     /** NBC 1 NUC report builder (FM 3-11.3 Fig. G-3), saved on the incident. */
     private void promptNbc1(Marker card) {
         final Marker m = live(card);
         final NucRecord r0 = m == null ? null : BlastStore.readNuc(m);
         if (r0 == null)
             return;
-        final NucRecord.Obs o = r0.obs;
         final GeoPoint self = selfPoint();
         final GeoPoint gz = m.getPoint();
         Context ctx = mapView.getContext();
@@ -1685,116 +1671,28 @@ public final class BlastPane {
         int pd = dp(14);
         box.setPadding(pd, dp(6), pd, 0);
         sv.addView(box);
-        box.addView(note(ctx, NucReports.PRECEDENCE));
-        double az0 = o.azDeg;
-        if (Double.isNaN(az0) && self != null && gz != null)
-            az0 = self.bearingTo(gz);
-        final EditText az = field(ctx, box, "BRAVO: direction to the burst from "
-                + "you, degrees" + (Double.isNaN(o.azDeg) && !Double.isNaN(az0)
-                        ? " (filled from your GPS to ground zero, true)" : ""),
-                Double.isNaN(az0) ? "" : Long.toString(Math.round(az0)), true);
-        final CheckBox magnetic = new CheckBox(ctx);
-        magnetic.setText("Magnetic (from a compass)");
-        box.addView(magnetic);
-        box.addView(note(ctx, NucReports.FLASH_HELP));
-        final EditText ftb = field(ctx, box, "JULIET: flash-to-bang, seconds",
-                Double.isNaN(o.flashToBangS) ? ""
-                        : Long.toString(Math.round(o.flashToBangS)), true);
-        box.addView(note(ctx, NucReports.WIDTH_HELP));
-        final EditText cw = field(ctx, box, "LIMA: cloud width at H+5, degrees",
-                Double.isNaN(o.cloudWidthDeg) ? ""
-                        : Formats.decimalTrim(o.cloudWidthDeg), true);
-        box.addView(label(ctx, "FOXTROT: ground zero"));
-        final String[] gq = { o.gzQualifier };
-        List<Button> gqb = choiceRow(box, new String[] { "Estimated (EE)",
-                "Actual: I can see GZ (AA)" }, 2);
-        box.addView(label(ctx, "KILO: crater"));
-        final String[] kilo = { o.crater };
-        List<Button> kb = choiceRow(box, new String[] { "Crater", "No crater",
-                "Unknown" }, 3);
-        box.addView(label(ctx, "GOLF: delivery"));
-        final String[] so = { o.golfSo };
-        List<Button> sob = choiceRow(box, new String[] { "Suspected",
-                "Observed" }, 2);
-        final String[] del = { o.golfDelivery };
-        List<Button> db = choiceRow(box, new String[] { "Unknown", "Aircraft",
-                "Missile", "Cannon" }, 4);
-        final String[] con = { o.golfContainer };
-        List<Button> cb = choiceRow(box, new String[] { "Unknown", "Bomb",
-                "Missile", "Shell" }, 4);
-        box.addView(note(ctx, NucReports.HOTEL_HELP + " This report uses the "
-                + "incident's burst type: " + NucReports.hotel(r0.burst) + "."));
-        final TextView preview = new TextView(ctx);
-        preview.setTypeface(Typeface.MONOSPACE);
-        preview.setTextIsSelectable(true);
-        preview.setPadding(0, dp(8), 0, dp(8));
-        box.addView(preview);
         final String obsGrid = mgrs10(self);
         final String gzGrid = mgrs10(gz);
         final NucRecord[] built = { r0 };
+        final FormView[] fv = new FormView[1];
         final Runnable update = new Runnable() {
             @Override
             public void run() {
-                double a = ZoneCalculator.parseQuantity(az.getText().toString());
-                if (magnetic.isChecked() && !Double.isNaN(a) && self != null) {
-                    try {
-                        a = ATAKUtilities.convertFromMagneticToTrue(self, a);
-                    } catch (RuntimeException e) {
-                        a = Double.NaN;
-                    }
-                }
-                NucRecord.Obs no = new NucRecord.Obs(
+                if (fv[0] == null)
+                    return;
+                built[0] = r0.withObs(Nbc1Form.obs(fv[0].values(),
                         self == null ? Double.NaN : self.getLatitude(),
-                        self == null ? Double.NaN : self.getLongitude(), a,
-                        ZoneCalculator.parseQuantity(ftb.getText().toString()),
-                        ZoneCalculator.parseQuantity(cw.getText().toString()),
-                        kilo[0], so[0], del[0], con[0], gq[0]);
-                built[0] = r0.withObs(no);
-                String s = NucReports.nbc1(built[0], obsGrid, gzGrid);
-                List<String> miss = NucReports.nbc1Missing(built[0], obsGrid);
-                if (!miss.isEmpty()) {
-                    s += "\n\nMissing:";
-                    for (String x : miss)
-                        s += "\n- " + x;
-                }
-                preview.setText(s);
+                        self == null ? Double.NaN : self.getLongitude(),
+                        magneticAt(self)));
+                fv[0].set(Nbc1Form.SLOT_PREVIEW,
+                        Nbc1Form.preview(built[0], obsGrid, gzGrid));
             }
         };
-        bindChoice(gqb, new String[] { "EE", "AA" }, gq, false, update);
-        bindChoice(kb, new String[] { "CRATER", "NONE", "UNK" }, kilo, true,
-                update);
-        bindChoice(sob, new String[] { "SUS", "OBS" }, so, false, update);
-        bindChoice(db, new String[] { "UNK", "AIR", "MSL", "CAN" }, del, false,
-                update);
-        bindChoice(cb, new String[] { "UNK", "BOM", "MSL", "SHL" }, con, false,
-                update);
-        TextWatcher tw = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                update.run();
-            }
-        };
-        az.addTextChangedListener(tw);
-        ftb.addTextChangedListener(tw);
-        cw.addTextChangedListener(tw);
-        magnetic.setOnCheckedChangeListener(
-                new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton b, boolean on) {
-                        update.run();
-                    }
-                });
+        fv[0] = renderForm(Nbc1Form.form(r0, self != null && gz != null
+                ? self.bearingTo(gz) : Double.NaN), ctx, box, update);
         update.run();
         showTyping(new AlertDialog.Builder(ctx)
-                .setTitle("NBC 1 NUC report")
+                .setTitle(Nbc1Form.TITLE)
                 .setView(sv)
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
@@ -1811,11 +1709,31 @@ public final class BlastPane {
                             @Override
                             public void onClick(DialogInterface d, int w) {
                                 update.run();
-                                copy(NucReports.nbc1(built[0], obsGrid,
+                                copy(Nbc1Form.report(built[0], obsGrid,
                                         gzGrid));
                             }
                         })
                 .setNegativeButton("Cancel", null));
+    }
+
+    /**
+     * The Magnetic port for a position: ATAK's declination there (NaN if it
+     * fails); null without a position.
+     */
+    private static Magnetic magneticAt(final GeoPoint where) {
+        if (where == null)
+            return null;
+        return new Magnetic() {
+            @Override
+            public double toTrue(double magneticDeg) {
+                try {
+                    return ATAKUtilities.convertFromMagneticToTrue(where,
+                            magneticDeg);
+                } catch (RuntimeException e) {
+                    return Double.NaN;
+                }
+            }
+        };
     }
 
     /** Place ground zero by polar plot: azimuth and flash-to-bang. */
@@ -1834,56 +1752,32 @@ public final class BlastPane {
         box.setOrientation(LinearLayout.VERTICAL);
         int pd = dp(16);
         box.setPadding(pd, dp(8), pd, 0);
-        final EditText az = field(ctx, box, "Azimuth to the stem or cloud "
-                + "centre, degrees", "", true);
-        final CheckBox magnetic = new CheckBox(ctx);
-        magnetic.setText("Magnetic bearing (from a compass)");
-        magnetic.setChecked(true);
-        box.addView(magnetic);
-        final EditText ftb = field(ctx, box, "Flash-to-bang, seconds", "", true);
-        box.addView(note(ctx, NucReports.FLASH_HELP + " Ground zero is placed "
-                + "that far along the azimuth from your GPS position (polar "
-                + "plot, FM 3-11.3) and marked estimated."));
+        final FormView fv = renderForm(PolarForm.form(), ctx, box,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // nothing live in this form
+                    }
+                });
         showTyping(new AlertDialog.Builder(ctx)
-                .setTitle("Place from what you observed")
+                .setTitle(PolarForm.TITLE)
                 .setView(box)
                 .setPositiveButton("Place", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface d, int w) {
-                        double a = ZoneCalculator.parseQuantity(
-                                az.getText().toString());
-                        double s = ZoneCalculator.parseQuantity(
-                                ftb.getText().toString());
-                        if (!(a >= 0 && a <= 360)) {
-                            toast("Enter an azimuth from 0 to 359.");
+                        PolarForm.Result res = PolarForm.place(fv.values(),
+                                self.getLatitude(), self.getLongitude(),
+                                magneticAt(self));
+                        if (res.error != null) {
+                            toast(res.error);
                             return;
                         }
-                        if (!(s > 0 && s <= 300)) {
-                            toast("Enter the flash-to-bang time, 1 to 300 s.");
-                            return;
-                        }
-                        double t = a;
-                        if (magnetic.isChecked()) {
-                            try {
-                                t = ATAKUtilities.convertFromMagneticToTrue(
-                                        self, a);
-                            } catch (RuntimeException e) {
-                                toast("Magnetic declination unavailable: "
-                                        + "enter a true bearing.");
-                                return;
-                            }
-                        }
-                        double[] ll = Geo.destination(self.getLatitude(),
-                                self.getLongitude(), ((t % 360) + 360) % 360,
-                                NucMil.polarKm(s) * 1000);
-                        GeoPoint at = new GeoPoint(ll[0], ll[1]);
+                        GeoPoint at = new GeoPoint(res.lat, res.lon);
                         if (!at.isValid()) {
                             toast("Could not compute the position.");
                             return;
                         }
-                        placeNuc(at, new NucRecord.Obs(self.getLatitude(),
-                                self.getLongitude(), t, s, Double.NaN, "",
-                                "SUS", "UNK", "UNK", "EE"));
+                        placeNuc(at, res.obs);
                     }
                 })
                 .setNegativeButton("Cancel", null));
@@ -2168,7 +2062,6 @@ public final class BlastPane {
         final UxoRecord r0 = BlastStore.readUxo(m);
         if (r0 == null)
             return;
-        final UxoRecord.Report rp = r0.report;
         final Context ctx = mapView.getContext();
         ScrollView sv = new ScrollView(ctx);
         final LinearLayout box = new LinearLayout(ctx);
@@ -2176,135 +2069,32 @@ public final class BlastPane {
         int pd = dp(16);
         box.setPadding(pd, dp(8), pd, 0);
         sv.addView(box);
-
-        final TextView preview = new TextView(ctx);
-        preview.setTypeface(Typeface.MONOSPACE);
-        preview.setTextIsSelectable(true);
-        preview.setPadding(0, dp(8), 0, dp(8));
-
-        box.addView(note(ctx, "Line 1 (time found) and line 2 (grid) are "
-                + "filled in from the incident."));
-        final EditText land = field(ctx, box,
-                "Line 2, landmark / how to find it", rp.landmark, false);
-        final EditText poc = field(ctx, box,
-                "Line 3, contact (callsign, phone, frequency)", rp.contact,
-                false);
-        box.addView(label(ctx, "Line 4, how it got there"));
-        final String[] emps = { "Dropped", "Projected", "Placed", "Thrown",
-                "Possible IED", "Unknown" };
-        final int[] emp = { -1 };
-        for (int i = 0; i < emps.length; i++)
-            if (emps[i].equals(rp.emplacement))
-                emp[0] = i;
-        final List<Button> empBtns = choiceRow(box, emps, 3);
-        final EditText count = field(ctx, box, "Line 4, number of items seen",
-                rp.count > 0 ? Integer.toString(rp.count) : "", true);
-        final EditText desc = field(ctx, box,
-                "Line 4, description: size, shape, colour, markings, "
-                        + "condition", rp.description, false);
-        final EditText cbrn = field(ctx, box,
-                "Line 5, chemical or other signs (leaks, smell, sick people)",
-                rp.cbrn, false);
-        final EditText res = field(ctx, box,
-                "Line 6, resources threatened (road, homes, school…)",
-                rp.resources, false);
-        final EditText imp = field(ctx, box,
-                "Line 7, impact (road closed, …)", rp.impact, false);
-        final EditText prot = field(ctx, box,
-                "Line 8, protective measures taken (e.g. people kept out)",
-                rp.protective, false);
-        box.addView(label(ctx, "Line 9, recommended priority"));
-        final UxoRecord.Priority[] pris = { UxoRecord.Priority.IMMEDIATE,
-                UxoRecord.Priority.INDIRECT, UxoRecord.Priority.MINOR,
-                UxoRecord.Priority.NO_THREAT };
-        final String[] priLabels = new String[pris.length];
-        final int[] pri = { -1 };
-        for (int i = 0; i < pris.length; i++) {
-            priLabels[i] = pris[i].label;
-            if (pris[i] == rp.priority)
-                pri[0] = i;
-        }
-        final List<Button> priBtns = choiceRow(box, priLabels, 2);
-        final TextView priNote = note(ctx, "");
-        box.addView(priNote);
-        box.addView(label(ctx, "Preview"));
-        box.addView(preview);
-        TextView caution = note(ctx, UxoText.REPORT_CAUTION + " "
-                + UxoText.PRIORITY_NOTE + "\nEmergency number: "
-                + emergencyNumber());
-        box.addView(caution);
-
-        final String[] priDesc = {
-                "Stops movement or threatens vital assets.",
-                "Slows movement or threatens important assets.",
-                "Reduces movement or threatens non-critical assets.",
-                "Little or no effect at present." };
+        // The core describes the form and computes the note and preview.
+        final FormView[] fv = new FormView[1];
         final Runnable update = new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < empBtns.size(); i++)
-                    tint(empBtns.get(i), i == emp[0] ? UXO_SEL : BTN);
-                for (int i = 0; i < priBtns.size(); i++)
-                    tint(priBtns.get(i), i == pri[0] ? UXO_SEL : BTN);
-                priNote.setText(pri[0] < 0 ? "Tap one (tap again to clear)."
-                        : priDesc[pri[0]]);
-                UxoRecord r = r0.withReport(collect(count, desc, land,
-                        emp[0] < 0 ? "" : emps[emp[0]], cbrn, res, imp, prot,
-                        pri[0] < 0 ? UxoRecord.Priority.UNSET : pris[pri[0]],
-                        poc));
-                preview.setText(UxoText.nineLine(r, callsign(), grid(m)));
+                if (fv[0] == null)
+                    return;
+                FormValues v = fv[0].values();
+                fv[0].set(UxoReportForm.SLOT_PRI_NOTE,
+                        UxoReportForm.priorityNote(v));
+                fv[0].set(UxoReportForm.SLOT_PREVIEW, UxoReportForm.preview(
+                        r0, v, callsign(), grid(m)));
             }
         };
-        for (int i = 0; i < empBtns.size(); i++) {
-            final int k = i;
-            empBtns.get(i).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    emp[0] = emp[0] == k ? -1 : k;
-                    update.run();
-                }
-            });
-        }
-        for (int i = 0; i < priBtns.size(); i++) {
-            final int k = i;
-            priBtns.get(i).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    pri[0] = pri[0] == k ? -1 : k;
-                    update.run();
-                }
-            });
-        }
-        TextWatcher tw = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                update.run();
-            }
-        };
-        for (EditText e : new EditText[] { count, desc, land, cbrn, res, imp,
-                prot, poc })
-            e.addTextChangedListener(tw);
+        fv[0] = renderForm(UxoReportForm.form(r0, emergencyNumber()), ctx, box,
+                update);
         update.run();
         final Runnable save = new Runnable() {
             @Override
             public void run() {
-                saveReport(m, collect(count, desc, land,
-                        emp[0] < 0 ? "" : emps[emp[0]], cbrn, res, imp, prot,
-                        pri[0] < 0 ? UxoRecord.Priority.UNSET : pris[pri[0]],
-                        poc));
+                saveReport(m, UxoReportForm.report(fv[0].values()));
             }
         };
 
         showTyping(new AlertDialog.Builder(ctx)
-                .setTitle("EOD 9-line: " + BlastStore.nameOf(m))
+                .setTitle(UxoReportForm.title(BlastStore.nameOf(m)))
                 .setView(sv)
                 .setPositiveButton("Save",
                         new DialogInterface.OnClickListener() {
@@ -2318,7 +2108,8 @@ public final class BlastPane {
                             @Override
                             public void onClick(DialogInterface d, int w) {
                                 save.run();
-                                copy(preview.getText().toString());
+                                copy(UxoReportForm.preview(r0,
+                                        fv[0].values(), callsign(), grid(m)));
                             }
                         })
                 .setNegativeButton("Cancel", null)
@@ -2327,6 +2118,12 @@ public final class BlastPane {
 
     private EditText field(Context ctx, LinearLayout box, String hint,
             String value, boolean number) {
+        return field(ctx, box, hint, value, number, number ? 4
+                : com.atakmap.android.blast.plugin.core.UxoCodec.MAX_REPORT_TEXT);
+    }
+
+    private EditText field(Context ctx, LinearLayout box, String hint,
+            String value, boolean number, int maxLen) {
         box.addView(label(ctx, hint));
         EditText e = new EditText(ctx);
         doneKey(e);
@@ -2335,10 +2132,7 @@ public final class BlastPane {
                 : InputType.TYPE_CLASS_TEXT
                         | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         e.setFilters(new android.text.InputFilter[] {
-                new android.text.InputFilter.LengthFilter(
-                        number ? 4 : com.atakmap.android.blast.plugin.core
-                                .UxoCodec.MAX_REPORT_TEXT)
-        });
+                new android.text.InputFilter.LengthFilter(maxLen) });
         box.addView(e);
         return e;
     }
@@ -2348,14 +2142,6 @@ public final class BlastPane {
         t.setText(s);
         t.setTypeface(Typeface.DEFAULT_BOLD);
         t.setPadding(0, dp(8), 0, dp(2));
-        return t;
-    }
-
-    private TextView note(Context ctx, String s) {
-        TextView t = new TextView(ctx);
-        t.setText(s);
-        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        t.setPadding(0, dp(2), 0, dp(2));
         return t;
     }
 
@@ -2380,25 +2166,6 @@ public final class BlastPane {
         for (int i = 0; i < pad && row != null; i++)
             row.addView(new View(plugin), weight());
         return out;
-    }
-
-    private static UxoRecord.Report collect(EditText count, EditText desc,
-            EditText land, String emp, EditText cbrn, EditText res,
-            EditText imp, EditText prot, UxoRecord.Priority pri,
-            EditText poc) {
-        int n = 0;
-        try {
-            n = Integer.parseInt(count.getText().toString().trim());
-        } catch (NumberFormatException ignored) {
-        }
-        return new UxoRecord.Report(n, clean(desc), clean(land), emp,
-                clean(cbrn), clean(res), clean(imp), clean(prot), pri,
-                clean(poc));
-    }
-
-    private static String clean(EditText e) {
-        return com.atakmap.android.blast.plugin.core.UxoCodec.longText(
-                e.getText().toString());
     }
 
     private void saveReport(Marker card, UxoRecord.Report rep) {
@@ -3017,6 +2784,8 @@ public final class BlastPane {
                 return SEND;
             case SELECTED:
                 return NUC_SEL;
+            case SELECTED_UXO:
+                return UXO_SEL;
             default:
                 return BTN;
         }
@@ -3050,6 +2819,122 @@ public final class BlastPane {
                             ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         }
         return row;
+    }
+
+    /** A rendered core form: its inputs, choices, checks and live slots. */
+    private final class FormView {
+        final java.util.Map<String, EditText> inputs = new java.util.HashMap<>();
+        final java.util.Map<String, CheckBox> checks = new java.util.HashMap<>();
+        final java.util.Map<String, String[]> choices = new java.util.HashMap<>();
+        final java.util.Map<String, TextView> slots = new java.util.HashMap<>();
+
+        FormValues values() {
+            FormValues v = new FormValues();
+            for (java.util.Map.Entry<String, EditText> e : inputs.entrySet())
+                v.put(e.getKey(), e.getValue().getText().toString());
+            for (java.util.Map.Entry<String, CheckBox> e : checks.entrySet())
+                v.put(e.getKey(), e.getValue().isChecked());
+            for (java.util.Map.Entry<String, String[]> e : choices.entrySet())
+                v.put(e.getKey(), e.getValue()[0]);
+            return v;
+        }
+
+        void set(String slot, String text) {
+            TextView t = slots.get(slot);
+            if (t != null)
+                t.setText(text);
+        }
+    }
+
+    /**
+     * Build a core form into a dialog box, in the dialog's own context and
+     * style (as 1.1 did). {@code onChange} runs after every edit, tap or
+     * check; it is not run here.
+     */
+    private FormView renderForm(Screen screen, Context ctx, LinearLayout box,
+            final Runnable onChange) {
+        final FormView f = new FormView();
+        TextWatcher tw = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int a, int b, int c) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                onChange.run();
+            }
+        };
+        for (Item it : screen.items()) {
+            if (it instanceof Text) {
+                Text t = (Text) it;
+                TextView v = new TextView(ctx);
+                v.setText(t.text);
+                if (t.size > 0)
+                    v.setTextSize(TypedValue.COMPLEX_UNIT_SP, t.size);
+                if (t.tone != Tone.DEFAULT)
+                    v.setTextColor(color(t.tone));
+                if (t.bold)
+                    v.setTypeface(Typeface.DEFAULT_BOLD);
+                if (t.mono)
+                    v.setTypeface(Typeface.MONOSPACE);
+                if (t.selectable)
+                    v.setTextIsSelectable(true);
+                v.setPadding(0, dp(t.padTopDp), 0, dp(t.padBottomDp));
+                box.addView(v);
+                if (t.slot != null)
+                    f.slots.put(t.slot, v);
+            } else if (it instanceof Input) {
+                Input in = (Input) it;
+                EditText e = field(ctx, box, in.label, in.value, in.numeric,
+                        in.maxLength);
+                e.addTextChangedListener(tw);
+                f.inputs.put(in.id, e);
+            } else if (it instanceof Check) {
+                Check c = (Check) it;
+                CheckBox cb = new CheckBox(ctx);
+                cb.setText(c.label);
+                if (c.checked)
+                    cb.setChecked(true);
+                box.addView(cb);
+                cb.setOnCheckedChangeListener(
+                        new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton b,
+                                    boolean on) {
+                                onChange.run();
+                            }
+                        });
+                f.checks.put(c.id, cb);
+            } else if (it instanceof Choice) {
+                final Choice c = (Choice) it;
+                String[] labels = new String[c.size()];
+                for (int i = 0; i < labels.length; i++)
+                    labels[i] = c.label(i);
+                final List<Button> bs = choiceRow(box, labels, c.perRow);
+                final String[] value = { c.selected };
+                final int sel = buttonColor(c.selectedKind);
+                for (int i = 0; i < bs.size(); i++) {
+                    final int k = i;
+                    bs.get(i).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            value[0] = c.tap(k, value[0]);
+                            for (int j = 0; j < bs.size(); j++)
+                                tint(bs.get(j), c.code(j).equals(value[0])
+                                        ? sel : BTN);
+                            onChange.run();
+                        }
+                    });
+                    tint(bs.get(i), c.code(i).equals(value[0]) ? sel : BTN);
+                }
+                f.choices.put(c.id, value);
+            }
+        }
+        return f;
     }
 
     /** Update a live slot's TextView from a core Text. */

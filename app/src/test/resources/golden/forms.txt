@@ -1,0 +1,160 @@
+=== EOD 9-line: EOD 9-line: UXO 1
+  text 12 DEFAULT pad=2/2 | Line 1 (time found) and line 2 (grid) are filled in from the incident.
+  input land max=200 | Line 2, landmark / how to find it = []
+  input poc max=200 | Line 3, contact (callsign, phone, frequency) = []
+  text 0 bold DEFAULT pad=8/2 | Line 4, how it got there
+  choice emp per=3 sel=[] clearable SELECTED_UXO | Dropped=Dropped | Projected=Projected | Placed=Placed | Thrown=Thrown | Possible IED=Possible IED | Unknown=Unknown
+  input count numeric max=4 | Line 4, number of items seen = []
+  input desc max=200 | Line 4, description: size, shape, colour, markings, condition = []
+  input cbrn max=200 | Line 5, chemical or other signs (leaks, smell, sick people) = []
+  input res max=200 | Line 6, resources threatened (road, homes, school…) = []
+  input imp max=200 | Line 7, impact (road closed, …) = []
+  input prot max=200 | Line 8, protective measures taken (e.g. people kept out) = []
+  text 0 bold DEFAULT pad=8/2 | Line 9, recommended priority
+  choice pri per=2 sel=[] clearable SELECTED_UXO | IMMEDIATE=Immediate | INDIRECT=Indirect | MINOR=Minor | NO_THREAT=No threat
+  text 12 DEFAULT pad=2/2 slot=pri_note | 
+  text 0 bold DEFAULT pad=8/2 | Preview
+  text 0 DEFAULT pad=8/8 mono selectable slot=preview | 
+  text 12 DEFAULT pad=2/2 | In conflict areas, reporting or marking items can put people at risk. Choose who receives this report. A priority of MINOR or NO THREAT (NO HAZARD) doesn't mean the item is safe.\nEmergency number: 911
+note: Tap one (tap again to clear).
+preview:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890
+3. CONTACT: ALPHA-1
+4. TYPE: Projectiles and Mortars (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 375 m (1,240 ft) advised
+9. RECOMMENDED PRIORITY: -
+filled note: Slows movement or threatens important assets.
+filled preview:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890, North of the water tower
+3. CONTACT: BRAVO-2 ch 3
+4. TYPE: Projectiles and Mortars, Projected, 3 items, Three 81 mm mortar rounds, rusted (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: Road
+7. IMPACT ON MISSION: Road closed
+8. PROTECTIVE MEASURES: Cordon set
+9. RECOMMENDED PRIORITY: INDIRECT
+saved cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" r_n="3" r_desc="Three 81 mm mortar rounds, rusted" r_land="North of the water tower" r_emp="Projected" r_cbrn="None seen" r_res="Road" r_imp="Road closed" r_prot="Cordon set" r_pri="INDIRECT" r_poc="BRAVO-2 ch 3"/>
+reopened:
+  text 12 DEFAULT pad=2/2 | Line 1 (time found) and line 2 (grid) are filled in from the incident.
+  input land max=200 | Line 2, landmark / how to find it = [North of the water tower]
+  input poc max=200 | Line 3, contact (callsign, phone, frequency) = [BRAVO-2 ch 3]
+  text 0 bold DEFAULT pad=8/2 | Line 4, how it got there
+  choice emp per=3 sel=[Projected] clearable SELECTED_UXO | Dropped=Dropped | Projected=Projected | Placed=Placed | Thrown=Thrown | Possible IED=Possible IED | Unknown=Unknown
+  input count numeric max=4 | Line 4, number of items seen = [3]
+  input desc max=200 | Line 4, description: size, shape, colour, markings, condition = [Three 81 mm mortar rounds, rusted]
+  input cbrn max=200 | Line 5, chemical or other signs (leaks, smell, sick people) = [None seen]
+  input res max=200 | Line 6, resources threatened (road, homes, school…) = [Road]
+  input imp max=200 | Line 7, impact (road closed, …) = [Road closed]
+  input prot max=200 | Line 8, protective measures taken (e.g. people kept out) = [Cordon set]
+  text 0 bold DEFAULT pad=8/2 | Line 9, recommended priority
+  choice pri per=2 sel=[INDIRECT] clearable SELECTED_UXO | IMMEDIATE=Immediate | INDIRECT=Indirect | MINOR=Minor | NO_THREAT=No threat
+  text 12 DEFAULT pad=2/2 slot=pri_note | 
+  text 0 bold DEFAULT pad=8/2 | Preview
+  text 0 DEFAULT pad=8/8 mono selectable slot=preview | 
+  text 12 DEFAULT pad=2/2 | In conflict areas, reporting or marking items can put people at risk. Choose who receives this report. A priority of MINOR or NO THREAT (NO HAZARD) doesn't mean the item is safe.\nEmergency number: 911
+bad count: 0 note: Tap one (tap again to clear).
+
+=== NBC 1 (GPS azimuth 123.4)
+  text 12 DEFAULT pad=2/2 | Precedence: FLASH for the first nuclear use against your forces, otherwise IMMEDIATE. Send it to the next higher headquarters (unit SOP).
+  input az numeric max=4 | BRAVO: direction to the burst from you, degrees (filled from your GPS to ground zero, true) = [123]
+  check mag false | Magnetic (from a compass)
+  text 12 DEFAULT pad=2/2 | Flash-to-bang (JULIET): at the flash cover your eyes, get down and count seconds until the shock wave arrives (there will be two). Distance = seconds x 0.35 km.
+  input ftb numeric max=4 | JULIET: flash-to-bang, seconds = []
+  text 12 DEFAULT pad=2/2 | Cloud width (LIMA): at H+5 minutes, take compass bearings to the left and right edges of the cloud; the difference is the angular width.
+  input cw numeric max=4 | LIMA: cloud width at H+5, degrees = []
+  text 0 bold DEFAULT pad=8/2 | FOXTROT: ground zero
+  choice gq per=2 sel=[EE] SELECTED | EE=Estimated (EE) | AA=Actual: I can see GZ (AA)
+  text 0 bold DEFAULT pad=8/2 | KILO: crater
+  choice kilo per=3 sel=[] clearable SELECTED | CRATER=Crater | NONE=No crater | UNK=Unknown
+  text 0 bold DEFAULT pad=8/2 | GOLF: delivery
+  choice so per=2 sel=[SUS] SELECTED | SUS=Suspected | OBS=Observed
+  choice del per=4 sel=[UNK] SELECTED | UNK=Unknown | AIR=Aircraft | MSL=Missile | CAN=Cannon
+  choice con per=4 sel=[UNK] SELECTED | UNK=Unknown | BOM=Bomb | MSL=Missile | SHL=Shell
+  text 12 DEFAULT pad=2/2 | Burst type (HOTEL): if the cloud is lighter in colour than the stem, or the stem is ragged or broken (not solidly joined to the cloud), it was an AIR burst. If the stem is thick and dark and joins the cloud, SURFACE. Otherwise, or at night, UNKNOWN. This report uses the incident's burst type: SURF.
+  text 0 DEFAULT pad=8/8 mono selectable slot=preview | 
+=== NBC 1 (no GPS)
+  text 12 DEFAULT pad=2/2 | Precedence: FLASH for the first nuclear use against your forces, otherwise IMMEDIATE. Send it to the next higher headquarters (unit SOP).
+  input az numeric max=4 | BRAVO: direction to the burst from you, degrees = []
+  check mag false | Magnetic (from a compass)
+  text 12 DEFAULT pad=2/2 | Flash-to-bang (JULIET): at the flash cover your eyes, get down and count seconds until the shock wave arrives (there will be two). Distance = seconds x 0.35 km.
+  input ftb numeric max=4 | JULIET: flash-to-bang, seconds = []
+  text 12 DEFAULT pad=2/2 | Cloud width (LIMA): at H+5 minutes, take compass bearings to the left and right edges of the cloud; the difference is the angular width.
+  input cw numeric max=4 | LIMA: cloud width at H+5, degrees = []
+  text 0 bold DEFAULT pad=8/2 | FOXTROT: ground zero
+  choice gq per=2 sel=[EE] SELECTED | EE=Estimated (EE) | AA=Actual: I can see GZ (AA)
+  text 0 bold DEFAULT pad=8/2 | KILO: crater
+  choice kilo per=3 sel=[] clearable SELECTED | CRATER=Crater | NONE=No crater | UNK=Unknown
+  text 0 bold DEFAULT pad=8/2 | GOLF: delivery
+  choice so per=2 sel=[SUS] SELECTED | SUS=Suspected | OBS=Observed
+  choice del per=4 sel=[UNK] SELECTED | UNK=Unknown | AIR=Aircraft | MSL=Missile | CAN=Cannon
+  choice con per=4 sel=[UNK] SELECTED | UNK=Unknown | BOM=Bomb | MSL=Missile | SHL=Shell
+  text 12 DEFAULT pad=2/2 | Burst type (HOTEL): if the cloud is lighter in colour than the stem, or the stem is ragged or broken (not solidly joined to the cloud), it was an AIR burst. If the stem is thick and dark and joins the cloud, SURFACE. Otherwise, or at night, UNKNOWN. This report uses the incident's burst type: SURF.
+  text 0 DEFAULT pad=8/8 mono selectable slot=preview | 
+preview initial:
+NBC1 NUC
+BRAVO/16SGH1334568890/123DGT//
+DELTA/011452ZNOV2026//
+FOXTROT/16SGH1234567890/EE//
+GOLF/SUS/UNK/1/UNK/1//
+HOTEL/SURF//
+YANKEE/090DGT/016KPH//
+GENTEXT/GZ ESTIMATED//
+obs (magnetic port 4.5W): az=118.5 cot: <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="16" burst="SURFACE" wfrom="270" wmph="10" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" sdz_m="941" mdz_m="1882" ldz_m="5647" burn_m="2240" rad_m="1685" o_lat="38.0406" o_lon="-84.5037" o_az="118.5" o_ftb="22" o_cw="12.5" o_k="CRATER" o_gs="OBS" o_gd="MSL" o_gc="MSL" o_gq="AA"/>
+obs (magnetic port broken): az=NaN cot: <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="16" burst="SURFACE" wfrom="270" wmph="10" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" sdz_m="941" mdz_m="1882" ldz_m="5647" burn_m="2240" rad_m="1685" o_lat="38.0406" o_lon="-84.5037" o_ftb="22" o_cw="12.5" o_k="CRATER" o_gs="OBS" o_gd="MSL" o_gc="MSL" o_gq="AA"/>
+obs (magnetic port none): az=123 cot: <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="16" burst="SURFACE" wfrom="270" wmph="10" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" sdz_m="941" mdz_m="1882" ldz_m="5647" burn_m="2240" rad_m="1685" o_lat="38.0406" o_lon="-84.5037" o_az="123" o_ftb="22" o_cw="12.5" o_k="CRATER" o_gs="OBS" o_gd="MSL" o_gc="MSL" o_gq="AA"/>
+report:
+NBC1 NUC
+BRAVO/16SGH1334568890/119DGT//
+DELTA/011452ZNOV2026//
+FOXTROT/16SGH1234567890/AA//
+GOLF/OBS/MSL/1/MSL/1//
+HOTEL/SURF//
+JULIET/22//
+KILO/CRATER//
+LIMA/013DEG//
+YANKEE/090DGT/016KPH//
+reopened:
+  text 12 DEFAULT pad=2/2 | Precedence: FLASH for the first nuclear use against your forces, otherwise IMMEDIATE. Send it to the next higher headquarters (unit SOP).
+  input az numeric max=4 | BRAVO: direction to the burst from you, degrees = [119]
+  check mag false | Magnetic (from a compass)
+  text 12 DEFAULT pad=2/2 | Flash-to-bang (JULIET): at the flash cover your eyes, get down and count seconds until the shock wave arrives (there will be two). Distance = seconds x 0.35 km.
+  input ftb numeric max=4 | JULIET: flash-to-bang, seconds = [22]
+  text 12 DEFAULT pad=2/2 | Cloud width (LIMA): at H+5 minutes, take compass bearings to the left and right edges of the cloud; the difference is the angular width.
+  input cw numeric max=4 | LIMA: cloud width at H+5, degrees = [12.5]
+  text 0 bold DEFAULT pad=8/2 | FOXTROT: ground zero
+  choice gq per=2 sel=[AA] SELECTED | EE=Estimated (EE) | AA=Actual: I can see GZ (AA)
+  text 0 bold DEFAULT pad=8/2 | KILO: crater
+  choice kilo per=3 sel=[CRATER] clearable SELECTED | CRATER=Crater | NONE=No crater | UNK=Unknown
+  text 0 bold DEFAULT pad=8/2 | GOLF: delivery
+  choice so per=2 sel=[OBS] SELECTED | SUS=Suspected | OBS=Observed
+  choice del per=4 sel=[MSL] SELECTED | UNK=Unknown | AIR=Aircraft | MSL=Missile | CAN=Cannon
+  choice con per=4 sel=[MSL] SELECTED | UNK=Unknown | BOM=Bomb | MSL=Missile | SHL=Shell
+  text 12 DEFAULT pad=2/2 | Burst type (HOTEL): if the cloud is lighter in colour than the stem, or the stem is ragged or broken (not solidly joined to the cloud), it was an AIR burst. If the stem is thick and dark and joins the cloud, SURFACE. Otherwise, or at night, UNKNOWN. This report uses the incident's burst type: SURF.
+  text 0 DEFAULT pad=8/8 mono selectable slot=preview | 
+
+=== polar: Place from what you observed
+  input az numeric max=4 | Azimuth to the stem or cloud centre, degrees = []
+  check mag true | Magnetic bearing (from a compass)
+  input ftb numeric max=4 | Flash-to-bang, seconds = []
+  text 12 DEFAULT pad=2/2 | Flash-to-bang (JULIET): at the flash cover your eyes, get down and count seconds until the shock wave arrives (there will be two). Distance = seconds x 0.35 km. Ground zero is placed that far along the azimuth from your GPS position (polar plot, FM 3-11.3) and marked estimated.
+place az= ftb=20 mag=true (4.5W): Enter an azimuth from 0 to 359.
+place az= ftb=20 mag=true (broken): Enter an azimuth from 0 to 359.
+place az=400 ftb=20 mag=true (4.5W): Enter an azimuth from 0 to 359.
+place az=400 ftb=20 mag=true (broken): Enter an azimuth from 0 to 359.
+place az=90 ftb= mag=true (4.5W): Enter the flash-to-bang time, 1 to 300 s.
+place az=90 ftb= mag=true (broken): Enter the flash-to-bang time, 1 to 300 s.
+place az=90 ftb=301 mag=true (4.5W): Enter the flash-to-bang time, 1 to 300 s.
+place az=90 ftb=301 mag=true (broken): Enter the flash-to-bang time, 1 to 300 s.
+place az=90 ftb=20 mag=true (4.5W): 38.0455211,-84.4241993 obs <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="16" burst="SURFACE" wfrom="270" wmph="10" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" sdz_m="941" mdz_m="1882" ldz_m="5647" burn_m="2240" rad_m="1685" o_lat="38.0406" o_lon="-84.5037" o_az="85.5" o_ftb="20" o_gs="SUS" o_gd="UNK" o_gc="UNK" o_gq="EE"/>
+place az=90 ftb=20 mag=true (broken): Magnetic declination unavailable: enter a true bearing.
+place az=90 ftb=20 mag=false (4.5W): 38.040573,-84.4239589 obs <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="16" burst="SURFACE" wfrom="270" wmph="10" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" sdz_m="941" mdz_m="1882" ldz_m="5647" burn_m="2240" rad_m="1685" o_lat="38.0406" o_lon="-84.5037" o_az="90" o_ftb="20" o_gs="SUS" o_gd="UNK" o_gc="UNK" o_gq="EE"/>
+place az=90 ftb=20 mag=false (broken): 38.040573,-84.4239589 obs <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="16" burst="SURFACE" wfrom="270" wmph="10" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" sdz_m="941" mdz_m="1882" ldz_m="5647" burn_m="2240" rad_m="1685" o_lat="38.0406" o_lon="-84.5037" o_az="90" o_ftb="20" o_gs="SUS" o_gd="UNK" o_gc="UNK" o_gq="EE"/>
+place az=359 ftb=1 mag=false (4.5W): 38.0437528,-84.5037696 obs <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="16" burst="SURFACE" wfrom="270" wmph="10" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" sdz_m="941" mdz_m="1882" ldz_m="5647" burn_m="2240" rad_m="1685" o_lat="38.0406" o_lon="-84.5037" o_az="359" o_ftb="1" o_gs="SUS" o_gd="UNK" o_gc="UNK" o_gq="EE"/>
+place az=359 ftb=1 mag=false (broken): 38.0437528,-84.5037696 obs <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="16" burst="SURFACE" wfrom="270" wmph="10" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" sdz_m="941" mdz_m="1882" ldz_m="5647" burn_m="2240" rad_m="1685" o_lat="38.0406" o_lon="-84.5037" o_az="359" o_ftb="1" o_gs="SUS" o_gd="UNK" o_gc="UNK" o_gq="EE"/>

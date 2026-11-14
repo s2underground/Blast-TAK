@@ -9,7 +9,9 @@ public final class Button {
         /** Any other action. */
         NORMAL,
         /** The chosen option of a set (ATAK: purple). */
-        SELECTED
+        SELECTED,
+        /** The chosen option in a UXO form (ATAK: dark orange). */
+        SELECTED_UXO
     }
 
     public final String action;

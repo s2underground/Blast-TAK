@@ -6,6 +6,8 @@ package com.atakmap.android.blast.plugin.core.screen;
  * can differ without the core knowing.
  */
 public enum Tone {
+    /** The host's default text colour (dialogs follow the host theme). */
+    DEFAULT,
     /** Normal text. */
     TEXT,
     /** Secondary text, and anything that is cleared. */

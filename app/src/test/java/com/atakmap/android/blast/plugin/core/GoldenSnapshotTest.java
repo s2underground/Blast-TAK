@@ -65,6 +65,11 @@ public class GoldenSnapshotTest {
     }
 
     @Test
+    public void forms() {
+        Golden.check("forms.txt", formsSnapshot());
+    }
+
+    @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
     }
@@ -84,6 +89,7 @@ public class GoldenSnapshotTest {
             Golden.check("standoff-card.txt", standoffCardSnapshot());
             Golden.check("uxo-card.txt", uxoCardSnapshot());
             Golden.check("nuclear-card.txt", nucCardSnapshot());
+            Golden.check("forms.txt", formsSnapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);
@@ -506,6 +512,129 @@ public class GoldenSnapshotTest {
                     .android.blast.plugin.core.screen.NucCard.team(r, EN)))
                     .append("\n");
         }
+        return sb.toString();
+    }
+
+    /** Refactor step 4d: the EOD 9-line, NBC 1 and polar plot forms. */
+    static String formsSnapshot() {
+        StringBuilder sb = new StringBuilder();
+        com.atakmap.android.blast.plugin.core.port.Magnetic mag =
+                new com.atakmap.android.blast.plugin.core.port.Magnetic() {
+                    @Override
+                    public double toTrue(double m) {
+                        return m - 4.5; // a fixed 4.5° W declination
+                    }
+                };
+        com.atakmap.android.blast.plugin.core.port.Magnetic broken =
+                new com.atakmap.android.blast.plugin.core.port.Magnetic() {
+                    @Override
+                    public double toTrue(double m) {
+                        return Double.NaN;
+                    }
+                };
+        // EOD 9-line: empty, then filled, then a saved report reopened.
+        UxoRecord u = UxoRecord.create("PROJ_MORTAR", false, false,
+                UxoRecord.Where.PATH, UxoRecord.Placement.MAP, BY, T)
+                .withNumber(1);
+        sb.append("=== EOD 9-line: ").append(com.atakmap.android.blast.plugin
+                .core.screen.UxoReportForm.title("UXO 1")).append("\n");
+        com.atakmap.android.blast.plugin.core.screen.Screen f =
+                com.atakmap.android.blast.plugin.core.screen.UxoReportForm
+                        .form(u, "911");
+        sb.append(ScreenDump.dump(f));
+        com.atakmap.android.blast.plugin.core.screen.FormValues v =
+                com.atakmap.android.blast.plugin.core.screen.FormValues
+                        .initial(f);
+        sb.append("note: ").append(com.atakmap.android.blast.plugin.core
+                .screen.UxoReportForm.priorityNote(v)).append("\n");
+        sb.append("preview:\n").append(com.atakmap.android.blast.plugin.core
+                .screen.UxoReportForm.preview(u, v, "ALPHA-1", GRID))
+                .append("\n");
+        v.put("land", "North of the water tower").put("poc", "BRAVO-2 ch 3")
+                .put("emp", "Projected").put("count", " 3 ")
+                .put("desc", "Three 81 mm mortar rounds, rusted")
+                .put("cbrn", "None seen").put("res", "Road")
+                .put("imp", "Road closed").put("prot", "Cordon set")
+                .put("pri", "INDIRECT");
+        sb.append("filled note: ").append(com.atakmap.android.blast.plugin
+                .core.screen.UxoReportForm.priorityNote(v)).append("\n");
+        sb.append("filled preview:\n").append(com.atakmap.android.blast
+                .plugin.core.screen.UxoReportForm.preview(u, v, "ALPHA-1",
+                        GRID)).append("\n");
+        UxoRecord saved = u.withReport(com.atakmap.android.blast.plugin.core
+                .screen.UxoReportForm.report(v));
+        sb.append("saved cot: ").append(UxoCodec.toXml(saved)).append("\n");
+        sb.append("reopened:\n").append(ScreenDump.dump(com.atakmap.android
+                .blast.plugin.core.screen.UxoReportForm.form(saved, "911")));
+        v.put("count", "x").put("pri", "");
+        sb.append("bad count: ").append(com.atakmap.android.blast.plugin.core
+                .screen.UxoReportForm.report(v).count).append(" note: ")
+                .append(com.atakmap.android.blast.plugin.core.screen
+                        .UxoReportForm.priorityNote(v)).append("\n");
+
+        // NBC 1: GPS azimuth prefill, then entries; magnetic on / broken.
+        NucRecord n = NucRecord.create(16, NucModel.Burst.SURFACE, "", 270, 10,
+                BY, T).withNumber(1);
+        f = com.atakmap.android.blast.plugin.core.screen.Nbc1Form.form(n,
+                123.4);
+        sb.append("\n=== NBC 1 (GPS azimuth 123.4)\n").append(ScreenDump.dump(f));
+        sb.append("=== NBC 1 (no GPS)\n").append(ScreenDump.dump(com.atakmap
+                .android.blast.plugin.core.screen.Nbc1Form.form(n,
+                        Double.NaN)));
+        v = com.atakmap.android.blast.plugin.core.screen.FormValues.initial(f);
+        NucRecord.Obs o = com.atakmap.android.blast.plugin.core.screen.Nbc1Form
+                .obs(v, LAT, LON, mag);
+        sb.append("preview initial:\n").append(com.atakmap.android.blast
+                .plugin.core.screen.Nbc1Form.preview(n.withObs(o), GRID2,
+                        GRID)).append("\n");
+        v.put("ftb", "22").put("cw", "12.5").put("gq", "AA").put("kilo",
+                "CRATER").put("so", "OBS").put("del", "MSL").put("con", "MSL");
+        v.put("mag", true);
+        for (com.atakmap.android.blast.plugin.core.port.Magnetic m
+                : new com.atakmap.android.blast.plugin.core.port.Magnetic[] {
+                        mag, broken, null }) {
+            o = com.atakmap.android.blast.plugin.core.screen.Nbc1Form.obs(v,
+                    LAT, LON, m);
+            sb.append("obs (magnetic port ").append(m == mag ? "4.5W"
+                    : m == broken ? "broken" : "none").append("): az=")
+                    .append(Golden.num(o.azDeg, 3)).append(" cot: ")
+                    .append(NucCodec.toXml(n.withObs(o))).append("\n");
+        }
+        o = com.atakmap.android.blast.plugin.core.screen.Nbc1Form.obs(v, LAT,
+                LON, mag);
+        sb.append("report:\n").append(com.atakmap.android.blast.plugin.core
+                .screen.Nbc1Form.report(n.withObs(o), GRID2, GRID))
+                .append("\n");
+        sb.append("reopened:\n").append(ScreenDump.dump(com.atakmap.android
+                .blast.plugin.core.screen.Nbc1Form.form(n.withObs(o), 1)));
+
+        // Polar plot.
+        f = com.atakmap.android.blast.plugin.core.screen.PolarForm.form();
+        sb.append("\n=== polar: ").append(com.atakmap.android.blast.plugin
+                .core.screen.PolarForm.TITLE).append("\n")
+                .append(ScreenDump.dump(f));
+        String[][] tries = { { "", "20", "true" }, { "400", "20", "true" },
+                { "90", "", "true" }, { "90", "301", "true" },
+                { "90", "20", "true" }, { "90", "20", "false" },
+                { "359", "1", "false" } };
+        for (String[] t : tries)
+            for (com.atakmap.android.blast.plugin.core.port.Magnetic m
+                    : new com.atakmap.android.blast.plugin.core.port.Magnetic[] {
+                            mag, broken }) {
+                v = com.atakmap.android.blast.plugin.core.screen.FormValues
+                        .initial(f).put("az", t[0]).put("ftb", t[1])
+                        .put("mag", Boolean.parseBoolean(t[2]));
+                com.atakmap.android.blast.plugin.core.screen.PolarForm.Result
+                        res = com.atakmap.android.blast.plugin.core.screen
+                                .PolarForm.place(v, LAT, LON, m);
+                sb.append("place az=").append(t[0]).append(" ftb=")
+                        .append(t[1]).append(" mag=").append(t[2])
+                        .append(m == mag ? " (4.5W)" : " (broken)")
+                        .append(": ").append(res.error != null ? res.error
+                                : Golden.ll(res.lat, res.lon) + " obs "
+                                        + NucCodec.toXml(n.withObs(res.obs)))
+                        .append("\n");
+            }
         return sb.toString();
     }
 
