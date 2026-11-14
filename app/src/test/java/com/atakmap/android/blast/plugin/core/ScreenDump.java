@@ -31,6 +31,8 @@ final class ScreenDump {
                         .append(t.padBottomDp);
             if (t.icon != null)
                 sb.append(" icon=").append(t.icon);
+            if (t.mono)
+                sb.append(" mono");
             if (t.slot != null)
                 sb.append(" slot=").append(t.slot);
             sb.append(" | ").append(t.text.replace("\n", "\\n"));
@@ -48,8 +50,11 @@ final class ScreenDump {
             return sb.toString();
         }
         if (it instanceof Buttons) {
+            Buttons bs = (Buttons) it;
             StringBuilder sb = new StringBuilder("  buttons");
-            for (Button b : ((Buttons) it).buttons)
+            if (bs.marginTopDp != 0)
+                sb.append(" margin=").append(bs.marginTopDp);
+            for (Button b : bs.buttons)
                 sb.append(" | ").append(b.action).append(" \"")
                         .append(b.label).append("\" ").append(b.kind)
                         .append(" w=").append(Golden.num(b.weight, 2))

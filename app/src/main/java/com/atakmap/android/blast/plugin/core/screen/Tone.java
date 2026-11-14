@@ -15,5 +15,9 @@ public enum Tone {
     /** Danger: inside the mandatory zone, conflicting data. */
     RED,
     /** Safe: at or beyond the preferred distance. */
-    GREEN
+    GREEN,
+    /** Section headings. */
+    BLUE,
+    /** Military ordnance (UXO): the cordon and its threat line. */
+    ORANGE
 }

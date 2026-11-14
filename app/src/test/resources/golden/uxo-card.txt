@@ -1,0 +1,261 @@
+
+=== card UXO 1 Projectiles and Mortars
+  text 17 bold TEXT | UXO 1 Projectiles and Mortars
+  text 13 bold ORANGE | Artillery shell or mortar
+  text 18 bold ORANGE pad=4/0 | CORDON 375 m (1,240 ft)  (minimum)
+  text 12 DIM | Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024. Fragments may travel farther.
+  text 14 TEXT pad=6/0 slot=you | 
+  text 12 DIM slot=team | 
+  buttons margin=6 | report "EOD 9-LINE REPORT…" PRIMARY w=1 bold
+  text 12 bold BLUE pad=8/2 | DO NOW
+  text 13 TEXT | 1  Don't touch it, move it or go closer, not even for a photo (use zoom).
+  text 13 TEXT | 2  Keep everyone out of the cordon.
+  text 13 TEXT | 3  Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+  text 13 TEXT | 4  Use radios and phones only outside the cordon, never within 50 m of the item.
+  text 13 TEXT | 5  Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+  text 12 DIM | Emergency number: 112 (change it in the Reference tab)
+  text 12 bold BLUE pad=8/2 | MOVING AWAY
+  text 12 DIM | Reported from a road or path known to be safe.
+  text 13 bold TEXT | On a road or path you know is safe: stop. Don't go closer. Leave the way you came, on that path, and get outside the cordon.
+  text 12 DIM | If you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 12 DIM | In a vehicle: stop. Don't reverse or turn the wheel. Stay in the vehicle unless it is on fire, and call for help.
+  buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
+  buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
+  buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
+  buttons | why "Why this distance?" NORMAL w=1
+  text 12 DIM | • This cordon is a minimum. Fragments may travel farther than this distance (ATP 4-32.2, Table 1).
+  text 12 DIM | • Don't mark the item itself. Mark the area or the way in, from a safe place, and only if you can do it without going closer.
+  text 12 DIM | • Never move it, touch it or take it as a souvenir. Old or damaged ordnance can still explode.
+  text 12 DIM | • Blast doesn't replace EOD, police or mine action authorities.
+  text 11 DIM pad=4/4 | ATP 4-32.2 (01 Mar 2024), Fig. 31, Projectiles and Mortars. Placed by ALPHA-1 011452Z NOV 26. Position: tapped on the map. Reported from: a road or path known to be safe.
+you, no fix:
+  text 14 DIM pad=6/0 slot=you | YOU: no GPS position yet.
+you 0 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 0 ft (0 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,230 ft (375 m) farther, without going closer to the item.
+you 0 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 0 ft (0 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,230 ft (375 m) farther, without going closer to the item.
+you 0 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 0 ft (0 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,230 ft (375 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 20 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 66 ft (20 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,165 ft (355 m) farther, without going closer to the item.
+you 20 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 66 ft (20 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,165 ft (355 m) farther, without going closer to the item.
+you 20 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 66 ft (20 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,165 ft (355 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 21.5 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 71 ft (22 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,160 ft (354 m) farther, without going closer to the item.
+you 21.5 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 71 ft (22 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,160 ft (354 m) farther, without going closer to the item.
+you 21.5 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 71 ft (22 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,160 ft (354 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 150 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 492 ft (150 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 738 ft (225 m) farther, without going closer to the item.
+you 150 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 492 ft (150 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 738 ft (225 m) farther, without going closer to the item.
+you 150 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 492 ft (150 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 738 ft (225 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 366 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 1,201 ft (366 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 30 ft (9 m) farther, without going closer to the item.
+you 366 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 1,201 ft (366 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 30 ft (9 m) farther, without going closer to the item.
+you 366 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 1,201 ft (366 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 30 ft (9 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 400 m ce=NaN:
+  text 14 GREEN pad=6/0 slot=you | YOU: 1,312 ft (400 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 400 m ce=5:
+  text 14 GREEN pad=6/0 slot=you | YOU: 1,312 ft (400 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 400 m ce=80:
+  text 14 GREEN pad=6/0 slot=you | YOU: 1,312 ft (400 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.\nYou are close to the line and GPS error could put you inside it. Move farther.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 1000 m ce=NaN:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3,281 ft (1,000 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 1000 m ce=5:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3,281 ft (1,000 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 1000 m ce=80:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3,281 ft (1,000 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 5000 m ce=NaN:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3.1 mi (5.0 km) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 5000 m ce=5:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3.1 mi (5.0 km) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 5000 m ce=80:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3.1 mi (5.0 km) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+team []:
+  text 12 DIM slot=team | Team: no other contacts on the map.
+team [5000.0]:
+  text 12 DIM slot=team | Team on the map: 0 inside the cordon, 1 outside.
+team [10.0, 300.0, 5000.0]:
+  text 12 RED slot=team | Team on the map: 2 inside the cordon, 1 outside.
+
+=== card UXO 2 Missiles and Rockets
+  text 17 bold TEXT | UXO 2 Missiles and Rockets
+  text 13 bold ORANGE | Rocket or missile (more than one item)
+  text 18 bold ORANGE pad=4/0 | CORDON 525 m (1,730 ft)  (minimum)
+  text 12 DIM | Missiles and Rockets, 475 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024. Fragments may travel farther.
+  text 14 TEXT pad=6/0 slot=you | 
+  text 12 DIM slot=team | 
+  buttons margin=6 | report "EOD 9-LINE REPORT…" PRIMARY w=1 bold
+  text 12 bold BLUE pad=8/2 | DO NOW
+  text 13 TEXT | 1  Don't touch it, move it or go closer, not even for a photo (use zoom).
+  text 13 TEXT | 2  Keep everyone out of the cordon.
+  text 13 TEXT | 3  Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+  text 13 TEXT | 4  Use radios and phones only outside the cordon, never within 50 m of the item.
+  text 13 TEXT | 5  Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+  text 13 TEXT | 6  Keep to the side: never stand in line with the nose or tail. Anti-tank (shaped-charge) items can throw a jet far along their axis.
+  text 13 TEXT | 7  Several items: extend the cordon further if they are spread out.
+  text 12 DIM | Emergency number: 112 (change it in the Reference tab)
+  text 12 bold BLUE pad=8/2 | MOVING AWAY
+  text 12 DIM | Reported from possibly inside a minefield or bomblet area.
+  text 13 bold TEXT | If you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 12 DIM | On a road or path you know is safe: stop. Don't go closer. Leave the way you came, on that path, and get outside the cordon.
+  text 12 DIM | In a vehicle: stop. Don't reverse or turn the wheel. Stay in the vehicle unless it is on fire, and call for help.
+  buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
+  buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
+  buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
+  buttons | why "Why this distance?" NORMAL w=1
+  text 12 DIM | • This cordon is a minimum. Fragments may travel farther than this distance (ATP 4-32.2, Table 1).
+  text 12 DIM | • Don't mark the item itself. Mark the area or the way in, from a safe place, and only if you can do it without going closer.
+  text 12 DIM | • Never move it, touch it or take it as a souvenir. Old or damaged ordnance can still explode.
+  text 12 DIM | • Blast doesn't replace EOD, police or mine action authorities.
+  text 11 DIM pad=4/4 | ATP 4-32.2 (01 Mar 2024), Fig. 31, Missiles and Rockets. Placed by ALPHA-1 011452Z NOV 26. Position: range and bearing from the reporter (approximate). Reported from: possibly inside a minefield or bomblet area.
+you, no fix:
+  text 14 DIM pad=6/0 slot=you | YOU: no GPS position yet.
+you 0 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 0 ft (0 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,722 ft (525 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 0 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 0 ft (0 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,722 ft (525 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 0 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 0 ft (0 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,722 ft (525 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+you 20 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 66 ft (20 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,657 ft (505 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 20 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 66 ft (20 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,657 ft (505 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 20 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 66 ft (20 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,657 ft (505 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+you 21.5 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 71 ft (22 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,652 ft (504 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 21.5 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 71 ft (22 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,652 ft (504 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 21.5 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 71 ft (22 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,652 ft (504 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+you 150 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 492 ft (150 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,230 ft (375 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 150 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 492 ft (150 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,230 ft (375 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 150 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 492 ft (150 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 1,230 ft (375 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+you 366 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 1,201 ft (366 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 522 ft (159 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 366 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 1,201 ft (366 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 522 ft (159 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 366 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 1,201 ft (366 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 522 ft (159 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+you 400 m ce=NaN:
+  text 14 RED pad=6/0 slot=you | YOU: 1,312 ft (400 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 410 ft (125 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 400 m ce=5:
+  text 14 RED pad=6/0 slot=you | YOU: 1,312 ft (400 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 410 ft (125 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+you 400 m ce=80:
+  text 14 RED pad=6/0 slot=you | YOU: 1,312 ft (400 m) from the item: INSIDE the 525 m cordon.\nMove out to at least 525 m (1,730 ft), about 410 ft (125 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+you 1000 m ce=NaN:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3,281 ft (1,000 m) from the item: OUTSIDE the 525 m cordon.\nStay outside the cordon and keep others out.\nThe item's position is an estimate (range and bearing).
+you 1000 m ce=5:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3,281 ft (1,000 m) from the item: OUTSIDE the 525 m cordon.\nStay outside the cordon and keep others out.\nThe item's position is an estimate (range and bearing).
+you 1000 m ce=80:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3,281 ft (1,000 m) from the item: OUTSIDE the 525 m cordon.\nStay outside the cordon and keep others out.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+you 5000 m ce=NaN:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3.1 mi (5.0 km) from the item: OUTSIDE the 525 m cordon.\nStay outside the cordon and keep others out.\nThe item's position is an estimate (range and bearing).
+you 5000 m ce=5:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3.1 mi (5.0 km) from the item: OUTSIDE the 525 m cordon.\nStay outside the cordon and keep others out.\nThe item's position is an estimate (range and bearing).
+you 5000 m ce=80:
+  text 14 GREEN pad=6/0 slot=you | YOU: 3.1 mi (5.0 km) from the item: OUTSIDE the 525 m cordon.\nStay outside the cordon and keep others out.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+team []:
+  text 12 DIM slot=team | Team: no other contacts on the map.
+team [5000.0]:
+  text 12 DIM slot=team | Team on the map: 0 inside the cordon, 1 outside.
+team [10.0, 300.0, 5000.0]:
+  text 12 RED slot=team | Team on the map: 2 inside the cordon, 1 outside.
+
+=== card UXO 3 Projectiles and Mortars CLEARED
+  text 17 bold DIM | UXO 3 Projectiles and Mortars CLEARED
+  text 13 bold DIM | Artillery shell or mortar (3 items) · CLEARED
+  text 18 bold DIM pad=4/0 | CORDON 375 m (1,240 ft)  (minimum)
+  text 12 DIM | Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024. Fragments may travel farther.
+  text 14 TEXT pad=6/0 slot=you | 
+  text 12 DIM slot=team | 
+  buttons margin=6 | report "EOD 9-LINE REPORT… (edit)" PRIMARY w=1 bold
+  text 12 bold BLUE pad=8/2 | DO NOW
+  text 13 TEXT | 1  Don't touch it, move it or go closer, not even for a photo (use zoom).
+  text 13 TEXT | 2  Keep everyone out of the cordon.
+  text 13 TEXT | 3  Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+  text 13 TEXT | 4  Use radios and phones only outside the cordon, never within 50 m of the item.
+  text 13 TEXT | 5  Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+  text 12 DIM | Emergency number: 112 (change it in the Reference tab)
+  text 12 bold BLUE pad=8/2 | MOVING AWAY
+  text 13 bold TEXT | On a road or path you know is safe: stop. Don't go closer. Leave the way you came, on that path, and get outside the cordon.
+  text 12 DIM | If you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 12 DIM | In a vehicle: stop. Don't reverse or turn the wheel. Stay in the vehicle unless it is on fire, and call for help.
+  text 12 bold BLUE pad=8/2 | REPORT (saved on this incident)
+  text 12 TEXT mono | EOD 9-LINE (UXO)\n1. DTG: 011452Z NOV 26\n2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890, North of the water tower\n3. CONTACT: BRAVO-2 on channel 3\n4. TYPE: Projectiles and Mortars, Projected, 3 items, Three 81 mm mortar rounds, rusted (observed without touching, disturbing or approaching)\n5. CBRN: None seen\n6. RESOURCES THREATENED: Road closed\n7. IMPACT ON MISSION: Main supply route blocked\n8. PROTECTIVE MEASURES: Cordon set at 375 m\n9. RECOMMENDED PRIORITY: INDIRECT
+  buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
+  buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
+  buttons | status "Reopen" NORMAL w=1 | delete "Delete…" NORMAL w=1
+  buttons | why "Why this distance?" NORMAL w=1
+  text 12 DIM | • This cordon is a minimum. Fragments may travel farther than this distance (ATP 4-32.2, Table 1).
+  text 12 DIM | • Don't mark the item itself. Mark the area or the way in, from a safe place, and only if you can do it without going closer.
+  text 12 DIM | • Never move it, touch it or take it as a souvenir. Old or damaged ordnance can still explode.
+  text 12 DIM | • Blast doesn't replace EOD, police or mine action authorities.
+  text 11 DIM pad=4/4 | ATP 4-32.2 (01 Mar 2024), Fig. 31, Projectiles and Mortars. Placed by ALPHA-1 011452Z NOV 26. Position: on an existing marker. CLEARED by BRAVO-2 011552Z NOV 26.
+you, no fix:
+  text 14 DIM pad=6/0 slot=you | YOU: no GPS position yet.
+you 0 m ce=NaN:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 0 ft (0 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,230 ft (375 m) farther, without going closer to the item.
+you 0 m ce=5:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 0 ft (0 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,230 ft (375 m) farther, without going closer to the item.
+you 0 m ce=80:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 0 ft (0 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,230 ft (375 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 20 m ce=NaN:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 66 ft (20 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,165 ft (355 m) farther, without going closer to the item.
+you 20 m ce=5:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 66 ft (20 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,165 ft (355 m) farther, without going closer to the item.
+you 20 m ce=80:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 66 ft (20 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,165 ft (355 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 21.5 m ce=NaN:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 71 ft (22 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,160 ft (354 m) farther, without going closer to the item.
+you 21.5 m ce=5:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 71 ft (22 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,160 ft (354 m) farther, without going closer to the item.
+you 21.5 m ce=80:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 71 ft (22 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,160 ft (354 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 150 m ce=NaN:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 492 ft (150 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 738 ft (225 m) farther, without going closer to the item.
+you 150 m ce=5:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 492 ft (150 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 738 ft (225 m) farther, without going closer to the item.
+you 150 m ce=80:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 492 ft (150 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 738 ft (225 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 366 m ce=NaN:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 1,201 ft (366 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 30 ft (9 m) farther, without going closer to the item.
+you 366 m ce=5:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 1,201 ft (366 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 30 ft (9 m) farther, without going closer to the item.
+you 366 m ce=80:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 1,201 ft (366 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 30 ft (9 m) farther, without going closer to the item.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 400 m ce=NaN:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 1,312 ft (400 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 400 m ce=5:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 1,312 ft (400 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 400 m ce=80:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 1,312 ft (400 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.\nYou are close to the line and GPS error could put you inside it. Move farther.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 1000 m ce=NaN:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 3,281 ft (1,000 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 1000 m ce=5:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 3,281 ft (1,000 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 1000 m ce=80:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 3,281 ft (1,000 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+you 5000 m ce=NaN:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 3.1 mi (5.0 km) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 5000 m ce=5:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 3.1 mi (5.0 km) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.
+you 5000 m ce=80:
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 3.1 mi (5.0 km) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.\nGPS accuracy is poor (about 262 ft (80 m)): treat this check as approximate.
+team []:
+  text 12 DIM slot=team | Team: no other contacts on the map.
+team [5000.0]:
+  text 12 DIM slot=team | Team on the map: 0 inside the cordon, 1 outside.
+team [10.0, 300.0, 5000.0]:
+  text 12 DIM slot=team | Team on the map: 2 inside the cordon, 1 outside.

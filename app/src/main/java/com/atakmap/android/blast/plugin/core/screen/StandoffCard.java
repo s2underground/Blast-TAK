@@ -19,9 +19,10 @@ public final class StandoffCard {
 
     public static final String SLOT_YOU = "you", SLOT_TEAM = "team";
 
-    public static final String SEND_ALL = "send_all", SEND_TO = "send_to",
-            FLY = "fly", RENAME = "rename", EXPORT = "export",
-            STATUS = "status", DELETE = "delete";
+    public static final String SEND_ALL = CardActions.SEND_ALL,
+            SEND_TO = CardActions.SEND_TO, FLY = CardActions.FLY,
+            RENAME = CardActions.RENAME, EXPORT = CardActions.EXPORT,
+            STATUS = CardActions.STATUS, DELETE = CardActions.DELETE;
 
     /** Swatches for the mandatory / shelter-in-place / preferred rows. */
     private static final Tone[] ZONE_TONES = { Tone.RED, Tone.AMBER,
@@ -57,13 +58,9 @@ public final class StandoffCard {
                     false));
         s.add(Text.of(Labels.provenance(r), 11, Tone.DIM, false).padded(4,
                 4));
-        s.add(new Buttons(new Button(SEND_ALL, "SEND TO ALL",
-                Button.Kind.PRIMARY, 1.4f, true), Button.of(SEND_TO,
-                        "Send to…"), Button.of(FLY, "Fly to")));
-        s.add(new Buttons(Button.of(RENAME, "Rename…"), Button.of(EXPORT,
-                "Export…")));
-        s.add(new Buttons(Button.of(STATUS, cleared ? "Reopen"
-                : "Mark cleared"), Button.of(DELETE, "Delete…")));
+        s.add(CardActions.sendRow(0, true));
+        s.add(CardActions.renameRow());
+        s.add(CardActions.statusRow(cleared));
         s.add(Text.of(Guidance.CARD_ACTIONS, 13, Tone.TEXT, false).padded(6,
                 2));
         for (String c : Guidance.CAVEATS)

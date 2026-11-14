@@ -55,6 +55,11 @@ public class GoldenSnapshotTest {
     }
 
     @Test
+    public void uxoCard() {
+        Golden.check("uxo-card.txt", uxoCardSnapshot());
+    }
+
+    @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
     }
@@ -72,6 +77,7 @@ public class GoldenSnapshotTest {
             Golden.check("nuclear.txt", nucSnapshot());
             Golden.check("reference.txt", referenceSnapshot());
             Golden.check("standoff-card.txt", standoffCardSnapshot());
+            Golden.check("uxo-card.txt", uxoCardSnapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);
@@ -267,6 +273,52 @@ public class GoldenSnapshotTest {
                 .append("\n");
         sb.append("gpx:\n").append(Exports.gpxUxo("UXO 14", LAT, LON, last,
                 NOW)).append("\n");
+        return sb.toString();
+    }
+
+    /** Refactor step 4b: the UXO card as the core describes it. */
+    static String uxoCardSnapshot() {
+        StringBuilder sb = new StringBuilder();
+        List<UxoRecord> rs = new ArrayList<>();
+        rs.add(UxoRecord.create("PROJ_MORTAR", false, false,
+                UxoRecord.Where.PATH, UxoRecord.Placement.MAP, BY, T)
+                .withNumber(1));
+        rs.add(UxoRecord.create("MISSILE_ROCKET", true, true, UxoRecord.Where.AREA,
+                UxoRecord.Placement.RB, BY, T).withNumber(2));
+        rs.add(UxoRecord.create("PROJ_MORTAR", false, false,
+                UxoRecord.Where.UNSET, UxoRecord.Placement.MARKER, BY, T)
+                .withNumber(3).withReport(new UxoRecord.Report(3,
+                        "Three 81 mm mortar rounds, rusted", "North of the "
+                                + "water tower", "Projected", "None seen",
+                        "Road closed", "Main supply route blocked",
+                        "Cordon set at 375 m", UxoRecord.Priority.INDIRECT,
+                        "BRAVO-2 on channel 3")).cleared("BRAVO-2", NOW));
+        double[] acc = { Double.NaN, 5, 80 };
+        for (UxoRecord r : rs) {
+            String name = Names.withStatus(Names.initialUxo(r.number,
+                    UxoTable.category(r.categoryId).doctrineLabel),
+                    r.isCleared());
+            sb.append("\n=== card ").append(name).append("\n");
+            sb.append(ScreenDump.dump(com.atakmap.android.blast.plugin.core
+                    .screen.UxoCard.card(r, name, "112", GRID)));
+            sb.append("you, no fix:\n").append(ScreenDump.item(
+                    com.atakmap.android.blast.plugin.core.screen.UxoCard
+                            .you(r, false, Double.NaN, Double.NaN)))
+                    .append("\n");
+            for (double d : DIST)
+                for (double a : acc)
+                    sb.append("you ").append(Golden.num(d, 1)).append(" m ce=")
+                            .append(Golden.num(a, 0)).append(":\n")
+                            .append(ScreenDump.item(com.atakmap.android.blast
+                                    .plugin.core.screen.UxoCard.you(r, true,
+                                            d, a))).append("\n");
+            for (double[] team : new double[][] { {}, { 5000 },
+                    { 10, 300, 5000 } })
+                sb.append("team ").append(Arrays.toString(team)).append(":\n")
+                        .append(ScreenDump.item(com.atakmap.android.blast
+                                .plugin.core.screen.UxoCard.team(r, team)))
+                        .append("\n");
+        }
         return sb.toString();
     }
 

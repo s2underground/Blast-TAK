@@ -30,6 +30,8 @@ import com.atakmap.android.blast.plugin.R;
 import com.atakmap.android.blast.plugin.atak.BlastStore;
 import com.atakmap.android.blast.plugin.atak.Exporter;
 import com.atakmap.android.blast.plugin.core.screen.Buttons;
+import com.atakmap.android.blast.plugin.core.screen.CardActions;
+import com.atakmap.android.blast.plugin.core.screen.UxoCard;
 import com.atakmap.android.blast.plugin.core.screen.Item;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
@@ -2217,118 +2219,37 @@ public final class BlastPane {
         int p = dp(8);
         card.setPadding(p, p, p, p);
         zoneCard.addView(card);
+        // The core decides what the card says; this only renders it.
+        java.util.Map<String, TextView> slots = render(UxoCard.card(r,
+                ATAKUtilities.getDisplayName(m), emergencyNumber(), grid(m)),
+                card, new ScreenAction() {
+                    @Override
+                    public void run(String action) {
+                        uxoAction(action, m);
+                    }
+                });
+        youText = slots.get(UxoCard.SLOT_YOU);
+        teamText = slots.get(UxoCard.SLOT_TEAM);
+    }
 
-        card.addView(text(ATAKUtilities.getDisplayName(m), 17,
-                r.isCleared() ? DIM : TEXT, true));
-        card.addView(text(UxoText.threat(r) + (r.isCleared() ? " · CLEARED"
-                : ""), 13, r.isCleared() ? DIM : ORANGE, true));
-        TextView cordon = text("CORDON " + UxoText.cordon(r.cordonM)
-                + "  (minimum)", 18, r.isCleared() ? DIM : ORANGE, true);
-        cordon.setPadding(0, dp(4), 0, 0);
-        card.addView(cordon);
-        card.addView(text(UxoText.basis(r) + " Fragments may travel farther.",
-                12, DIM, false));
-        if (!r.isKnownEdition())
-            card.addView(text("This build doesn't have " + r.sourceId + " "
-                    + r.edition + ". Showing the distance the sender drew.",
-                    12, AMBER, false));
-        else if (r.receivedMismatch)
-            card.addView(text("The sender's distance differs from this "
-                    + "build's copy of the same table. This build's distance "
-                    + "is drawn. Check with the sender.", 12, RED, false));
-
-        youText = text("", 14, TEXT, false);
-        youText.setPadding(0, dp(6), 0, 0);
-        card.addView(youText);
-        teamText = text("", 12, DIM, false);
-        card.addView(teamText);
-
-        Button report = button(r.report.isEmpty() ? "EOD 9-LINE REPORT…"
-                : "EOD 9-LINE REPORT… (edit)", SEND);
-        report.setTypeface(Typeface.DEFAULT_BOLD);
-        report.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    /** What the UXO card's buttons do (ids from UxoCard / CardActions). */
+    private void uxoAction(String action, Marker m) {
+        switch (action) {
+            case UxoCard.REPORT:
                 promptReport(m);
-            }
-        });
-        LinearLayout.LayoutParams rl = full();
-        rl.setMargins(0, dp(6), 0, 0);
-        card.addView(report, rl);
-
-        card.addView(sub("DO NOW"));
-        int i = 1;
-        for (String line : UxoText.doNow(r))
-            card.addView(text((i++) + "  " + line, 13, TEXT, false));
-        card.addView(text("Emergency number: " + emergencyNumber()
-                + " (change it in the Reference tab)", 12, DIM, false));
-
-        card.addView(sub("MOVING AWAY"));
-        UxoRecord.Where first = r.where == UxoRecord.Where.UNSET
-                ? UxoRecord.Where.PATH : r.where;
-        if (r.where != UxoRecord.Where.UNSET)
-            card.addView(text("Reported from " + UxoText.whereLabel(r.where)
-                    + ".", 12, DIM, false));
-        card.addView(text(UxoText.drill(first), 13, TEXT, true));
-        for (UxoRecord.Where w : new UxoRecord.Where[] { UxoRecord.Where.PATH,
-                UxoRecord.Where.AREA, UxoRecord.Where.VEHICLE })
-            if (w != first)
-                card.addView(text(UxoText.drill(w), 12, DIM, false));
-
-        String rep = UxoText.nineLine(r, r.byCallsign, grid(m));
-        if (!r.report.isEmpty()) {
-            card.addView(sub("REPORT (saved on this incident)"));
-            TextView rt = text(rep, 12, TEXT, false);
-            rt.setTypeface(Typeface.MONOSPACE);
-            card.addView(rt);
-        }
-
-        LinearLayout a1 = horizontal();
-        Button sendAll = button("SEND TO ALL", SEND);
-        sendAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case CardActions.SEND_ALL:
+                // UXO sending is deliberate: confirm first.
                 confirmSendUxo(m);
-            }
-        });
-        Button sendTo = button("Send to…", BTN);
-        sendTo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Marker l = live(m);
-                if (l != null)
-                    sharing.sendTo(l);
-            }
-        });
-        Button fly = button("Fly to", BTN);
-        fly.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goTo(m);
-            }
-        });
-        a1.addView(sendAll, new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1.4f));
-        a1.addView(sendTo, weight());
-        a1.addView(fly, weight());
-        LinearLayout.LayoutParams al = full();
-        al.setMargins(0, dp(6), 0, 0);
-        card.addView(a1, al);
-        addCommonActions(card, m, r.isCleared());
-
-        Button why = button("Why this distance?", BTN);
-        why.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case UxoCard.WHY:
                 showTab(true, UxoReference.RINGS);
-            }
-        });
-        card.addView(why, full());
-        for (String c : UxoText.CAVEATS)
-            card.addView(text("• " + c, 12, DIM, false));
-        TextView prov = text(UxoText.provenance(r), 11, DIM, false);
-        prov.setPadding(0, dp(4), 0, dp(4));
-        card.addView(prov);
+                break;
+            default:
+                // Send to…, Fly to, Rename, Export, status, Delete: as for
+                // every card.
+                standoffAction(action, m);
+        }
     }
 
     /** Rename / Export / Clear / Delete, shared by both kinds of card. */
@@ -2409,47 +2330,18 @@ public final class BlastPane {
         GeoPoint center = m.getPoint();
         Marker self = ATAKUtilities.findSelf(mapView);
         GeoPoint sp = self != null ? self.getPoint() : null;
-        if (center == null || sp == null || !sp.isValid()
-                || (sp.getLatitude() == 0 && sp.getLongitude() == 0)) {
-            youText.setText("YOU: no GPS position yet.");
-            youText.setTextColor(DIM);
-        } else {
+        boolean fix = !(center == null || sp == null || !sp.isValid()
+                || (sp.getLatitude() == 0 && sp.getLongitude() == 0));
+        double dist = Double.NaN, acc = Double.NaN;
+        if (fix) {
             double ce = sp.getCE();
             boolean ceKnown = !Double.isNaN(ce) && ce > 0 && ce < 9999999;
-            UxoText.You you = UxoText.check(r.cordonM, distance(center, sp),
-                    ceKnown ? ce : Double.NaN);
-            if (you == null) {
-                youText.setText("YOU: position check unavailable.");
-                youText.setTextColor(DIM);
-            } else {
-                String s = "YOU: " + you.headline(r.cordonM) + "\n"
-                        + you.guidance(r.cordonM);
-                String w = you.boundaryWarning();
-                if (w != null)
-                    s += "\n" + w;
-                if (ceKnown && ce > 50)
-                    s += "\nGPS accuracy is poor (about "
-                            + Formats.measured(ce)
-                            + "): treat this check as approximate.";
-                if (r.placement == UxoRecord.Placement.RB)
-                    s += "\nThe item's position is an estimate (range and "
-                            + "bearing).";
-                if (r.isCleared())
-                    s = "Incident marked cleared. " + s;
-                youText.setText(s);
-                youText.setTextColor(r.isCleared() ? DIM
-                        : you.inside ? RED : GREEN);
-            }
+            dist = distance(center, sp);
+            acc = ceKnown ? ce : Double.NaN;
         }
-        if (teamText != null && center != null) {
-            double[] arr = teamDistances(center, self);
-            int[] n = UxoText.count(r.cordonM, arr);
-            teamText.setText(arr.length == 0
-                    ? "Team: no other contacts on the map."
-                    : "Team on the map: " + n[0] + " inside the cordon, "
-                            + n[1] + " outside.");
-            teamText.setTextColor(n[0] > 0 && !r.isCleared() ? RED : DIM);
-        }
+        apply(youText, UxoCard.you(r, fix, dist, acc));
+        if (teamText != null && center != null)
+            apply(teamText, UxoCard.team(r, teamDistances(center, self)));
     }
 
     private double[] teamDistances(GeoPoint center, Marker self) {
@@ -3232,6 +3124,10 @@ public final class BlastPane {
                 return RED;
             case GREEN:
                 return GREEN;
+            case BLUE:
+                return BLUE;
+            case ORANGE:
+                return ORANGE;
             default:
                 return TEXT;
         }
@@ -3248,6 +3144,8 @@ public final class BlastPane {
             if (it instanceof Text) {
                 Text t = (Text) it;
                 TextView v = text(t.text, t.size, color(t.tone), t.bold);
+                if (t.mono)
+                    v.setTypeface(Typeface.MONOSPACE);
                 if (t.icon != null) {
                     setIcon(v, threatIcon(t.icon));
                     v.setCompoundDrawablePadding(dp(6));
@@ -3274,9 +3172,10 @@ public final class BlastPane {
                                     l.weight(i)));
                 into.addView(line);
             } else if (it instanceof Buttons) {
-                LinearLayout row = horizontal();
+                Buttons bs = (Buttons) it;
+                LinearLayout row = bs.buttons.size() == 1 ? null : horizontal();
                 for (final com.atakmap.android.blast.plugin.core.screen.Button b
-                        : ((Buttons) it).buttons) {
+                        : bs.buttons) {
                     Button v = button(b.label, b.kind
                             == com.atakmap.android.blast.plugin.core.screen.Button.Kind.PRIMARY
                                     ? SEND : BTN);
@@ -3288,10 +3187,27 @@ public final class BlastPane {
                             actions.run(b.action);
                         }
                     });
-                    row.addView(v, new LinearLayout.LayoutParams(0,
-                            ViewGroup.LayoutParams.WRAP_CONTENT, b.weight));
+                    if (row == null) {
+                        // A lone button spans the card.
+                        LinearLayout.LayoutParams lp = full();
+                        if (bs.marginTopDp != 0)
+                            lp.setMargins(0, dp(bs.marginTopDp), 0, 0);
+                        into.addView(v, lp);
+                    } else {
+                        row.addView(v, new LinearLayout.LayoutParams(0,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                b.weight));
+                    }
                 }
-                into.addView(row);
+                if (row != null) {
+                    if (bs.marginTopDp != 0) {
+                        LinearLayout.LayoutParams lp = full();
+                        lp.setMargins(0, dp(bs.marginTopDp), 0, 0);
+                        into.addView(row, lp);
+                    } else {
+                        into.addView(row);
+                    }
+                }
             }
         }
         return slots;
