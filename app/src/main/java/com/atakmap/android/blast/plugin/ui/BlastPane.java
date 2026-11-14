@@ -44,7 +44,8 @@ import com.atakmap.android.blast.plugin.core.screen.Ink;
 import com.atakmap.android.blast.plugin.core.screen.Item;
 import com.atakmap.android.blast.plugin.core.screen.KeyRow;
 import com.atakmap.android.blast.plugin.core.screen.NucCard;
-import com.atakmap.android.blast.plugin.core.screen.Widget;
+import com.atakmap.android.blast.plugin.core.screen.EntryRow;
+import com.atakmap.android.blast.plugin.core.screen.WindPicker;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
 import com.atakmap.android.blast.plugin.core.screen.StandoffCard;
@@ -159,6 +160,7 @@ public final class BlastPane {
     private TextView nucSelText;
     private LinearLayout nucPreview;
     private WindPicker nucWindPicker;
+    private Rendered nucWindView;
     private boolean nucMegatons, nucSettingText;
     private String nucPresetId;
     private NucModel.Burst nucBurst = NucModel.Burst.UNKNOWN;
@@ -1013,15 +1015,25 @@ public final class BlastPane {
         }
 
         col.addView(header("3. WIND (optional, for fallout)"));
-        nucWindPicker = new WindPicker(col, nucWindFrom, nucWindMph,
-                new WindListener() {
-                    @Override
-                    public void onWind(double fromDeg, double mph) {
-                        nucWindFrom = fromDeg;
-                        nucWindMph = mph;
-                        updateNuc();
-                    }
-                });
+        nucWindPicker = new WindPicker(nucWindFrom, nucWindMph);
+        final Rendered[] wv = new Rendered[1];
+        wv[0] = render(nucWindPicker.screen(), col, new ScreenAction() {
+            @Override
+            public void run(String action) {
+                WindPicker.Tap t = nucWindPicker.tap(action, wv[0].values());
+                if (t == null)
+                    return;
+                if (t.error != null)
+                    toast(t.error);
+                wv[0].update(nucWindPicker.screen());
+                if (t.changed) {
+                    nucWindFrom = nucWindPicker.fromDeg();
+                    nucWindMph = nucWindPicker.mph();
+                    updateNuc();
+                }
+            }
+        });
+        nucWindView = wv[0];
 
         nucSelText = text("", 13, TEXT, false);
         nucSelText.setPadding(0, dp(4), 0, dp(4));
@@ -1159,7 +1171,7 @@ public final class BlastPane {
         for (Button b : nucBurstButtons)
             tint(b, b.getTag() == nucBurst ? NUC_SEL : BTN);
         if (nucWindPicker != null)
-            nucWindPicker.restyle();
+            nucWindView.update(nucWindPicker.screen());
         nucPreview.removeAllViews();
         double kt = nucYieldKt();
         if (Double.isNaN(kt)) {
@@ -1266,198 +1278,6 @@ public final class BlastPane {
     // ------------------------------------------------------------------
     // Wind picker (like HAZ-TAK): compass buttons for the direction the
     // wind blows FROM, speed buttons, optional exact values typed inline.
-
-    private interface WindListener {
-        void onWind(double fromDeg, double mph);
-    }
-
-    private static final String[] COMPASS = { "N", "NE", "E", "SE", "S",
-            "SW", "W", "NW" };
-    /** Speed presets, mph: light, moderate (Glasstone's 15 mph), strong. */
-    private static final double[] SPEEDS = { 8, 15, 30 };
-    private static final String[] SPEED_LABELS = { "Light\n~8 mph",
-            "Moderate\n~15 mph", "Strong\n~30 mph" };
-
-    private final class WindPicker {
-        double from, mph;
-        final WindListener listener;
-        final List<Button> dirs = new ArrayList<>();
-        final List<Button> speeds = new ArrayList<>();
-        final Button none;
-        final EditText exactFrom, exactSpeed;
-        final Button kmhBtn;
-        boolean kmh;
-        final TextView status;
-
-        WindPicker(LinearLayout col, double from0, double mph0,
-                WindListener l) {
-            from = from0;
-            mph = mph0;
-            listener = l;
-            col.addView(text("Which way is the wind blowing FROM?", 13, TEXT,
-                    true));
-            for (int row = 0; row < 2; row++) {
-                LinearLayout line = horizontal();
-                for (int k = row * 4; k < row * 4 + 4; k++) {
-                    final double deg = k * 45;
-                    Button b = button(COMPASS[k], BTN);
-                    b.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            from = deg;
-                            if (Double.isNaN(mph))
-                                mph = SPEEDS[1];
-                            changed();
-                        }
-                    });
-                    dirs.add(b);
-                    line.addView(b, weight());
-                }
-                col.addView(line);
-            }
-            LinearLayout ex = horizontal();
-            ex.setGravity(Gravity.CENTER_VERTICAL);
-            exactFrom = inlineNumber("Exact ° true (0-359)", 5);
-            ex.addView(exactFrom, new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT, 2f));
-            Button setDir = button("Set", BTN);
-            setDir.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    double f = ZoneCalculator.parseQuantity(
-                            exactFrom.getText().toString());
-                    if (!(f >= 0 && f <= 360)) {
-                        toast("Enter a direction from 0 to 359.");
-                        return;
-                    }
-                    from = f % 360;
-                    if (Double.isNaN(mph))
-                        mph = SPEEDS[1];
-                    changed();
-                }
-            });
-            ex.addView(setDir, weight());
-            col.addView(ex);
-
-            col.addView(text("Wind speed", 13, TEXT, true));
-            LinearLayout sp = horizontal();
-            for (int k = 0; k < SPEEDS.length; k++) {
-                final double s = SPEEDS[k];
-                Button b = button(SPEED_LABELS[k], BTN);
-                b.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mph = s;
-                        changed();
-                    }
-                });
-                speeds.add(b);
-                sp.addView(b, weight());
-            }
-            col.addView(sp);
-            LinearLayout es = horizontal();
-            es.setGravity(Gravity.CENTER_VERTICAL);
-            exactSpeed = inlineNumber("Exact speed", 5);
-            es.addView(exactSpeed, new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT, 2f));
-            kmhBtn = button("mph", BTN);
-            kmhBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    kmh = !kmh;
-                    kmhBtn.setText(kmh ? "km/h" : "mph");
-                }
-            });
-            es.addView(kmhBtn, weight());
-            Button setSp = button("Set", BTN);
-            setSp.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    double s = ZoneCalculator.parseQuantity(
-                            exactSpeed.getText().toString());
-                    if (kmh)
-                        s = s / 1.609344;
-                    if (!(s >= 1 && s <= 200)) {
-                        toast("Enter a speed of at least 1 mph (2 km/h).");
-                        return;
-                    }
-                    mph = s;
-                    changed();
-                }
-            });
-            es.addView(setSp, weight());
-            col.addView(es);
-            none = button("Wind unknown (no fallout drawn)", BTN);
-            none.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    from = Double.NaN;
-                    mph = Double.NaN;
-                    changed();
-                }
-            });
-            col.addView(none, full());
-            status = text("", 12, DIM, false);
-            col.addView(status);
-            restyle();
-        }
-
-        void set(double f, double s) {
-            from = f;
-            mph = s;
-            exactFrom.setText("");
-            exactSpeed.setText("");
-            restyle();
-        }
-
-        boolean valid() {
-            return NucRecord.validWind(from, mph);
-        }
-
-        private void changed() {
-            restyle();
-            listener.onWind(valid() ? from : Double.NaN,
-                    valid() ? mph : Double.NaN);
-        }
-
-        void restyle() {
-            boolean ok = valid();
-            for (int k = 0; k < dirs.size(); k++)
-                tint(dirs.get(k), ok && Math.abs(angleDiff(from, k * 45))
-                        < 0.5 ? NUC_SEL : BTN);
-            for (int k = 0; k < speeds.size(); k++)
-                tint(speeds.get(k), ok && Math.abs(mph - SPEEDS[k]) < 0.05
-                        ? NUC_SEL : BTN);
-            tint(none, ok ? BTN : NUC_SEL);
-            if (ok) {
-                status.setText("Wind FROM " + Math.round(from) + "° ("
-                        + compassName(from) + ") at " + Math.round(mph)
-                        + " mph / " + Math.round(mph * 1.609344)
-                        + " km/h: fallout drifts toward "
-                        + Math.round((from + 180) % 360) + "° ("
-                        + compassName(from + 180) + "). Surface wind is a "
-                        + "rough guide: fallout follows the winds aloft.");
-                status.setTextColor(TEXT);
-            } else {
-                status.setText("No wind: fallout contours are not drawn. "
-                        + "Everyone within 50 miles should still get inside.");
-                status.setTextColor(DIM);
-            }
-        }
-    }
-
-    private static double angleDiff(double a, double b) {
-        double d = ((a - b) % 360 + 540) % 360 - 180;
-        return d;
-    }
-
-    /** Nearest of 16 compass points. */
-    static String compassName(double deg) {
-        String[] p = { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
-                "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW" };
-        int i = (int) Math.round((((deg % 360) + 360) % 360) / 22.5) % 16;
-        return p[i];
-    }
 
     private EditText inlineNumber(String hint, int maxLen) {
         EditText e = new EditText(plugin);
@@ -1620,42 +1440,6 @@ public final class BlastPane {
         }
     }
 
-    /** The nuclear card's host widgets: EDM entry and the wind picker. */
-    private void nucWidget(String id, LinearLayout card, final Marker m,
-            final NucRecord r) {
-        if (NucCard.WIDGET_EDM.equals(id)) {
-            LinearLayout el = horizontal();
-            el.setGravity(Gravity.CENTER_VERTICAL);
-            final EditText edm = inlineNumber("e.g. 090016", 9);
-            edm.setInputType(InputType.TYPE_CLASS_NUMBER);
-            el.addView(edm, new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT, 2f));
-            Button apply = button("Apply EDM", BTN);
-            apply.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    NucMil.Edm e = NucMil.parseEdm(edm.getText().toString());
-                    NucRecord cur = BlastStore.readNuc(m);
-                    if (e == null || cur == null) {
-                        toast("Enter 3, 6 or 9 digits from the EDM line.");
-                        return;
-                    }
-                    saveNuc(m, cur.withEdm(e),
-                            "EDM applied on this device. Use SEND to share it.");
-                }
-            });
-            el.addView(apply, weight());
-            card.addView(el);
-        } else if (NucCard.WIDGET_WIND.equals(id)) {
-            new WindPicker(card, r.windFromDeg, r.windMph, new WindListener() {
-                @Override
-                public void onWind(double fromDeg, double mph) {
-                    saveWind(m, fromDeg, mph);
-                }
-            });
-        }
-    }
-
     /** NBC 1 NUC report builder (FM 3-11.3 Fig. G-3), saved on the incident. */
     private void promptNbc1(Marker card) {
         final Marker m = live(card);
@@ -1803,26 +1587,42 @@ public final class BlastPane {
         card.setPadding(p, p, p, p);
         zoneCard.addView(card);
         // The core decides what the card says; this only renders it.
-        java.util.Map<String, TextView> slots = render(NucCard.card(r,
-                ATAKUtilities.getDisplayName(m), mgrs10(m.getPoint())), card,
-                new ScreenAction() {
+        final WindPicker wind = NucCard.wind(r);
+        final Rendered[] rd = new Rendered[1];
+        rd[0] = render(NucCard.card(r, ATAKUtilities.getDisplayName(m),
+                mgrs10(m.getPoint()), wind), card, new ScreenAction() {
                     @Override
                     public void run(String action) {
-                        nucAction(action, m);
-                    }
-                }, new WidgetMaker() {
-                    @Override
-                    public void make(String id, LinearLayout into) {
-                        nucWidget(id, into, m, r);
+                        nucAction(action, m, wind, rd[0]);
                     }
                 });
-        youText = slots.get(NucCard.SLOT_YOU);
-        teamText = slots.get(NucCard.SLOT_TEAM);
+        youText = rd[0].slots.get(NucCard.SLOT_YOU);
+        teamText = rd[0].slots.get(NucCard.SLOT_TEAM);
     }
 
     /** What the nuclear card's buttons do (ids from NucCard / CardActions). */
-    private void nucAction(String action, Marker m) {
+    private void nucAction(String action, Marker m, WindPicker wind,
+            Rendered rd) {
+        WindPicker.Tap tap = wind.tap(action, rd.values());
+        if (tap != null) {
+            if (tap.error != null)
+                toast(tap.error);
+            rd.update(wind.screen());
+            if (tap.changed)
+                saveWind(m, wind.fromDeg(), wind.mph());
+            return;
+        }
         switch (action) {
+            case NucCard.APPLY_EDM: {
+                NucMil.Edm e = NucMil.parseEdm(rd.values().get(NucCard.EDM));
+                NucRecord cur = BlastStore.readNuc(m);
+                if (e == null || cur == null) {
+                    toast(NucCard.EDM_ERROR);
+                    return;
+                }
+                saveNuc(m, cur.withEdm(e), NucCard.EDM_APPLIED);
+                break;
+            }
             case NucCard.NBC1:
                 promptNbc1(m);
                 break;
@@ -1947,7 +1747,7 @@ public final class BlastPane {
                     public void run(String action) {
                         uxoAction(action, m);
                     }
-                });
+                }).slots;
         youText = slots.get(UxoCard.SLOT_YOU);
         teamText = slots.get(UxoCard.SLOT_TEAM);
     }
@@ -2322,8 +2122,11 @@ public final class BlastPane {
         nucBurst = NucModel.Burst.UNKNOWN;
         nucWindFrom = Double.NaN;
         nucWindMph = Double.NaN;
-        if (nucWindPicker != null)
+        if (nucWindPicker != null) {
             nucWindPicker.set(Double.NaN, Double.NaN);
+            nucWindView.clearEntries();
+            nucWindView.update(nucWindPicker.screen());
+        }
         if (nucYieldEdit != null) {
             nucSettingText = true;
             nucYieldEdit.setText("");
@@ -2611,7 +2414,7 @@ public final class BlastPane {
                     public void run(String action) {
                         standoffAction(action, m);
                     }
-                });
+                }).slots;
         youText = slots.get(StandoffCard.SLOT_YOU);
         teamText = slots.get(StandoffCard.SLOT_TEAM);
     }
@@ -2691,24 +2494,76 @@ public final class BlastPane {
         return k.tone != null ? color(k.tone) : k.argb;
     }
 
-    /** Builds a host widget for a {@code Widget} item. */
-    private interface WidgetMaker {
-        void make(String id, LinearLayout into);
-    }
-
     /**
-     * Add a core screen's items to {@code into}. Returns the TextViews of
-     * live slots (by slot name) so they can be updated in place.
+     * A rendered core screen: the views of its live slots, buttons (by
+     * action) and entry boxes, so they can be read and updated in place.
      */
-    private java.util.Map<String, TextView> render(Screen screen,
-            LinearLayout into, final ScreenAction actions) {
-        return render(screen, into, actions, null);
+    private final class Rendered {
+        final java.util.Map<String, TextView> slots = new java.util.HashMap<>();
+        final java.util.Map<String, Button> buttons = new java.util.HashMap<>();
+        final java.util.Map<String, EditText> entries = new java.util.HashMap<>();
+
+        /** What is typed in the entry boxes. */
+        FormValues values() {
+            FormValues v = new FormValues();
+            for (java.util.Map.Entry<String, EditText> e : entries.entrySet())
+                v.put(e.getKey(), e.getValue().getText().toString());
+            return v;
+        }
+
+        void clearEntries() {
+            for (EditText e : entries.values())
+                e.setText("");
+        }
+
+        /**
+         * Restyle in place from a newer model of the same screen: button
+         * labels and selection colours, and live slot text.
+         */
+        void update(Screen fresh) {
+            for (Item it : fresh.items()) {
+                List<com.atakmap.android.blast.plugin.core.screen.Button> bs =
+                        it instanceof Buttons ? ((Buttons) it).buttons
+                                : it instanceof EntryRow
+                                        ? ((EntryRow) it).buttons : null;
+                if (bs != null) {
+                    for (com.atakmap.android.blast.plugin.core.screen.Button b
+                            : bs) {
+                        Button v = buttons.get(b.action);
+                        if (v == null)
+                            continue;
+                        v.setText(b.label);
+                        tint(v, buttonColor(b.kind));
+                    }
+                } else if (it instanceof Text && it.slot != null) {
+                    apply(slots.get(it.slot), (Text) it);
+                }
+            }
+        }
     }
 
-    private java.util.Map<String, TextView> render(Screen screen,
-            LinearLayout into, final ScreenAction actions,
-            WidgetMaker widgets) {
-        java.util.Map<String, TextView> slots = new java.util.HashMap<>();
+    /** A button for a core button, running its action. */
+    private Button screenButton(
+            final com.atakmap.android.blast.plugin.core.screen.Button b,
+            final ScreenAction actions, Rendered rd) {
+        Button v = button(b.label, buttonColor(b.kind));
+        if (b.bold)
+            v.setTypeface(Typeface.DEFAULT_BOLD);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                actions.run(b.action);
+            }
+        });
+        rd.buttons.put(b.action, v);
+        return v;
+    }
+
+    /** Add a core screen's items to {@code into}. */
+    private Rendered render(Screen screen, LinearLayout into,
+            final ScreenAction actions) {
+        Rendered rd = new Rendered();
+        java.util.Map<String, TextView> slots = rd.slots;
         for (Item it : screen.items()) {
             if (it instanceof Text) {
                 Text t = (Text) it;
@@ -2742,23 +2597,29 @@ public final class BlastPane {
                 into.addView(line);
             } else if (it instanceof KeyRow) {
                 into.addView(keyRow((KeyRow) it));
-            } else if (it instanceof Widget) {
-                if (widgets != null)
-                    widgets.make(((Widget) it).id, into);
+            } else if (it instanceof EntryRow) {
+                EntryRow er = (EntryRow) it;
+                LinearLayout row = horizontal();
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                EditText e = inlineNumber(er.hint, er.maxLength);
+                if (er.digitsOnly)
+                    e.setInputType(InputType.TYPE_CLASS_NUMBER);
+                row.addView(e, new LinearLayout.LayoutParams(0,
+                        ViewGroup.LayoutParams.WRAP_CONTENT, er.weight));
+                rd.entries.put(er.id, e);
+                for (com.atakmap.android.blast.plugin.core.screen.Button b
+                        : er.buttons)
+                    row.addView(screenButton(b, actions, rd),
+                            new LinearLayout.LayoutParams(0,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    b.weight));
+                into.addView(row);
             } else if (it instanceof Buttons) {
                 Buttons bs = (Buttons) it;
                 LinearLayout row = bs.buttons.size() == 1 ? null : horizontal();
                 for (final com.atakmap.android.blast.plugin.core.screen.Button b
                         : bs.buttons) {
-                    Button v = button(b.label, buttonColor(b.kind));
-                    if (b.bold)
-                        v.setTypeface(Typeface.DEFAULT_BOLD);
-                    v.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            actions.run(b.action);
-                        }
-                    });
+                    Button v = screenButton(b, actions, rd);
                     if (row == null) {
                         // A lone button spans the card.
                         LinearLayout.LayoutParams lp = full();
@@ -2782,7 +2643,7 @@ public final class BlastPane {
                 }
             }
         }
-        return slots;
+        return rd;
     }
 
     private static int buttonColor(

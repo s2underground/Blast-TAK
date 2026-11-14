@@ -70,6 +70,11 @@ public class GoldenSnapshotTest {
     }
 
     @Test
+    public void wind() {
+        Golden.check("wind.txt", windSnapshot());
+    }
+
+    @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
     }
@@ -90,6 +95,7 @@ public class GoldenSnapshotTest {
             Golden.check("uxo-card.txt", uxoCardSnapshot());
             Golden.check("nuclear-card.txt", nucCardSnapshot());
             Golden.check("forms.txt", formsSnapshot());
+            Golden.check("wind.txt", windSnapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);
@@ -662,6 +668,68 @@ public class GoldenSnapshotTest {
                     .append("\n");
             for (String p : s.body)
                 sb.append(p).append("\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Refactor step 4e: the wind picker through a run of taps (what it
+     * shows and what it reports after each), and the EDM entry.
+     */
+    static String windSnapshot() {
+        StringBuilder sb = new StringBuilder();
+        com.atakmap.android.blast.plugin.core.screen.WindPicker w =
+                new com.atakmap.android.blast.plugin.core.screen.WindPicker(
+                        Double.NaN, Double.NaN);
+        sb.append("=== no wind\n").append(ScreenDump.dump(w.screen()));
+        String[][] taps = { { "wind_from_1", "", "" },
+                { "wind_speed_2", "", "" }, { "wind_set_from", "abc", "" },
+                { "wind_set_from", "361", "" }, { "wind_set_from", "360", "" },
+                { "wind_set_from", "247.6", "" },
+                { "wind_set_speed", "", "0.5" }, { "wind_set_speed", "", "12" },
+                { "wind_unit", "", "" }, { "wind_set_speed", "", "1" },
+                { "wind_set_speed", "", "40" }, { "wind_unit", "", "" },
+                { "wind_set_speed", "", "201" }, { "wind_none", "", "" },
+                { "wind_set_from", "90", "" }, { "wind_from_8", "", "" },
+                { "wind_speed_x", "", "" }, { "send_all", "", "" } };
+        for (String[] t : taps) {
+            com.atakmap.android.blast.plugin.core.screen.FormValues v =
+                    new com.atakmap.android.blast.plugin.core.screen.FormValues()
+                            .put(com.atakmap.android.blast.plugin.core.screen
+                                    .WindPicker.EXACT_FROM, t[1])
+                            .put(com.atakmap.android.blast.plugin.core.screen
+                                    .WindPicker.EXACT_SPEED, t[2]);
+            com.atakmap.android.blast.plugin.core.screen.WindPicker.Tap r =
+                    w.tap(t[0], v);
+            sb.append("\n=== tap ").append(t[0]);
+            if (!t[1].isEmpty())
+                sb.append(" from=[").append(t[1]).append("]");
+            if (!t[2].isEmpty())
+                sb.append(" speed=[").append(t[2]).append("]");
+            sb.append(" -> ").append(r == null ? "not a wind action"
+                    : (r.changed ? "changed" : "unchanged")
+                            + (r.error == null ? "" : ", error: " + r.error))
+                    .append("\nwind: ").append(Golden.num(w.fromDeg(), 1))
+                    .append(" from, ").append(Golden.num(w.mph(), 2))
+                    .append(" mph\n");
+            if (r != null)
+                sb.append(ScreenDump.dump(w.screen()));
+        }
+        w.set(Double.NaN, Double.NaN);
+        sb.append("\n=== set none\n").append(ScreenDump.item(w.status()))
+                .append("\n");
+        for (double f : new double[] { 0, 11.2, 11.3, 348.7, 348.8, 359.9,
+                -10, 725 })
+            sb.append("compass ").append(Golden.num(f, 1)).append(": ")
+                    .append(com.atakmap.android.blast.plugin.core.screen
+                            .WindPicker.compassName(f)).append("\n");
+        sb.append("\n=== EDM entry\n");
+        for (String e : new String[] { "", "12", "090", "090016",
+                "090016045", "0900161", "abcdef" }) {
+            NucMil.Edm m = NucMil.parseEdm(e);
+            sb.append("[").append(e).append("] -> ").append(m == null
+                    ? com.atakmap.android.blast.plugin.core.screen.NucCard
+                            .EDM_ERROR : "ok").append("\n");
         }
         return sb.toString();
     }

@@ -4,10 +4,10 @@ import com.atakmap.android.blast.plugin.core.screen.Button;
 import com.atakmap.android.blast.plugin.core.screen.Buttons;
 import com.atakmap.android.blast.plugin.core.screen.Check;
 import com.atakmap.android.blast.plugin.core.screen.Choice;
+import com.atakmap.android.blast.plugin.core.screen.EntryRow;
 import com.atakmap.android.blast.plugin.core.screen.Input;
 import com.atakmap.android.blast.plugin.core.screen.Item;
 import com.atakmap.android.blast.plugin.core.screen.KeyRow;
-import com.atakmap.android.blast.plugin.core.screen.Widget;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
 import com.atakmap.android.blast.plugin.core.screen.Text;
@@ -62,10 +62,17 @@ final class ScreenDump {
             if (bs.marginTopDp != 0)
                 sb.append(" margin=").append(bs.marginTopDp);
             for (Button b : bs.buttons)
-                sb.append(" | ").append(b.action).append(" \"")
-                        .append(b.label.replace("\n", "\\n")).append("\" ").append(b.kind)
-                        .append(" w=").append(Golden.num(b.weight, 2))
-                        .append(b.bold ? " bold" : "");
+                button(sb, b);
+            return sb.toString();
+        }
+        if (it instanceof EntryRow) {
+            EntryRow e = (EntryRow) it;
+            StringBuilder sb = new StringBuilder("  entry " + e.id
+                    + (e.digitsOnly ? " digits" : " decimal") + " max="
+                    + e.maxLength + " w=" + Golden.num(e.weight, 2) + " ["
+                    + e.hint + "]");
+            for (Button b : e.buttons)
+                button(sb, b);
             return sb.toString();
         }
         if (it instanceof KeyRow) {
@@ -94,8 +101,13 @@ final class ScreenDump {
                         .append(c.label(i));
             return sb.toString();
         }
-        if (it instanceof Widget)
-            return "  widget " + ((Widget) it).id;
         return "  ? " + it.getClass().getSimpleName();
+    }
+
+    private static void button(StringBuilder sb, Button b) {
+        sb.append(" | ").append(b.action).append(" \"")
+                .append(b.label.replace("\n", "\\n")).append("\" ")
+                .append(b.kind).append(" w=").append(Golden.num(b.weight, 2))
+                .append(b.bold ? " bold" : "");
     }
 }

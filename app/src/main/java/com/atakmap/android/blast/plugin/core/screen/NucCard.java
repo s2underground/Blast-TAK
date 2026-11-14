@@ -10,8 +10,8 @@ import com.atakmap.android.blast.plugin.core.NucText;
 /**
  * The selected-incident card for the nuclear reference mode: banner, DO
  * NOW, NBC 1 button, live YOU / Team slots, the ring key, the fallout
- * picture (civil bands or military Zones I/II with NBC 3), the wind and
- * EDM controls (host widgets for now), actions and sources.
+ * picture (civil bands or military Zones I/II with NBC 3), the EDM entry
+ * and {@link WindPicker}, actions and sources.
  */
 public final class NucCard {
 
@@ -32,8 +32,11 @@ public final class NucCard {
     public static final String HOW_ZONES = "how_zones", WHY = "why",
             WHAT_TO_DO = "what_to_do";
 
-    /** Host widgets (see {@link Widget}). */
-    public static final String WIDGET_EDM = "edm", WIDGET_WIND = "wind";
+    /** The EDM box and its button. */
+    public static final String EDM = "edm", APPLY_EDM = "apply_edm";
+    public static final String EDM_ERROR = "Enter 3, 6 or 9 digits from the "
+            + "EDM line.", EDM_APPLIED = "EDM applied on this device. Use "
+                    + "SEND to share it.";
 
     /** Ring key text colours (brighter than the map strokes, for text). */
     public static int ringInk(NucText.Ring ring) {
@@ -63,6 +66,20 @@ public final class NucCard {
      * @param gzGrid ground zero as MGRS to 10 m, for the NBC 3 text
      */
     public static Screen card(NucRecord r, String name, String gzGrid) {
+        return card(r, name, gzGrid, wind(r));
+    }
+
+    /** The wind picker for this incident's card, set to its saved wind. */
+    public static WindPicker wind(NucRecord r) {
+        return new WindPicker(r.windFromDeg, r.windMph);
+    }
+
+    /**
+     * The card, with the host's own {@code wind} picker (from
+     * {@link #wind}) so the host can keep handling its taps.
+     */
+    public static Screen card(NucRecord r, String name, String gzGrid,
+            WindPicker wind) {
         boolean grey = r.isCleared();
         Screen s = new Screen();
         s.add(Text.of(name, 17, grey ? Tone.DIM : Tone.TEXT, true));
@@ -103,7 +120,7 @@ public final class NucCard {
                     ink, NucText.meaning(ring)));
         }
 
-        fallout(s, r, grey, gzGrid);
+        fallout(s, r, grey, gzGrid, wind);
 
         s.add(CardActions.sendRow(6, false));
         s.add(CardActions.renameRow());
@@ -120,7 +137,7 @@ public final class NucCard {
 
     /** The FALLOUT PICTURE section. */
     private static void fallout(Screen s, NucRecord r, boolean grey,
-            String gzGrid) {
+            String gzGrid, WindPicker wind) {
         s.add(Text.heading("FALLOUT PICTURE"));
         s.add(new Buttons(new Button(PIC_CIVIL, "CIVIL\nFEMA / Glasstone",
                 r.mil.on ? Button.Kind.NORMAL : Button.Kind.SELECTED, 1f,
@@ -183,12 +200,13 @@ public final class NucCard {
                     + ": 6 digits dddsss, 9 digits with angle, or 3 digits "
                     + "(Zone I km, winds below 8 km/h).", 12, Tone.DIM,
                     false));
-            s.add(new Widget(WIDGET_EDM));
+            s.add(new EntryRow(EDM, "e.g. 090016", 9, true, 2f,
+                    Button.of(APPLY_EDM, "Apply EDM")));
         }
         if (r.isKnownModel()) {
             s.add(Text.heading(r.mil.on ? "OR A SURFACE WIND (rough guide)"
                     : r.hasWind() ? "CHANGE WIND" : "ADD WIND"));
-            s.add(new Widget(WIDGET_WIND));
+            wind.addTo(s);
         }
     }
 
