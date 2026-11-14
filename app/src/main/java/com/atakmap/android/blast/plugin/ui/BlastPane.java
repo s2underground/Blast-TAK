@@ -29,6 +29,13 @@ import android.widget.Toast;
 import com.atakmap.android.blast.plugin.R;
 import com.atakmap.android.blast.plugin.atak.BlastStore;
 import com.atakmap.android.blast.plugin.atak.Exporter;
+import com.atakmap.android.blast.plugin.core.screen.Buttons;
+import com.atakmap.android.blast.plugin.core.screen.Item;
+import com.atakmap.android.blast.plugin.core.screen.Legend;
+import com.atakmap.android.blast.plugin.core.screen.Screen;
+import com.atakmap.android.blast.plugin.core.screen.StandoffCard;
+import com.atakmap.android.blast.plugin.core.screen.Text;
+import com.atakmap.android.blast.plugin.core.screen.Tone;
 import com.atakmap.android.blast.plugin.core.Names;
 import com.atakmap.android.blast.plugin.atak.Sharing;
 import com.atakmap.android.blast.plugin.core.BlastRecord;
@@ -3153,63 +3160,22 @@ public final class BlastPane {
         int p = dp(8);
         card.setPadding(p, p, p, p);
         zoneCard.addView(card);
+        // The core decides what the card says; this only renders it.
+        java.util.Map<String, TextView> slots = render(StandoffCard.card(r,
+                ATAKUtilities.getDisplayName(m)), card, new ScreenAction() {
+                    @Override
+                    public void run(String action) {
+                        standoffAction(action, m);
+                    }
+                });
+        youText = slots.get(StandoffCard.SLOT_YOU);
+        teamText = slots.get(StandoffCard.SLOT_TEAM);
+    }
 
-        TextView name = text(ATAKUtilities.getDisplayName(m), 17,
-                r.isCleared() ? DIM : TEXT, true);
-        setIcon(name, threatIcon(r.rowId));
-        name.setCompoundDrawablePadding(dp(6));
-        card.addView(name);
-        card.addView(text(Labels.threat(r)
-                + (r.isCleared() ? " · CLEARED" : ""), 13,
-                r.isCleared() ? DIM : AMBER, true));
-
-        String[][] rows = Labels.zoneRows(r);
-        int[] colors = { RED, AMBER, GREEN };
-        for (int i = 0; i < rows.length; i++) {
-            LinearLayout line = horizontal();
-            View sw = new View(plugin);
-            sw.setBackgroundColor(r.isCleared() ? DIM : colors[i]);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(12),
-                    dp(12));
-            lp.setMargins(0, 0, dp(6), 0);
-            lp.gravity = Gravity.CENTER_VERTICAL;
-            line.addView(sw, lp);
-            line.addView(text(rows[i][0], 14, TEXT, false),
-                    new LinearLayout.LayoutParams(0,
-                            ViewGroup.LayoutParams.WRAP_CONTENT, 1.3f));
-            line.addView(text(rows[i][1], 14, TEXT, true), weight());
-            line.addView(text(rows[i][2], 14, TEXT, true), weight());
-            card.addView(line);
-        }
-
-        card.addView(text(Labels.metresNote(r), 11, DIM, false));
-
-        youText = text("", 14, TEXT, false);
-        youText.setPadding(0, dp(6), 0, 0);
-        card.addView(youText);
-        teamText = text("", 12, DIM, false);
-        card.addView(teamText);
-
-        if (r.table() == null)
-            card.addView(text("This build doesn't have the " + r.sourceId
-                    + " " + Formats.editionLabel(r.edition) + " table. "
-                    + "Showing the distances the sender drew.", 12, AMBER,
-                    false));
-        else if (r.disagreesWithTable())
-            card.addView(text("These distances differ from this build's "
-                    + "copy of the same table. Check with the sender.", 12,
-                    RED, false));
-
-        TextView prov = text(Labels.provenance(r), 11, DIM, false);
-        prov.setPadding(0, dp(4), 0, dp(4));
-        card.addView(prov);
-
-        LinearLayout a1 = horizontal();
-        Button sendAll = button("SEND TO ALL", SEND);
-        sendAll.setTypeface(Typeface.DEFAULT_BOLD);
-        sendAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    /** What the standoff card's buttons do (ids from StandoffCard). */
+    private void standoffAction(String action, Marker m) {
+        switch (action) {
+            case StandoffCard.SEND_ALL:
                 try {
                     Marker l = live(m);
                     if (l == null)
@@ -3220,114 +3186,142 @@ public final class BlastPane {
                     Log.e(TAG, "send failed", e);
                     toast("Send failed.");
                 }
-            }
-        });
-        Button sendTo = button("Send to…", BTN);
-        sendTo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case StandoffCard.SEND_TO: {
                 Marker l = live(m);
                 if (l != null)
                     sharing.sendTo(l);
+                break;
             }
-        });
-        Button fly = button("Fly to", BTN);
-        fly.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            case StandoffCard.FLY:
                 goTo(m);
-            }
-        });
-        a1.addView(sendAll, new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1.4f));
-        a1.addView(sendTo, weight());
-        a1.addView(fly, weight());
-        card.addView(a1);
-
-        LinearLayout aRename = horizontal();
-        Button ren = button("Rename…", BTN);
-        ren.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case StandoffCard.RENAME:
                 promptRename(m);
-            }
-        });
-        Button exp = button("Export…", BTN);
-        exp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case StandoffCard.EXPORT:
                 promptExport(m);
-            }
-        });
-        aRename.addView(ren, weight());
-        aRename.addView(exp, weight());
-        card.addView(aRename);
-
-        LinearLayout a2 = horizontal();
-        Button clear = button(r.isCleared() ? "Reopen" : "Mark cleared", BTN);
-        clear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case StandoffCard.STATUS:
                 confirmStatus(m);
-            }
-        });
-        Button del = button("Delete…", BTN);
-        del.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case StandoffCard.DELETE:
                 confirmDelete(m);
-            }
-        });
-        a2.addView(clear, weight());
-        a2.addView(del, weight());
-        card.addView(a2);
+                break;
+            default:
+                Log.w(TAG, "unknown card action " + action);
+        }
+    }
 
-        TextView actions = text(Guidance.CARD_ACTIONS, 13, TEXT, false);
-        actions.setPadding(0, dp(6), 0, dp(2));
-        card.addView(actions);
-        for (String c : Guidance.CAVEATS)
-            card.addView(text("• " + c, 12, DIM, false));
+    // ------------------------------------------------------------------
+    // Screen model renderer (core/screen -> Android views)
+
+    /** Runs a button's action id. */
+    private interface ScreenAction {
+        void run(String action);
+    }
+
+    /** Blast's dark-pane colour for a core tone. */
+    private static int color(Tone t) {
+        switch (t) {
+            case DIM:
+                return DIM;
+            case AMBER:
+                return AMBER;
+            case RED:
+                return RED;
+            case GREEN:
+                return GREEN;
+            default:
+                return TEXT;
+        }
+    }
+
+    /**
+     * Add a core screen's items to {@code into}. Returns the TextViews of
+     * live slots (by slot name) so they can be updated in place.
+     */
+    private java.util.Map<String, TextView> render(Screen screen,
+            LinearLayout into, final ScreenAction actions) {
+        java.util.Map<String, TextView> slots = new java.util.HashMap<>();
+        for (Item it : screen.items()) {
+            if (it instanceof Text) {
+                Text t = (Text) it;
+                TextView v = text(t.text, t.size, color(t.tone), t.bold);
+                if (t.icon != null) {
+                    setIcon(v, threatIcon(t.icon));
+                    v.setCompoundDrawablePadding(dp(6));
+                }
+                if (t.padTopDp != 0 || t.padBottomDp != 0)
+                    v.setPadding(0, dp(t.padTopDp), 0, dp(t.padBottomDp));
+                into.addView(v);
+                if (t.slot != null)
+                    slots.put(t.slot, v);
+            } else if (it instanceof Legend) {
+                Legend l = (Legend) it;
+                LinearLayout line = horizontal();
+                View sw = new View(plugin);
+                sw.setBackgroundColor(color(l.swatch));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        dp(12), dp(12));
+                lp.setMargins(0, 0, dp(6), 0);
+                lp.gravity = Gravity.CENTER_VERTICAL;
+                line.addView(sw, lp);
+                for (int i = 0; i < l.cellCount(); i++)
+                    line.addView(text(l.cell(i), l.size, color(l.tone),
+                            l.bold(i)), new LinearLayout.LayoutParams(0,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    l.weight(i)));
+                into.addView(line);
+            } else if (it instanceof Buttons) {
+                LinearLayout row = horizontal();
+                for (final com.atakmap.android.blast.plugin.core.screen.Button b
+                        : ((Buttons) it).buttons) {
+                    Button v = button(b.label, b.kind
+                            == com.atakmap.android.blast.plugin.core.screen.Button.Kind.PRIMARY
+                                    ? SEND : BTN);
+                    if (b.bold)
+                        v.setTypeface(Typeface.DEFAULT_BOLD);
+                    v.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            actions.run(b.action);
+                        }
+                    });
+                    row.addView(v, new LinearLayout.LayoutParams(0,
+                            ViewGroup.LayoutParams.WRAP_CONTENT, b.weight));
+                }
+                into.addView(row);
+            }
+        }
+        return slots;
+    }
+
+    /** Update a live slot's TextView from a core Text. */
+    private static void apply(TextView v, Text t) {
+        if (v == null || t == null)
+            return;
+        v.setText(t.text);
+        v.setTextColor(color(t.tone));
     }
 
     private void updateYou(Marker m, BlastRecord r) {
         if (youText == null)
             return;
-        StandoffRow row = r.row();
         GeoPoint center = m.getPoint();
         Marker self = ATAKUtilities.findSelf(mapView);
         GeoPoint sp = self != null ? self.getPoint() : null;
-        if (center == null || sp == null || !sp.isValid()
-                || (sp.getLatitude() == 0 && sp.getLongitude() == 0)) {
-            youText.setText("YOU: no GPS position yet.");
-            youText.setTextColor(DIM);
-        } else {
+        boolean fix = !(center == null || sp == null || !sp.isValid()
+                || (sp.getLatitude() == 0 && sp.getLongitude() == 0));
+        double dist = Double.NaN, acc = Double.NaN;
+        if (fix) {
             // CE is NaN when unknown; CotPoint uses 9999999 for unknown.
             double ce = sp.getCE();
             boolean ceKnown = !Double.isNaN(ce) && ce > 0 && ce < 9999999;
-            PositionCheck.Result res = PositionCheck.check(row,
-                    distance(center, sp), ceKnown ? ce : Double.NaN);
-            if (res == null) {
-                youText.setText("YOU: position check unavailable.");
-                youText.setTextColor(DIM);
-            } else {
-                String s = "YOU: " + res.headline() + "\n" + res.guidance();
-                String w = res.boundaryWarning();
-                if (w != null)
-                    s += "\n" + w;
-                if (ceKnown && ce > row.mandatoryRadiusM())
-                    s += "\nGPS accuracy is poor (about "
-                            + Formats.measured(ce)
-                            + "): treat this check as approximate.";
-                if (r.isCleared())
-                    s = "Incident marked cleared. " + s;
-                youText.setText(s);
-                youText.setTextColor(r.isCleared() ? DIM
-                        : res.zone == PositionCheck.Zone.MANDATORY ? RED
-                                : res.zone == PositionCheck.Zone.SHELTER
-                                        ? AMBER
-                                        : GREEN);
-            }
+            dist = distance(center, sp);
+            acc = ceKnown ? ce : Double.NaN;
         }
+        apply(youText, StandoffCard.you(r, fix, dist, acc));
         if (teamText != null && center != null) {
             List<Double> ds = new ArrayList<>();
             try {
@@ -3347,12 +3341,7 @@ public final class BlastPane {
             double[] arr = new double[ds.size()];
             for (int i = 0; i < arr.length; i++)
                 arr[i] = ds.get(i);
-            int[] n = PositionCheck.count(row, arr);
-            teamText.setText(ds.isEmpty() ? "Team: no other contacts on the map."
-                    : "Team on the map: " + n[0] + " in mandatory, " + n[1]
-                            + " in shelter-in-place, " + n[2]
-                            + " at or beyond preferred.");
-            teamText.setTextColor(n[0] > 0 && !r.isCleared() ? RED : DIM);
+            apply(teamText, StandoffCard.team(r, arr));
         }
     }
 

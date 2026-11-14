@@ -50,6 +50,11 @@ public class GoldenSnapshotTest {
     }
 
     @Test
+    public void standoffCard() {
+        Golden.check("standoff-card.txt", standoffCardSnapshot());
+    }
+
+    @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
     }
@@ -66,6 +71,7 @@ public class GoldenSnapshotTest {
             Golden.check("uxo.txt", uxoSnapshot());
             Golden.check("nuclear.txt", nucSnapshot());
             Golden.check("reference.txt", referenceSnapshot());
+            Golden.check("standoff-card.txt", standoffCardSnapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);
@@ -138,6 +144,46 @@ public class GoldenSnapshotTest {
         for (String c : Guidance.CAVEATS)
             sb.append("caveat: ").append(c).append("\n");
         sb.append("disclaimer: ").append(Guidance.DISCLAIMER).append("\n");
+        return sb.toString();
+    }
+
+    /** Refactor step 4: the standoff card as the core describes it. */
+    static String standoffCardSnapshot() {
+        StringBuilder sb = new StringBuilder();
+        StandoffTable t = StandoffTable.current();
+        List<BlastRecord> rs = new ArrayList<>();
+        rs.add(BlastRecord.create(ZoneCalculator.forRow(t, "BRIEFCASE"), BY,
+                T).withNumber(1));
+        rs.add(BlastRecord.create(ZoneCalculator.forQuantity(t, 37,
+                ZoneCalculator.MassUnit.LB), BY, T).withNumber(2));
+        rs.add(BlastRecord.create(ZoneCalculator.forRow(t, "CAR"), BY, T)
+                .withNumber(3).cleared("BRAVO-2", NOW));
+        double[] acc = { Double.NaN, 5, 200 };
+        for (BlastRecord r : rs) {
+            String name = Names.withStatus(Names.initial(r.number,
+                    r.rowLabel), r.isCleared());
+            sb.append("\n=== card ").append(name).append("\n");
+            sb.append(ScreenDump.dump(
+                    com.atakmap.android.blast.plugin.core.screen.StandoffCard
+                            .card(r, name)));
+            sb.append("you, no fix:\n").append(ScreenDump.item(
+                    com.atakmap.android.blast.plugin.core.screen.StandoffCard
+                            .you(r, false, Double.NaN, Double.NaN)))
+                    .append("\n");
+            for (double d : DIST)
+                for (double a : acc)
+                    sb.append("you ").append(Golden.num(d, 1)).append(" m ce=")
+                            .append(Golden.num(a, 0)).append(":\n")
+                            .append(ScreenDump.item(com.atakmap.android.blast
+                                    .plugin.core.screen.StandoffCard.you(r,
+                                            true, d, a))).append("\n");
+            for (double[] team : new double[][] { {}, { 5000 },
+                    { 10, 300, 5000 }, { 10, 20 } })
+                sb.append("team ").append(Arrays.toString(team)).append(":\n")
+                        .append(ScreenDump.item(com.atakmap.android.blast
+                                .plugin.core.screen.StandoffCard.team(r,
+                                        team))).append("\n");
+        }
         return sb.toString();
     }
 
