@@ -38,15 +38,27 @@ public final class WindPicker {
 
     private double from, mph;
     private boolean kmh;
+    /** What is typed in the two exact boxes. */
+    private String exactFrom = "", exactSpeed = "";
 
     public WindPicker(double fromDeg, double mph) {
         set(fromDeg, mph);
     }
 
-    /** Replace the wind (NaN, NaN for none). Hosts also empty the boxes. */
+    /** Replace the wind (NaN, NaN for none) and empty the exact boxes. */
     public void set(double fromDeg, double mph) {
         this.from = fromDeg;
         this.mph = mph;
+        exactFrom = "";
+        exactSpeed = "";
+    }
+
+    /** Remember what is typed in the exact boxes (those {@code v} has). */
+    public void capture(FormValues v) {
+        if (v.has(EXACT_FROM))
+            exactFrom = v.get(EXACT_FROM);
+        if (v.has(EXACT_SPEED))
+            exactSpeed = v.get(EXACT_SPEED);
     }
 
     public boolean valid() {
@@ -84,8 +96,9 @@ public final class WindPicker {
      * when {@code action} isn't one of the picker's.
      */
     public Tap tap(String action, FormValues v) {
-        if (action == null)
+        if (action == null || !action.startsWith("wind_"))
             return null;
+        capture(v);
         if (action.startsWith(FROM)) {
             int k = index(action, FROM, COMPASS.length);
             if (k < 0)
@@ -162,7 +175,7 @@ public final class WindPicker {
             s.add(new Buttons(bs));
         }
         s.add(new EntryRow(EXACT_FROM, "Exact ° true (0-359)", 5, false, 2f,
-                Button.of(SET_FROM, "Set")));
+                Button.of(SET_FROM, "Set")).withValue(exactFrom));
         s.add(Text.of("Wind speed", 13, Tone.TEXT, true));
         Button[] sp = new Button[SPEEDS.length];
         for (int k = 0; k < SPEEDS.length; k++)
@@ -171,14 +184,13 @@ public final class WindPicker {
         s.add(new Buttons(sp));
         s.add(new EntryRow(EXACT_SPEED, "Exact speed", 5, false, 2f,
                 Button.of(UNIT, kmh ? "km/h" : "mph"),
-                Button.of(SET_SPEED, "Set")));
+                Button.of(SET_SPEED, "Set")).withValue(exactSpeed));
         s.add(new Buttons(pick(NONE, "Wind unknown (no fallout drawn)", !ok)));
         s.add(status());
     }
 
     private static Button pick(String action, String label, boolean on) {
-        return new Button(action, label, on ? Button.Kind.SELECTED
-                : Button.Kind.NORMAL, 1f, false);
+        return Button.pick(action, label, on, Button.Kind.SELECTED);
     }
 
     /** The status line. */

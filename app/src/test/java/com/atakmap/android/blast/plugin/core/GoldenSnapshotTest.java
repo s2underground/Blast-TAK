@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import com.atakmap.android.blast.plugin.core.screen.Item;
+import com.atakmap.android.blast.plugin.core.screen.Screen;
+
 /**
  * Refactor step 1: locks everything the core produces today, and what the
  * ATAK layer draws (via {@link DrawSpec}), for a matrix of sample
@@ -75,6 +78,11 @@ public class GoldenSnapshotTest {
     }
 
     @Test
+    public void newIncident() {
+        Golden.check("new-incident.txt", newIncidentSnapshot());
+    }
+
+    @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
     }
@@ -96,6 +104,7 @@ public class GoldenSnapshotTest {
             Golden.check("nuclear-card.txt", nucCardSnapshot());
             Golden.check("forms.txt", formsSnapshot());
             Golden.check("wind.txt", windSnapshot());
+            Golden.check("new-incident.txt", newIncidentSnapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);
@@ -732,5 +741,168 @@ public class GoldenSnapshotTest {
                             .EDM_ERROR : "ok").append("\n");
         }
         return sb.toString();
+    }
+
+    /**
+     * Refactor step 4f: the new-incident screens through a run of taps,
+     * and the records they place.
+     */
+    static String newIncidentSnapshot() {
+        StringBuilder sb = new StringBuilder();
+        com.atakmap.android.blast.plugin.core.screen.NewIncident n =
+                new com.atakmap.android.blast.plugin.core.screen.NewIncident(
+                        StandoffTable.current());
+        com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode none =
+                com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode.NONE;
+        sb.append("=== start\n").append(ScreenDump.dump(n.screen(none, null,
+                false)));
+        String first = StandoffTable.current().rows().get(0).id;
+        String last = StandoffTable.current().rows().get(StandoffTable
+                .current().rows().size() - 1).id;
+        // { action, box values (id=value;...), F = full dump }
+        String[][] taps = {
+                { "mode_ied", "", "F" }, { "row_" + first, "", "F" },
+                { "row_" + last, "", "" }, { "custom", "", "F" },
+                { "qty_changed", "qty=800", "" },
+                { "unit_kg", "qty=800", "" }, { "qty_changed", "qty=abc", "" },
+                { "qty_changed", "qty=1,000,000", "" },
+                { "qty_changed", "qty=0", "" }, { "unit_lb", "qty=50", "F" },
+                { "auto_send", "auto_send=true", "" },
+                { "ied_pick", "", "" }, { "ied_self", "", "" },
+                { "ied_center", "", "" }, { "ied_target", "", "" },
+                { "mode_uxo", "", "F" }, { "uxo_cat_UNKNOWN", "", "F" },
+                { "uxo_large", "", "" }, { "uxo_multi", "uxo_multi=true", "" },
+                { "uxo_cat_MISSILE_ROCKET", "", "" },
+                { "uxo_where_AREA", "", "F" }, { "uxo_rb", "", "" },
+                { "mode_nuc", "", "F" }, { "yield_changed", "yield=abc", "" },
+                { "yield_changed", "yield=0.05", "" },
+                { "yield_changed", "yield=20", "" }, { "nuc_mt", "yield=20", "" },
+                { "nuc_mt", "yield=1.2", "" }, { "nuc_kt", "yield=1.2", "" },
+                { "nuc_burst_SURFACE", "yield=1.2", "" },
+                { "wind_from_6", "yield=1.2", "" },
+                { "wind_set_speed", "yield=1.2;wind_exact_speed=9999", "" },
+                { "nuc_presets_FIELDED", "", "" },
+                { "nuc_presets_YIELD", "", "" }, { "nuc_polar", "", "" },
+                { "uxo_nothing", "", "" }, { "row_", "", "" },
+                { "nuc_burst_X", "", "" } };
+        for (String[] t : taps) {
+            com.atakmap.android.blast.plugin.core.screen.FormValues v =
+                    new com.atakmap.android.blast.plugin.core.screen.FormValues();
+            for (String kv : t[1].split(";")) {
+                if (kv.isEmpty())
+                    continue;
+                String[] p = kv.split("=", 2);
+                if (p[1].equals("true"))
+                    v.put(p[0], true);
+                else
+                    v.put(p[0], p[1]);
+            }
+            com.atakmap.android.blast.plugin.core.screen.NewIncident.Result r =
+                    n.tap(t[0], v);
+            sb.append("\n=== tap ").append(t[0]);
+            if (!t[1].isEmpty())
+                sb.append(" [").append(t[1]).append("]");
+            sb.append(" -> ");
+            if (r == null) {
+                sb.append("not this screen's\n");
+                continue;
+            }
+            sb.append(r.request).append(" mode=").append(r.mode);
+            if (r.group != null)
+                sb.append(" group=").append(r.group);
+            if (r.focus != null)
+                sb.append(" focus=").append(r.focus);
+            if (r.toast != null)
+                sb.append(" toast=").append(r.toast);
+            sb.append("\nnow ").append(n.mode()).append("; ready IED/UXO/NUC ")
+                    .append(n.ready(com.atakmap.android.blast.plugin.core.screen
+                            .NewIncident.Mode.IED)).append("/")
+                    .append(n.ready(com.atakmap.android.blast.plugin.core.screen
+                            .NewIncident.Mode.UXO)).append("/")
+                    .append(n.ready(com.atakmap.android.blast.plugin.core.screen
+                            .NewIncident.Mode.NUC)).append("\n");
+            Screen sc = n.screen(none, null, false);
+            if (t[2].equals("F")) {
+                sb.append(ScreenDump.dump(sc));
+            } else {
+                for (String slot : new String[] { "ied_sel", "uxo_sel",
+                        "nuc_sel" }) {
+                    Item it = find(sc.items(), slot);
+                    if (it != null)
+                        sb.append(ScreenDump.item(it)).append("\n");
+                }
+            }
+        }
+        com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode ied =
+                com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode.IED,
+                uxo = com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode.UXO,
+                nuc = com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode.NUC;
+        sb.append("\n=== nuclear, picking, opened on a marker\n")
+                .append(ScreenDump.dump(n.screen(nuc, "Rally Point 2",
+                        true)));
+        sb.append("\n=== records\n");
+        sb.append(BlastCodec.toXml(n.standoffRecord(BY, T))).append("\n");
+        sb.append(UxoCodec.toXml(n.uxoRecord(UxoRecord.Placement.RB, BY, T)))
+                .append("\n");
+        sb.append(NucCodec.toXml(n.nucRecord(null, BY, T))).append("\n");
+        n.choosePreset(NucPresets.group(NucPresets.Group.PLANNING).get(0));
+        sb.append("\n=== preset ").append(NucPresets.group(
+                NucPresets.Group.PLANNING).get(0).id).append("\n");
+        sb.append(ScreenDump.item(find(n.screen(none, null, false).items(),
+                "nuc_sel"))).append("\n");
+        for (Item it : n.screen(none, null, false).items())
+            dumpEntries(sb, it);
+        n.reset();
+        sb.append("\n=== reset\n").append(ScreenDump.dump(n.screen(none,
+                null, false)));
+        for (com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode m
+                : new com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode[] {
+                        ied, uxo, nuc })
+            sb.append("notReady ").append(m).append(": ")
+                    .append(com.atakmap.android.blast.plugin.core.screen
+                            .NewIncident.notReady(m))
+                    .append("\nprompt ").append(m).append(": ")
+                    .append(com.atakmap.android.blast.plugin.core.screen
+                            .NewIncident.pickPrompt(m)).append("\n");
+        sb.append("\n=== preset lists\n").append(com.atakmap.android.blast
+                .plugin.core.screen.NewIncident.FIELDED_TITLE).append("\n");
+        for (String i : com.atakmap.android.blast.plugin.core.screen
+                .NewIncident.regionItems())
+            sb.append("  ").append(i).append("\n");
+        sb.append(com.atakmap.android.blast.plugin.core.screen.NewIncident
+                .regionTitle(NucPresets.REGIONS[0])).append("\n");
+        for (NucPresets.Group g : NucPresets.Group.values())
+            if (g != NucPresets.Group.FIELDED) {
+                sb.append(com.atakmap.android.blast.plugin.core.screen
+                        .NewIncident.groupTitle(g)).append("\n");
+                for (String i : com.atakmap.android.blast.plugin.core.screen
+                        .NewIncident.presetItems(NucPresets.group(g),
+                                g == NucPresets.Group.YIELD))
+                    sb.append("  ").append(i).append("\n");
+            }
+        return sb.toString();
+    }
+
+    private static Item find(List<Item> items, String slot) {
+        for (Item it : items) {
+            if (slot.equals(it.slot))
+                return it;
+            if (it instanceof com.atakmap.android.blast.plugin.core.screen.Section) {
+                Item f = find(((com.atakmap.android.blast.plugin.core.screen
+                        .Section) it).items, slot);
+                if (f != null)
+                    return f;
+            }
+        }
+        return null;
+    }
+
+    private static void dumpEntries(StringBuilder sb, Item it) {
+        if (it instanceof com.atakmap.android.blast.plugin.core.screen.EntryRow)
+            sb.append(ScreenDump.item(it)).append("\n");
+        else if (it instanceof com.atakmap.android.blast.plugin.core.screen.Section)
+            for (Item i : ((com.atakmap.android.blast.plugin.core.screen
+                    .Section) it).items)
+                dumpEntries(sb, i);
     }
 }

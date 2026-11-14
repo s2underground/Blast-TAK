@@ -10,6 +10,7 @@ import com.atakmap.android.blast.plugin.core.screen.Item;
 import com.atakmap.android.blast.plugin.core.screen.KeyRow;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
+import com.atakmap.android.blast.plugin.core.screen.Section;
 import com.atakmap.android.blast.plugin.core.screen.Text;
 
 /** Writes a core screen model as text for golden files. */
@@ -26,6 +27,15 @@ final class ScreenDump {
     }
 
     static String item(Item it) {
+        if (it instanceof Section) {
+            Section sec = (Section) it;
+            StringBuilder sb = new StringBuilder("  section " + sec.id
+                    + (sec.visible ? "" : " hidden")
+                    + (sec.live ? " rebuilt" : "") + " {");
+            for (Item i : sec.items)
+                sb.append("\n  ").append(item(i).replace("\n", "\n  "));
+            return sb.append("\n  }").toString();
+        }
         if (it instanceof Text) {
             Text t = (Text) it;
             StringBuilder sb = new StringBuilder("  text ");
@@ -61,6 +71,10 @@ final class ScreenDump {
             StringBuilder sb = new StringBuilder("  buttons");
             if (bs.marginTopDp != 0)
                 sb.append(" margin=").append(bs.marginTopDp);
+            if (bs.marginBottomDp != 0)
+                sb.append(" below=").append(bs.marginBottomDp);
+            if (bs.tiles)
+                sb.append(" tiles");
             for (Button b : bs.buttons)
                 button(sb, b);
             return sb.toString();
@@ -70,7 +84,11 @@ final class ScreenDump {
             StringBuilder sb = new StringBuilder("  entry " + e.id
                     + (e.digitsOnly ? " digits" : " decimal") + " max="
                     + e.maxLength + " w=" + Golden.num(e.weight, 2) + " ["
-                    + e.hint + "]");
+                    + e.hint + "]" + (e.value == null ? ""
+                            : " = [" + e.value + "]")
+                    + (e.changeAction == null ? ""
+                            : " change=" + e.changeAction)
+                    + (e.centered ? "" : " top"));
             for (Button b : e.buttons)
                 button(sb, b);
             return sb.toString();
@@ -108,6 +126,10 @@ final class ScreenDump {
         sb.append(" | ").append(b.action).append(" \"")
                 .append(b.label.replace("\n", "\\n")).append("\" ")
                 .append(b.kind).append(" w=").append(Golden.num(b.weight, 2))
-                .append(b.bold ? " bold" : "");
+                .append(b.bold ? " bold" : "")
+                .append(b.enabled ? "" : " disabled")
+                .append(b.visible ? "" : " hidden")
+                .append(b.icon == null ? "" : " icon=" + b.icon)
+                .append(b.alignStart ? " start" : "");
     }
 }

@@ -39,6 +39,11 @@ public final class Text extends Item {
                 false);
     }
 
+    /** A pane heading for a step, e.g. "1. THREAT" (more space round it). */
+    public static Text step(String text) {
+        return of(text, 12, Tone.BLUE, true).padded(10, 4);
+    }
+
     /** A section heading (small, bold, blue, spaced above). */
     public static Text heading(String text) {
         return of(text, 12, Tone.BLUE, true).padded(8, 2);

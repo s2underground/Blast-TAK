@@ -37,10 +37,10 @@
   text 13 bold TEXT | Which way is the wind blowing FROM?
   buttons | wind_from_0 "N" SELECTED w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
   buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
-  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] | wind_set_from "Set" NORMAL w=1
+  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
   text 13 bold TEXT | Wind speed
   buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" SELECTED w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
-  entry wind_exact_speed decimal max=5 w=2 [Exact speed] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+  entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
   buttons | wind_none "Wind unknown (no fallout drawn)" NORMAL w=1
   text 12 TEXT slot=wind_status | Wind FROM 0° (N) at 15 mph / 24 km/h: fallout drifts toward 180° (S). Surface wind is a rough guide: fallout follows the winds aloft.
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
@@ -122,10 +122,10 @@ team all:
   text 13 bold TEXT | Which way is the wind blowing FROM?
   buttons | wind_from_0 "N" SELECTED w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
   buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
-  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] | wind_set_from "Set" NORMAL w=1
+  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
   text 13 bold TEXT | Wind speed
   buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" SELECTED w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
-  entry wind_exact_speed decimal max=5 w=2 [Exact speed] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+  entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
   buttons | wind_none "Wind unknown (no fallout drawn)" NORMAL w=1
   text 12 TEXT slot=wind_status | Wind FROM 0° (N) at 15 mph / 24 km/h: fallout drifts toward 180° (S). Surface wind is a rough guide: fallout follows the winds aloft.
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
@@ -207,10 +207,10 @@ team all:
   text 13 bold TEXT | Which way is the wind blowing FROM?
   buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" SELECTED w=1 | wind_from_3 "SE" NORMAL w=1
   buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
-  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] | wind_set_from "Set" NORMAL w=1
+  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
   text 13 bold TEXT | Wind speed
   buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
-  entry wind_exact_speed decimal max=5 w=2 [Exact speed] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+  entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
   buttons | wind_none "Wind unknown (no fallout drawn)" NORMAL w=1
   text 12 TEXT slot=wind_status | Wind FROM 90° (E) at 19 mph / 30 km/h: fallout drifts toward 270° (W). Surface wind is a rough guide: fallout follows the winds aloft.
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
@@ -277,10 +277,10 @@ team all:
   text 13 bold TEXT | Which way is the wind blowing FROM?
   buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
   buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
-  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] | wind_set_from "Set" NORMAL w=1
+  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
   text 13 bold TEXT | Wind speed
   buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
-  entry wind_exact_speed decimal max=5 w=2 [Exact speed] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+  entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
   buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
   text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
@@ -356,10 +356,10 @@ team all:
   text 13 bold TEXT | Which way is the wind blowing FROM?
   buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
   buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" SELECTED w=1 | wind_from_7 "NW" NORMAL w=1
-  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] | wind_set_from "Set" NORMAL w=1
+  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
   text 13 bold TEXT | Wind speed
   buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
-  entry wind_exact_speed decimal max=5 w=2 [Exact speed] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+  entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
   buttons | wind_none "Wind unknown (no fallout drawn)" NORMAL w=1
   text 12 TEXT slot=wind_status | Wind FROM 270° (W) at 10 mph / 16 km/h: fallout drifts toward 90° (E). Surface wind is a rough guide: fallout follows the winds aloft.
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1

@@ -46,6 +46,9 @@ import com.atakmap.android.blast.plugin.core.screen.KeyRow;
 import com.atakmap.android.blast.plugin.core.screen.NucCard;
 import com.atakmap.android.blast.plugin.core.screen.EntryRow;
 import com.atakmap.android.blast.plugin.core.screen.WindPicker;
+import com.atakmap.android.blast.plugin.core.screen.NewIncident;
+import com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode;
+import com.atakmap.android.blast.plugin.core.screen.Section;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
 import com.atakmap.android.blast.plugin.core.screen.StandoffCard;
@@ -56,17 +59,13 @@ import com.atakmap.android.blast.plugin.atak.Sharing;
 import com.atakmap.android.blast.plugin.core.BlastRecord;
 import com.atakmap.android.blast.plugin.core.Formats;
 import com.atakmap.android.blast.plugin.core.Guidance;
-import com.atakmap.android.blast.plugin.core.Labels;
 import com.atakmap.android.blast.plugin.core.PositionCheck;
-import com.atakmap.android.blast.plugin.core.StandoffRow;
 import com.atakmap.android.blast.plugin.core.StandoffTable;
 import com.atakmap.android.blast.plugin.core.UxoRecord;
 import com.atakmap.android.blast.plugin.core.UxoReference;
 import com.atakmap.android.blast.plugin.core.UxoTable;
 import com.atakmap.android.blast.plugin.core.UxoText;
 import com.atakmap.android.blast.plugin.core.ZoneCalculator;
-import com.atakmap.android.blast.plugin.core.ZoneCalculator.MassUnit;
-import com.atakmap.android.blast.plugin.core.ZoneCalculator.Selection;
 import com.atakmap.android.contact.Contact;
 import com.atakmap.android.contact.Contacts;
 import com.atakmap.android.contact.IndividualContact;
@@ -83,11 +82,9 @@ import com.atakmap.android.toolbar.widgets.TextContainer;
 import com.atakmap.coremap.log.Log;
 import com.atakmap.android.blast.plugin.core.Geo;
 import com.atakmap.android.blast.plugin.core.NucMil;
-import com.atakmap.android.blast.plugin.core.NucModel;
 import com.atakmap.android.blast.plugin.core.NucPresets;
 import com.atakmap.android.blast.plugin.core.NucRecord;
 import com.atakmap.android.blast.plugin.core.NucReference;
-import com.atakmap.android.blast.plugin.core.NucReports;
 import com.atakmap.android.blast.plugin.core.NucText;
 import com.atakmap.coremap.maps.coords.GeoPoint;
 import com.atakmap.coremap.maps.coords.GeoPointMetaData;
@@ -132,10 +129,6 @@ public final class BlastPane {
     private static final int NUC_COLOR = 0xFFE040FB;
 
     /** Which kind of incident the New incident section is placing. */
-    private enum Mode {
-        NONE, IED, UXO, NUC
-    }
-
     private final Context plugin;
     private final MapView mapView;
     private final BlastStore store;
@@ -151,38 +144,11 @@ public final class BlastPane {
     private final java.util.Map<String, View> refAnchors = new java.util.HashMap<>();
     private TextView emergencyText;
 
-    private Button modeIedBtn, modeUxoBtn, modeNucBtn;
-    private LinearLayout iedSection, uxoSection, nucSection;
-    private EditText nucYieldEdit;
-    private Button nucKtBtn, nucMtBtn, nucPickBtn, nucCenterBtn, nucTargetBtn,
-            nucPolarBtn;
-    private final List<Button> nucBurstButtons = new ArrayList<>();
-    private TextView nucSelText;
-    private LinearLayout nucPreview;
-    private WindPicker nucWindPicker;
-    private Rendered nucWindView;
-    private boolean nucMegatons, nucSettingText;
-    private String nucPresetId;
-    private NucModel.Burst nucBurst = NucModel.Burst.UNKNOWN;
-    private double nucWindFrom = Double.NaN, nucWindMph = Double.NaN;
-    private final List<Button> uxoCatButtons = new ArrayList<>();
-    private final List<Button> whereButtons = new ArrayList<>();
-    private Button largeBtn;
-    private CheckBox multiCheck;
-    private TextView uxoSelText;
-    private Button uxoPickBtn, uxoRbBtn, uxoCenterBtn, uxoTargetBtn;
-    private String uxoCat;
-    private boolean uxoLarge, uxoMulti;
-    private UxoRecord.Where uxoWhere = UxoRecord.Where.UNSET;
+    /** The new-incident choices (core) and their rendered views. */
+    private final NewIncident newIncident = new NewIncident(table);
+    private Rendered newView;
     /** What the map tap places. */
     private Mode pickKind = Mode.NONE;
-    private final List<Button> rowButtons = new ArrayList<>();
-    private Button customButton;
-    private LinearLayout customRow;
-    private EditText qtyEdit;
-    private Button lbButton, kgButton;
-    private TextView selectionText;
-    private Button pickBtn, selfBtn, centerBtn, targetBtn;
     private LinearLayout zoneCard;
     private LinearLayout zoneList;
     private TextView zoneListHeader;
@@ -190,10 +156,6 @@ public final class BlastPane {
     /** Debug builds only: what the incident lookup found. */
     private TextView debugLine;
 
-    private String selectedRowId;
-    private boolean customMode;
-    private MassUnit unit = MassUnit.LB;
-    private Selection selection;
     private Marker placeTarget;
     private String selectedZoneUid;
     /**
@@ -268,9 +230,7 @@ public final class BlastPane {
         placeTarget = null;
         selectedZoneUid = zone.getUID();
         showTab(false, null);
-        updatePlacement();
-        updateUxo();
-        updateNuc();
+        updateNew();
         onShow();
         main.post(new Runnable() {
             @Override
@@ -285,9 +245,7 @@ public final class BlastPane {
     public void placeAt(Marker target) {
         placeTarget = target;
         showTab(false, null);
-        updatePlacement();
-        updateUxo();
-        updateNuc();
+        updateNew();
         onShow();
         root.smoothScrollTo(0, 0);
     }
@@ -394,195 +352,14 @@ public final class BlastPane {
         zoneCard = vertical();
         col.addView(zoneCard);
 
-        col.addView(header("NEW INCIDENT: WHAT KIND OF THREAT?"));
-        LinearLayout modes = horizontal();
-        modeIedBtn = button("SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)",
-                BTN);
-        modeUxoBtn = button("MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\n"
-                + "rockets, grenades", BTN);
-        modeIedBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setMode(Mode.IED);
-            }
-        });
-        modeUxoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setMode(Mode.UXO);
-            }
-        });
-        modes.addView(modeIedBtn, weight());
-        modes.addView(modeUxoBtn, weight());
-        col.addView(modes);
-        modeNucBtn = button("NUCLEAR DETONATION", BTN);
-        modeNucBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setMode(Mode.NUC);
-            }
-        });
-        col.addView(modeNucBtn, full());
-        col.addView(text("Not sure? Choose MILITARY ORDNANCE if it looks "
-                + "factory-made, otherwise SUSPICIOUS DEVICE.", 12, DIM, false));
-
-        uxoSection = buildUxoSection();
-        uxoSection.setVisibility(View.GONE);
-        col.addView(uxoSection);
-
-        nucSection = buildNucSection();
-        nucSection.setVisibility(View.GONE);
-        col.addView(nucSection);
-
-        iedSection = vertical();
-        iedSection.setVisibility(View.GONE);
-        col.addView(iedSection);
-        LinearLayout outerCol = col;
-        col = iedSection;
-
-        col.addView(header("1. THREAT"));
-        List<StandoffRow> rows = table.rows();
-        for (int i = 0; i < rows.size(); i += 2) {
-            LinearLayout line = horizontal();
-            for (int j = i; j < Math.min(i + 2, rows.size()); j++) {
-                final StandoffRow r = rows.get(j);
-                Button b = button(r.label + "\n"
-                        + Formats.thousands(r.capacityLb) + " lb", BTN);
-                b.setTag(r.id);
-                setIcon(b, threatIcon(r.id));
-                b.setOnClickListener(new View.OnClickListener() {
+        // The core decides what the new-incident steps say and offer.
+        newView = render(newIncident.screen(picking(), targetName(),
+                autoSend()), col, new ScreenAction() {
                     @Override
-                    public void onClick(View v) {
-                        selectRow(r.id);
+                    public void run(String action) {
+                        newAction(action);
                     }
                 });
-                rowButtons.add(b);
-                line.addView(b, weight());
-            }
-            col.addView(line);
-        }
-        customButton = button("Custom quantity (lb or kg)", BTN);
-        customButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectCustom();
-            }
-        });
-        col.addView(customButton, full());
-
-        customRow = horizontal();
-        qtyEdit = new EditText(plugin);
-        doneKey(qtyEdit);
-        qtyEdit.setInputType(InputType.TYPE_CLASS_NUMBER
-                | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        qtyEdit.setHint("Estimate (TNT equivalent)");
-        qtyEdit.setTextColor(TEXT);
-        qtyEdit.setHintTextColor(DIM);
-        qtyEdit.setSingleLine(true);
-        qtyEdit.setFilters(new android.text.InputFilter[] {
-                new android.text.InputFilter.LengthFilter(
-                        ZoneCalculator.MAX_QUANTITY_CHARS)
-        });
-        qtyEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (customMode)
-                    recomputeSelection();
-            }
-        });
-        customRow.addView(qtyEdit, new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 2f));
-        lbButton = button("lb", BTN);
-        kgButton = button("kg", BTN);
-        lbButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setUnit(MassUnit.LB);
-            }
-        });
-        kgButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setUnit(MassUnit.KG);
-            }
-        });
-        customRow.addView(lbButton, weight());
-        customRow.addView(kgButton, weight());
-        customRow.setVisibility(View.GONE);
-        col.addView(customRow);
-
-        selectionText = text("", 13, TEXT, false);
-        selectionText.setPadding(0, dp(4), 0, dp(4));
-        col.addView(selectionText);
-
-        col.addView(header("2. PLACE"));
-        targetBtn = button("", SEND);
-        targetBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (placeTarget != null && placeTarget.getPoint() != null)
-                    place(placeTarget.getPoint());
-            }
-        });
-        col.addView(targetBtn, full());
-        LinearLayout place = horizontal();
-        pickBtn = button("Tap map", BTN);
-        selfBtn = button("My position", BTN);
-        centerBtn = button("Map center", BTN);
-        pickBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (picking)
-                    stopPick();
-                else
-                    startPick(Mode.IED);
-            }
-        });
-        selfBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GeoPoint gp = selfPoint();
-                if (gp == null)
-                    toast("No GPS position yet.");
-                else
-                    place(gp);
-            }
-        });
-        centerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GeoPointMetaData c = mapView.getCenterPoint();
-                if (c != null && c.get() != null && c.get().isValid())
-                    place(c.get());
-            }
-        });
-        place.addView(pickBtn, weight());
-        place.addView(selfBtn, weight());
-        place.addView(centerBtn, weight());
-        col.addView(place);
-
-        CheckBox auto = new CheckBox(plugin);
-        auto.setText("Send new incidents to everyone right away");
-        auto.setTextColor(TEXT);
-        auto.setChecked(prefs.getBoolean(PREF_AUTO_SEND, false));
-        auto.setOnCheckedChangeListener(
-                new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton b,
-                            boolean on) {
-                        prefs.edit().putBoolean(PREF_AUTO_SEND, on).apply();
-                    }
-                });
-        col.addView(auto);
-        col = outerCol;
 
         if (com.atakmap.android.blast.plugin.BuildConfig.DEBUG) {
             debugLine = text("", 10, DIM, false);
@@ -591,205 +368,119 @@ public final class BlastPane {
         TextView foot = text(Guidance.DISCLAIMER, 11, DIM, false);
         foot.setPadding(0, dp(12), 0, dp(4));
         col.addView(foot);
-        updatePlacement();
         return col;
     }
 
     // ------------------------------------------------------------------
-    // UXO: the three steps (one card, no pop-ups)
+    // New incident: the core NewIncident model, rendered and acted on here
 
-    private LinearLayout buildUxoSection() {
-        LinearLayout col = vertical();
-        col.addView(header("1. WHAT DO YOU SEE?   (do not go closer)"));
-        for (final UxoTable.Category c : UxoTable.pickerCategories()) {
-            Button b = button(c.plainLabel + "   "
-                    + Formats.thousands(c.cordonM) + " m", BTN);
-            b.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
-            b.setTag(c.id);
-            b.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    uxoCat = c.id;
-                    if (!c.isUnknown())
-                        uxoLarge = false;
-                    updateUxo();
-                }
-            });
-            uxoCatButtons.add(b);
-            LinearLayout.LayoutParams lp = full();
-            lp.setMargins(0, 0, 0, dp(2));
-            col.addView(b, lp);
-        }
-        largeBtn = button("It looks large (bomb or missile size): "
-                + Formats.thousands(UxoTable.UNKNOWN_LARGE_M) + " m", BTN);
-        largeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uxoLarge = !uxoLarge;
-                updateUxo();
+    /** The section whose map tap is running, or NONE. */
+    private Mode picking() {
+        return picking ? pickKind : Mode.NONE;
+    }
+
+    private String targetName() {
+        return placeTarget == null ? null
+                : ATAKUtilities.getDisplayName(placeTarget);
+    }
+
+    private boolean autoSend() {
+        return prefs.getBoolean(PREF_AUTO_SEND, false);
+    }
+
+    /** Redraw the new-incident steps from the core (no capture). */
+    private void renderNew() {
+        if (newView != null)
+            newView.update(newIncident.screen(picking(), targetName(),
+                    autoSend()));
+    }
+
+    /** Redraw after an outside change, keeping what is typed. */
+    private void updateNew() {
+        if (newView == null)
+            return;
+        newIncident.capture(newView.values());
+        renderNew();
+    }
+
+    /** What the new-incident buttons, boxes and checks do. */
+    private void newAction(String action) {
+        NewIncident.Result r = newIncident.tap(action, newView.values());
+        if (r == null)
+            return;
+        if (r.toast != null)
+            toast(r.toast);
+        if (r.request == NewIncident.Request.AUTO_SEND)
+            prefs.edit().putBoolean(PREF_AUTO_SEND, newView.values()
+                    .checked(NewIncident.AUTO_SEND)).apply();
+        renderNew();
+        switch (r.request) {
+            case MODE_CHANGED:
+                stopPick();
+                break;
+            case PRESETS:
+                choosePreset(r.group);
+                break;
+            case FOCUS: {
+                EditText e = newView.entries.get(r.focus);
+                if (e != null)
+                    e.requestFocus();
+                break;
             }
-        });
-        col.addView(largeBtn, full());
-        multiCheck = new CheckBox(plugin);
-        multiCheck.setText("More than one item (adds " + UxoTable.MULTI_ADD_M
-                + " m to the cordon)");
-        multiCheck.setTextColor(TEXT);
-        multiCheck.setOnCheckedChangeListener(
-                new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton b, boolean on) {
-                        uxoMulti = on;
-                        updateUxo();
-                    }
-                });
-        col.addView(multiCheck);
-
-        col.addView(header("2. WHERE ARE YOU?"));
-        Object[][] wheres = {
-                { UxoRecord.Where.PATH, "On a road or path I know is safe" },
-                { UxoRecord.Where.AREA,
-                        "I may be in a minefield or an area with bomblets" },
-                { UxoRecord.Where.VEHICLE, "In a vehicle" },
-        };
-        for (Object[] w : wheres) {
-            final UxoRecord.Where where = (UxoRecord.Where) w[0];
-            Button b = button((String) w[1], BTN);
-            b.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
-            b.setTag(where);
-            b.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    uxoWhere = where;
-                    updateUxo();
-                }
-            });
-            whereButtons.add(b);
-            LinearLayout.LayoutParams lp = full();
-            lp.setMargins(0, 0, 0, dp(2));
-            col.addView(b, lp);
-        }
-
-        uxoSelText = text("", 13, TEXT, false);
-        uxoSelText.setPadding(0, dp(4), 0, dp(4));
-        col.addView(uxoSelText);
-
-        col.addView(header("3. PLACE IT (never walk closer to get a fix)"));
-        uxoTargetBtn = button("", SEND);
-        uxoTargetBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            case PLACE_TARGET:
                 if (placeTarget != null && placeTarget.getPoint() != null)
-                    placeUxo(placeTarget.getPoint(),
+                    placeAs(r.mode, placeTarget.getPoint(),
                             UxoRecord.Placement.MARKER);
-            }
-        });
-        col.addView(uxoTargetBtn, full());
-        LinearLayout place = horizontal();
-        uxoPickBtn = button("Tap map", BTN);
-        uxoRbBtn = button("Range & bearing", BTN);
-        uxoCenterBtn = button("Map center", BTN);
-        uxoPickBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case PICK:
                 if (picking)
                     stopPick();
                 else
-                    startPick(Mode.UXO);
+                    startPick(r.mode);
+                break;
+            case PLACE_SELF: {
+                GeoPoint gp = selfPoint();
+                if (gp == null)
+                    toast(NewIncident.NO_GPS);
+                else
+                    placeAs(r.mode, gp, UxoRecord.Placement.MAP);
+                break;
             }
-        });
-        uxoRbBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                promptRangeBearing();
-            }
-        });
-        uxoCenterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            case PLACE_CENTER: {
                 GeoPointMetaData c = mapView.getCenterPoint();
                 if (c != null && c.get() != null && c.get().isValid())
-                    placeUxo(c.get(), UxoRecord.Placement.CENTER);
+                    placeAs(r.mode, c.get(), UxoRecord.Placement.CENTER);
+                break;
             }
-        });
-        place.addView(uxoPickBtn, weight());
-        place.addView(uxoRbBtn, weight());
-        place.addView(uxoCenterBtn, weight());
-        col.addView(place);
-        col.addView(text("UXO incidents are never sent automatically: "
-                + "share them from the incident card when you choose.", 12,
-                DIM, false));
-        return col;
+            case RANGE_BEARING:
+                promptRangeBearing();
+                break;
+            case POLAR:
+                promptPolarPlot();
+                break;
+            default:
+                break;
+        }
     }
 
-    private void setMode(Mode m) {
-        stopPick();
-        tint(modeIedBtn, m == Mode.IED ? SEL : BTN);
-        tint(modeUxoBtn, m == Mode.UXO ? UXO_SEL : BTN);
-        tint(modeNucBtn, m == Mode.NUC ? NUC_SEL : BTN);
-        iedSection.setVisibility(m == Mode.IED ? View.VISIBLE : View.GONE);
-        uxoSection.setVisibility(m == Mode.UXO ? View.VISIBLE : View.GONE);
-        nucSection.setVisibility(m == Mode.NUC ? View.VISIBLE : View.GONE);
-        updatePlacement();
-        updateUxo();
-        updateNuc();
-    }
-
-    private boolean uxoReady() {
-        return uxoCat != null && uxoWhere != UxoRecord.Where.UNSET;
-    }
-
-    private void updateUxo() {
-        if (uxoSection == null)
-            return;
-        for (Button b : uxoCatButtons)
-            tint(b, b.getTag().equals(uxoCat) ? UXO_SEL : BTN);
-        for (Button b : whereButtons)
-            tint(b, b.getTag() == uxoWhere ? UXO_SEL : BTN);
-        boolean unknown = UxoTable.UNKNOWN.equals(uxoCat);
-        largeBtn.setVisibility(unknown ? View.VISIBLE : View.GONE);
-        tint(largeBtn, uxoLarge ? UXO_SEL : BTN);
-        if (multiCheck.isChecked() != uxoMulti)
-            multiCheck.setChecked(uxoMulti);
-        if (uxoCat == null) {
-            uxoSelText.setText("Choose what you see, then where you are.");
-            uxoSelText.setTextColor(DIM);
-        } else {
-            int m = UxoTable.cordonM(uxoCat, uxoMulti, unknown && uxoLarge);
-            String s = "Cordon " + UxoText.cordon(m) + ", minimum. "
-                    + "Fragments may travel farther.";
-            if (uxoWhere == UxoRecord.Where.UNSET)
-                s += "\nNow choose where you are.";
-            else
-                s += "\n" + UxoText.drill(uxoWhere);
-            uxoSelText.setText(s);
-            uxoSelText.setTextColor(uxoWhere == UxoRecord.Where.UNSET ? AMBER
-                    : TEXT);
-        }
-        boolean ok = uxoReady();
-        for (Button b : new Button[] { uxoPickBtn, uxoRbBtn, uxoCenterBtn }) {
-            b.setEnabled(ok);
-            b.setAlpha(ok ? 1f : 0.4f);
-        }
-        if (placeTarget != null) {
-            uxoTargetBtn.setVisibility(View.VISIBLE);
-            uxoTargetBtn.setText("Place at "
-                    + ATAKUtilities.getDisplayName(placeTarget));
-            uxoTargetBtn.setEnabled(ok);
-            uxoTargetBtn.setAlpha(ok ? 1f : 0.4f);
-        } else {
-            uxoTargetBtn.setVisibility(View.GONE);
-        }
+    /** Place the chosen threat of {@code mode} at {@code at}. */
+    private void placeAs(Mode mode, GeoPoint at, UxoRecord.Placement how) {
+        if (mode == Mode.UXO)
+            placeUxo(at, how);
+        else if (mode == Mode.NUC)
+            placeNuc(at);
+        else
+            place(at);
     }
 
     private void placeUxo(GeoPoint at, UxoRecord.Placement how) {
         try {
-            if (!uxoReady()) {
-                toast("Choose what you see and where you are first.");
+            if (!newIncident.ready(Mode.UXO)) {
+                toast(NewIncident.notReady(Mode.UXO));
                 return;
             }
-            UxoRecord r = UxoRecord.create(uxoCat, uxoMulti,
-                    UxoTable.UNKNOWN.equals(uxoCat) && uxoLarge, uxoWhere, how,
-                    callsign(), System.currentTimeMillis());
+            UxoRecord r = newIncident.uxoRecord(how, callsign(),
+                    System.currentTimeMillis());
             Marker m = store.createUxo(at, r);
             if (m == null) {
                 toast("Could not place the incident.");
@@ -798,8 +489,7 @@ public final class BlastPane {
             placeTarget = null;
             selectedZoneUid = m.getUID();
             resetThreat();
-            toast("UXO incident placed (not sent). Use REPORT or SEND on its "
-                    + "card when you are outside the cordon.");
+            toast(NewIncident.UXO_PLACED);
             onShow();
             main.post(new Runnable() {
                 @Override
@@ -904,233 +594,17 @@ public final class BlastPane {
     // ------------------------------------------------------------------
     // Nuclear detonation reference: yield, burst, optional wind, place
 
-    private LinearLayout buildNucSection() {
-        LinearLayout col = vertical();
-        TextView banner = text(NucText.BANNER + " For planning and training: "
-                + "shows FEMA's protective actions and reference distances "
-                + "for a detonation of the size you choose.", 12, AMBER, false);
-        banner.setPadding(0, dp(4), 0, dp(4));
-        col.addView(banner);
-
-        col.addView(header("1. YIELD"));
-        LinearLayout yl = horizontal();
-        yl.setGravity(Gravity.CENTER_VERTICAL);
-        nucYieldEdit = new EditText(plugin);
-        doneKey(nucYieldEdit);
-        nucYieldEdit.setInputType(InputType.TYPE_CLASS_NUMBER
-                | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        nucYieldEdit.setHint("Yield");
-        nucYieldEdit.setTextColor(TEXT);
-        nucYieldEdit.setHintTextColor(DIM);
-        nucYieldEdit.setSingleLine(true);
-        nucYieldEdit.setFilters(new android.text.InputFilter[] {
-                new android.text.InputFilter.LengthFilter(8) });
-        nucYieldEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (!nucSettingText) {
-                    nucPresetId = null;
-                    updateNuc();
-                }
-            }
-        });
-        yl.addView(nucYieldEdit, new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 2f));
-        nucKtBtn = button("kt", BTN);
-        nucMtBtn = button("Mt", BTN);
-        nucKtBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nucMegatons = false;
-                nucPresetId = null;
-                updateNuc();
-            }
-        });
-        nucMtBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nucMegatons = true;
-                nucPresetId = null;
-                updateNuc();
-            }
-        });
-        yl.addView(nucKtBtn, weight());
-        yl.addView(nucMtBtn, weight());
-        col.addView(yl);
-        LinearLayout pr = horizontal();
-        for (final NucPresets.Group g : new NucPresets.Group[] {
-                NucPresets.Group.PLANNING, NucPresets.Group.FIELDED,
-                NucPresets.Group.HISTORICAL, NucPresets.Group.YIELD }) {
-            String lbl = g == NucPresets.Group.PLANNING ? "FEMA\nscenarios"
-                    : g == NucPresets.Group.FIELDED ? "Fielded\nweapons"
-                            : g == NucPresets.Group.HISTORICAL
-                                    ? "Tests &\nhistory"
-                                    : "By\nyield";
-            Button b = button(lbl, BTN);
-            b.setLines(2);
-            b.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    choosePreset(g);
-                }
-            });
-            LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.MATCH_PARENT, 1f);
-            bl.setMargins(dp(1), dp(1), dp(1), dp(1));
-            pr.addView(b, bl);
-        }
-        col.addView(pr);
-
-        col.addView(header("2. BURST"));
-        for (final NucModel.Burst b : new NucModel.Burst[] {
-                NucModel.Burst.UNKNOWN, NucModel.Burst.SURFACE,
-                NucModel.Burst.AIR }) {
-            String lbl = b == NucModel.Burst.UNKNOWN
-                    ? "Unknown: draw the worst case of both (recommended)"
-                    : b == NucModel.Burst.SURFACE
-                            ? "Surface / ground level (most fallout)"
-                            : "Air burst (outer envelope, little fallout)";
-            Button bt = button(lbl, BTN);
-            bt.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
-            bt.setTag(b);
-            bt.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    nucBurst = b;
-                    updateNuc();
-                }
-            });
-            nucBurstButtons.add(bt);
-            LinearLayout.LayoutParams lp = full();
-            lp.setMargins(0, 0, 0, dp(2));
-            col.addView(bt, lp);
-        }
-
-        col.addView(header("3. WIND (optional, for fallout)"));
-        nucWindPicker = new WindPicker(nucWindFrom, nucWindMph);
-        final Rendered[] wv = new Rendered[1];
-        wv[0] = render(nucWindPicker.screen(), col, new ScreenAction() {
-            @Override
-            public void run(String action) {
-                WindPicker.Tap t = nucWindPicker.tap(action, wv[0].values());
-                if (t == null)
-                    return;
-                if (t.error != null)
-                    toast(t.error);
-                wv[0].update(nucWindPicker.screen());
-                if (t.changed) {
-                    nucWindFrom = nucWindPicker.fromDeg();
-                    nucWindMph = nucWindPicker.mph();
-                    updateNuc();
-                }
-            }
-        });
-        nucWindView = wv[0];
-
-        nucSelText = text("", 13, TEXT, false);
-        nucSelText.setPadding(0, dp(4), 0, dp(4));
-        col.addView(nucSelText);
-        nucPreview = vertical();
-        col.addView(nucPreview);
-
-        col.addView(header("4. PLACE GROUND ZERO"));
-        nucTargetBtn = button("", SEND);
-        nucTargetBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (placeTarget != null && placeTarget.getPoint() != null)
-                    placeNuc(placeTarget.getPoint());
-            }
-        });
-        col.addView(nucTargetBtn, full());
-        LinearLayout place = horizontal();
-        nucPickBtn = button("Tap map", BTN);
-        nucCenterBtn = button("Map center", BTN);
-        nucPickBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (picking)
-                    stopPick();
-                else
-                    startPick(Mode.NUC);
-            }
-        });
-        nucCenterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GeoPointMetaData c = mapView.getCenterPoint();
-                if (c != null && c.get() != null && c.get().isValid())
-                    placeNuc(c.get());
-            }
-        });
-        place.addView(nucPickBtn, weight());
-        place.addView(nucCenterBtn, weight());
-        nucPolarBtn = button("From what I saw", BTN);
-        nucPolarBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                promptPolarPlot();
-            }
-        });
-        place.addView(nucPolarBtn, weight());
-        col.addView(place);
-        col.addView(text("Nuclear reference incidents are never sent "
-                + "automatically: share them from the card when you choose.",
-                12, DIM, false));
-        return col;
-    }
-
-    /** The typed yield in kt, or NaN. */
-    private double nucYieldKt() {
-        if (nucYieldEdit == null)
-            return Double.NaN;
-        double v = ZoneCalculator.parseQuantity(nucYieldEdit.getText()
-                .toString());
-        if (Double.isNaN(v))
-            return Double.NaN;
-        return nucMegatons ? v * 1000 : v;
-    }
-
-    private boolean nucReady() {
-        return NucModel.validYield(nucYieldKt());
-    }
-
-    private void setNucYield(NucPresets.Preset p) {
-        nucSettingText = true;
-        try {
-            nucMegatons = p.kt >= 1000;
-            nucYieldEdit.setText(Formats.decimalTrim(nucMegatons
-                    ? p.kt / 1000.0 : p.kt));
-        } finally {
-            nucSettingText = false;
-        }
-        nucPresetId = p.id;
-        updateNuc();
-    }
-
     private void choosePreset(final NucPresets.Group g) {
         if (g == NucPresets.Group.FIELDED) {
             // Country first, so no list gets long.
             final String[] regions = NucPresets.REGIONS;
-            String[] items = new String[regions.length];
-            for (int i = 0; i < regions.length; i++)
-                items[i] = regions[i] + " ("
-                        + NucPresets.fielded(regions[i]).size() + ")";
             new AlertDialog.Builder(mapView.getContext())
-                    .setTitle("Fielded weapons: choose a country")
-                    .setItems(items, new DialogInterface.OnClickListener() {
+                    .setTitle(NewIncident.FIELDED_TITLE)
+                    .setItems(NewIncident.regionItems(),
+                            new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface d, int w) {
-                            showPresets(regions[w] + ": public estimates, "
-                                    + "upper value of ranges",
+                            showPresets(NewIncident.regionTitle(regions[w]),
                                     NucPresets.fielded(regions[w]), false);
                         }
                     })
@@ -1138,82 +612,25 @@ public final class BlastPane {
                     .show();
             return;
         }
-        showPresets(g == NucPresets.Group.HISTORICAL
-                ? "Tests and historical weapons: published estimates"
-                : g.label, NucPresets.group(g), g == NucPresets.Group.YIELD);
+        showPresets(NewIncident.groupTitle(g), NucPresets.group(g),
+                g == NucPresets.Group.YIELD);
     }
 
     private void showPresets(String title,
             final List<NucPresets.Preset> ps, boolean labelOnly) {
-        String[] items = new String[ps.size()];
-        for (int i = 0; i < items.length; i++) {
-            NucPresets.Preset p = ps.get(i);
-            items[i] = labelOnly ? p.label : p.label + " — " + p.note;
-        }
+        String[] items = NewIncident.presetItems(ps, labelOnly);
         // A message would hide the list, so the note goes in the title.
         AlertDialog.Builder b = new AlertDialog.Builder(mapView.getContext())
                 .setTitle(title)
                 .setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface d, int w) {
-                        setNucYield(ps.get(w));
+                        newIncident.choosePreset(ps.get(w));
+                        renderNew();
                     }
                 })
                 .setNegativeButton("Cancel", null);
         b.show();
-    }
-
-    private void updateNuc() {
-        if (nucSection == null)
-            return;
-        tint(nucKtBtn, nucMegatons ? BTN : NUC_SEL);
-        tint(nucMtBtn, nucMegatons ? NUC_SEL : BTN);
-        for (Button b : nucBurstButtons)
-            tint(b, b.getTag() == nucBurst ? NUC_SEL : BTN);
-        if (nucWindPicker != null)
-            nucWindView.update(nucWindPicker.screen());
-        nucPreview.removeAllViews();
-        double kt = nucYieldKt();
-        if (Double.isNaN(kt)) {
-            nucSelText.setText("Type a yield or choose a preset.");
-            nucSelText.setTextColor(DIM);
-        } else if (!NucModel.validYield(kt)) {
-            nucSelText.setText("Enter 0.1 kt to 50 Mt.");
-            nucSelText.setTextColor(RED);
-        } else {
-            NucRecord.Radii r = NucRecord.Radii.of(kt, nucBurst);
-            NucPresets.Preset p = NucPresets.byId(nucPresetId);
-            String s = (p != null ? p.label + " (" + p.note + "): " : "")
-                    + NucPresets.yieldLabel(kt) + ", "
-                    + nucBurst.label.toLowerCase(java.util.Locale.US)
-                    + ". Will draw:";
-            double[] rs = { r.sdzM, r.mdzM, r.ldzM, r.burnM, r.radM };
-            NucText.Ring[] rings = { NucText.Ring.SDZ, NucText.Ring.MDZ,
-                    NucText.Ring.LDZ, NucText.Ring.BURN, NucText.Ring.RAD };
-            for (int k = 0; k < rings.length; k++)
-                nucPreview.addView(legendRow(rings[k], NucText.dist(rs[k]),
-                        null, false));
-            if (NucModel.extrapolated(kt))
-                s += "\nOutside Glasstone's 1 kt-10 Mt charts: burn and "
-                        + "radiation rings are extrapolated.";
-            nucSelText.setText(s);
-            nucSelText.setTextColor(TEXT);
-        }
-        boolean ok = nucReady();
-        for (Button b : new Button[] { nucPickBtn, nucCenterBtn,
-                nucPolarBtn }) {
-            b.setEnabled(ok);
-            b.setAlpha(ok ? 1f : 0.4f);
-        }
-        if (placeTarget != null) {
-            nucTargetBtn.setVisibility(View.VISIBLE);
-            nucTargetBtn.setText("Place at "
-                    + ATAKUtilities.getDisplayName(placeTarget));
-            nucTargetBtn.setEnabled(ok);
-            nucTargetBtn.setAlpha(ok ? 1f : 0.4f);
-        } else {
-            nucTargetBtn.setVisibility(View.GONE);
-        }
     }
 
     private void saveWind(Marker card, double from, double mph) {
@@ -1243,15 +660,12 @@ public final class BlastPane {
 
     private void placeNuc(GeoPoint at, NucRecord.Obs obs) {
         try {
-            if (!nucReady()) {
-                toast("Enter a yield from 0.1 kt to 50 Mt first.");
+            if (!newIncident.ready(Mode.NUC)) {
+                toast(NewIncident.notReady(Mode.NUC));
                 return;
             }
-            NucRecord r = NucRecord.create(nucYieldKt(), nucBurst,
-                    nucPresetId, nucWindFrom, nucWindMph, callsign(),
+            NucRecord r = newIncident.nucRecord(obs, callsign(),
                     System.currentTimeMillis());
-            if (obs != null)
-                r = r.withObs(obs);
             Marker m = store.createNuc(at, r);
             if (m == null) {
                 toast("Could not place the incident.");
@@ -1260,8 +674,7 @@ public final class BlastPane {
             placeTarget = null;
             selectedZoneUid = m.getUID();
             resetThreat();
-            toast("Nuclear reference placed (not sent). Use SEND on its card "
-                    + "to share it.");
+            toast(NewIncident.NUC_PLACED);
             onShow();
             main.post(new Runnable() {
                 @Override
@@ -1291,32 +704,6 @@ public final class BlastPane {
         e.setFilters(new android.text.InputFilter[] {
                 new android.text.InputFilter.LengthFilter(maxLen) });
         return e;
-    }
-
-    /** Ring colours for text on the dark card (brighter than the map). */
-    private static int ringTextColor(NucText.Ring ring) {
-        return NucCard.ringInk(ring);
-    }
-
-    /** One legend row: colour bar, coloured name and distance, meaning. */
-    private View legendRow(NucText.Ring ring, String dist, String meaning,
-            boolean grey) {
-        LinearLayout row = horizontal();
-        row.setPadding(0, dp(3), 0, dp(3));
-        View bar = new View(plugin);
-        bar.setBackgroundColor(grey ? DIM : ringTextColor(ring));
-        LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(dp(8),
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        bl.setMargins(0, 0, dp(8), 0);
-        row.addView(bar, bl);
-        LinearLayout tx = vertical();
-        tx.addView(text(ring.label + ": " + dist, 14, grey ? DIM
-                : ringTextColor(ring), true));
-        if (meaning != null)
-            tx.addView(text(meaning, 12, DIM, false));
-        row.addView(tx, new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        return row;
     }
 
     /**
@@ -1535,8 +922,8 @@ public final class BlastPane {
             toast("No GPS position yet: tap the map instead.");
             return;
         }
-        if (!nucReady()) {
-            toast("Enter a yield from 0.1 kt to 50 Mt first.");
+        if (!newIncident.ready(Mode.NUC)) {
+            toast(NewIncident.notReady(Mode.NUC));
             return;
         }
         Context ctx = mapView.getContext();
@@ -2098,116 +1485,14 @@ public final class BlastPane {
     // ------------------------------------------------------------------
     // Threat selection
 
-    private void selectRow(String rowId) {
-        customMode = false;
-        selectedRowId = rowId;
-        recomputeSelection();
-    }
-
     /**
      * Clear the threat choice. Called when the pane is opened and after
      * each incident is placed, so every incident needs a fresh choice.
      */
     public void resetThreat() {
-        customMode = false;
-        selectedRowId = null;
-        if (qtyEdit != null)
-            qtyEdit.setText("");
-        uxoCat = null;
-        uxoLarge = false;
-        uxoMulti = false;
-        uxoWhere = UxoRecord.Where.UNSET;
-        nucPresetId = null;
-        nucMegatons = false;
-        nucBurst = NucModel.Burst.UNKNOWN;
-        nucWindFrom = Double.NaN;
-        nucWindMph = Double.NaN;
-        if (nucWindPicker != null) {
-            nucWindPicker.set(Double.NaN, Double.NaN);
-            nucWindView.clearEntries();
-            nucWindView.update(nucWindPicker.screen());
-        }
-        if (nucYieldEdit != null) {
-            nucSettingText = true;
-            nucYieldEdit.setText("");
-            nucSettingText = false;
-        }
-        recomputeSelection();
-        if (modeIedBtn != null)
-            setMode(Mode.NONE);
-    }
-
-    private void selectCustom() {
-        customMode = true;
-        selectedRowId = null;
-        recomputeSelection();
-        qtyEdit.requestFocus();
-    }
-
-    private void setUnit(MassUnit u) {
-        unit = u;
-        recomputeSelection();
-    }
-
-    private void recomputeSelection() {
-        if (customMode) {
-            double q = ZoneCalculator.parseQuantity(qtyEdit.getText()
-                    .toString());
-            selection = Double.isNaN(q) ? null
-                    : ZoneCalculator.forQuantity(table, q, unit);
-        } else {
-            selection = selectedRowId == null ? null
-                    : ZoneCalculator.forRow(table, selectedRowId);
-        }
-        for (Button b : rowButtons)
-            tint(b, !customMode && b.getTag().equals(selectedRowId) ? SEL
-                    : BTN);
-        tint(customButton, customMode ? SEL : BTN);
-        customRow.setVisibility(customMode ? View.VISIBLE : View.GONE);
-        tint(lbButton, unit == MassUnit.LB ? SEL : BTN);
-        tint(kgButton, unit == MassUnit.KG ? SEL : BTN);
-
-        if (selection == null) {
-            selectionText.setText(customMode
-                    ? "Enter your estimate. The card row at or above it is used."
-                    : "Choose the threat that best matches what you see.");
-            selectionText.setTextColor(DIM);
-        } else if (!selection.isUsable()) {
-            selectionText.setText(selection.explain());
-            selectionText.setTextColor(RED);
-        } else {
-            StandoffRow r = selection.row;
-            selectionText.setText(selection.explain() + "\nMandatory evac "
-                    + Formats.ft(r.mandatoryFt) + " ("
-                    + Formats.thousands(r.mandatoryMetres()) + " m)"
-                    + " · Shelter-in-place to "
-                    + Formats.ft(r.shelterToFt) + " · Preferred "
-                    + Formats.ft(r.preferredFt) + "+ ("
-                    + Formats.thousands(r.preferredMetres()) + " m)");
-            selectionText.setTextColor(TEXT);
-        }
-        updatePlacement();
-    }
-
-    private void updatePlacement() {
-        boolean ok = selection != null && selection.isUsable();
-        for (Button b : new Button[] { pickBtn, selfBtn, centerBtn }) {
-            if (b != null) {
-                b.setEnabled(ok);
-                b.setAlpha(ok ? 1f : 0.4f);
-            }
-        }
-        if (targetBtn != null) {
-            if (placeTarget != null) {
-                targetBtn.setVisibility(View.VISIBLE);
-                targetBtn.setText("Place at "
-                        + ATAKUtilities.getDisplayName(placeTarget));
-                targetBtn.setEnabled(ok);
-                targetBtn.setAlpha(ok ? 1f : 0.4f);
-            } else {
-                targetBtn.setVisibility(View.GONE);
-            }
-        }
+        stopPick();
+        newIncident.reset();
+        renderNew();
     }
 
     // ------------------------------------------------------------------
@@ -2215,11 +1500,11 @@ public final class BlastPane {
 
     private void place(GeoPoint at) {
         try {
-            if (selection == null || !selection.isUsable()) {
-                toast("Choose a threat first.");
+            if (!newIncident.ready(Mode.IED)) {
+                toast(NewIncident.notReady(Mode.IED));
                 return;
             }
-            BlastRecord r = BlastRecord.create(selection, callsign(),
+            BlastRecord r = newIncident.standoffRecord(callsign(),
                     System.currentTimeMillis());
             Marker m = store.create(at, r);
             if (m == null) {
@@ -2229,11 +1514,11 @@ public final class BlastPane {
             placeTarget = null;
             selectedZoneUid = m.getUID();
             resetThreat();
-            if (prefs.getBoolean(PREF_AUTO_SEND, false)) {
+            if (autoSend()) {
                 sharing.sendToAll(m);
-                toast("Incident placed and sent to everyone.");
+                toast(NewIncident.PLACED_SENT);
             } else {
-                toast("Incident placed. Use SEND TO ALL to share it.");
+                toast(NewIncident.PLACED);
             }
             onShow();
             main.post(new Runnable() {
@@ -2249,11 +1534,7 @@ public final class BlastPane {
     }
 
     private void startPick(Mode kind) {
-        if (kind == Mode.IED && (selection == null || !selection.isUsable()))
-            return;
-        if (kind == Mode.UXO && !uxoReady())
-            return;
-        if (kind == Mode.NUC && !nucReady())
+        if (!newIncident.ready(kind))
             return;
         pickKind = kind;
         final MapEventDispatcher d = mapView.getMapEventDispatcher();
@@ -2271,15 +1552,9 @@ public final class BlastPane {
         d.addMapEventListener(MapEvent.ITEM_CLICK, pickListener);
         d.addMapEventListener(MapEvent.MAP_LONG_PRESS, pickListener);
         picking = true;
-        (kind == Mode.UXO ? uxoPickBtn : kind == Mode.NUC ? nucPickBtn
-                : pickBtn).setText("Cancel");
-        TextContainer.getInstance().displayPrompt(kind == Mode.UXO
-                ? "Tap the map where the item is (don't go closer). "
-                        + "Press Cancel to stop."
-                : kind == Mode.NUC
-                        ? "Tap the map at ground zero. Press Cancel to stop."
-                        : "Tap the map or a marker where the device is. "
-                                + "Press Cancel to stop.");
+        updateNew();
+        TextContainer.getInstance().displayPrompt(
+                NewIncident.pickPrompt(kind));
     }
 
     /**
@@ -2329,12 +1604,7 @@ public final class BlastPane {
         d.popListeners();
         TextContainer.getInstance().closePrompt();
         pickKind = Mode.NONE;
-        if (pickBtn != null)
-            pickBtn.setText("Tap map");
-        if (uxoPickBtn != null)
-            uxoPickBtn.setText("Tap map");
-        if (nucPickBtn != null)
-            nucPickBtn.setText("Tap map");
+        updateNew();
     }
 
     // ------------------------------------------------------------------
@@ -2496,63 +1766,127 @@ public final class BlastPane {
 
     /**
      * A rendered core screen: the views of its live slots, buttons (by
-     * action) and entry boxes, so they can be read and updated in place.
+     * action), entry boxes, checks and sections, so they can be read and
+     * updated in place.
      */
     private final class Rendered {
+        final ScreenAction actions;
         final java.util.Map<String, TextView> slots = new java.util.HashMap<>();
         final java.util.Map<String, Button> buttons = new java.util.HashMap<>();
         final java.util.Map<String, EditText> entries = new java.util.HashMap<>();
+        final java.util.Map<String, CheckBox> checks = new java.util.HashMap<>();
+        final java.util.Map<String, LinearLayout> sections = new java.util.HashMap<>();
+        /** True while the host sets a box or check (no change action). */
+        boolean quiet;
 
-        /** What is typed in the entry boxes. */
+        Rendered(ScreenAction actions) {
+            this.actions = actions;
+        }
+
+        /** What is typed in the entry boxes and ticked in the checks. */
         FormValues values() {
             FormValues v = new FormValues();
             for (java.util.Map.Entry<String, EditText> e : entries.entrySet())
                 v.put(e.getKey(), e.getValue().getText().toString());
+            for (java.util.Map.Entry<String, CheckBox> e : checks.entrySet())
+                v.put(e.getKey(), e.getValue().isChecked());
             return v;
-        }
-
-        void clearEntries() {
-            for (EditText e : entries.values())
-                e.setText("");
         }
 
         /**
          * Restyle in place from a newer model of the same screen: button
-         * labels and selection colours, and live slot text.
+         * labels, colours, enabled and shown states, box text the model
+         * sets, checks, sections, and live slot text.
          */
         void update(Screen fresh) {
-            for (Item it : fresh.items()) {
-                List<com.atakmap.android.blast.plugin.core.screen.Button> bs =
-                        it instanceof Buttons ? ((Buttons) it).buttons
-                                : it instanceof EntryRow
-                                        ? ((EntryRow) it).buttons : null;
-                if (bs != null) {
+            update(fresh.items());
+        }
+
+        private void update(List<Item> items) {
+            for (Item it : items) {
+                if (it instanceof Buttons) {
                     for (com.atakmap.android.blast.plugin.core.screen.Button b
-                            : bs) {
-                        Button v = buttons.get(b.action);
-                        if (v == null)
-                            continue;
-                        v.setText(b.label);
-                        tint(v, buttonColor(b.kind));
+                            : ((Buttons) it).buttons)
+                        restyle(b);
+                } else if (it instanceof EntryRow) {
+                    EntryRow er = (EntryRow) it;
+                    for (com.atakmap.android.blast.plugin.core.screen.Button b
+                            : er.buttons)
+                        restyle(b);
+                    EditText e = entries.get(er.id);
+                    if (e != null && er.value != null
+                            && !er.value.equals(e.getText().toString())) {
+                        quiet = true;
+                        try {
+                            e.setText(er.value);
+                        } finally {
+                            quiet = false;
+                        }
+                    }
+                } else if (it instanceof Check) {
+                    Check c = (Check) it;
+                    CheckBox cb = checks.get(c.id);
+                    if (cb != null && cb.isChecked() != c.checked) {
+                        quiet = true;
+                        try {
+                            cb.setChecked(c.checked);
+                        } finally {
+                            quiet = false;
+                        }
+                    }
+                } else if (it instanceof Section) {
+                    Section sec = (Section) it;
+                    LinearLayout l = sections.get(sec.id);
+                    if (l == null)
+                        continue;
+                    l.setVisibility(sec.visible ? View.VISIBLE : View.GONE);
+                    if (sec.live) {
+                        l.removeAllViews();
+                        renderItems(sec.items, l, this);
+                    } else {
+                        update(sec.items);
                     }
                 } else if (it instanceof Text && it.slot != null) {
                     apply(slots.get(it.slot), (Text) it);
                 }
             }
         }
+
+        private void restyle(
+                com.atakmap.android.blast.plugin.core.screen.Button b) {
+            Button v = buttons.get(b.action);
+            if (v == null)
+                return;
+            v.setText(b.label);
+            tint(v, buttonColor(b.kind));
+            enable(v, b);
+        }
+    }
+
+    /** Enabled (dimmed when not) and shown state of a core button. */
+    private static void enable(Button v,
+            com.atakmap.android.blast.plugin.core.screen.Button b) {
+        v.setEnabled(b.enabled);
+        v.setAlpha(b.enabled ? 1f : 0.4f);
+        v.setVisibility(b.visible ? View.VISIBLE : View.GONE);
     }
 
     /** A button for a core button, running its action. */
     private Button screenButton(
             final com.atakmap.android.blast.plugin.core.screen.Button b,
-            final ScreenAction actions, Rendered rd) {
+            final Rendered rd) {
         Button v = button(b.label, buttonColor(b.kind));
         if (b.bold)
             v.setTypeface(Typeface.DEFAULT_BOLD);
+        if (b.alignStart)
+            v.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+        if (b.icon != null)
+            setIcon(v, threatIcon(b.icon));
+        enable(v, b);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                actions.run(b.action);
+                rd.actions.run(b.action);
             }
         });
         rd.buttons.put(b.action, v);
@@ -2562,9 +1896,15 @@ public final class BlastPane {
     /** Add a core screen's items to {@code into}. */
     private Rendered render(Screen screen, LinearLayout into,
             final ScreenAction actions) {
-        Rendered rd = new Rendered();
+        Rendered rd = new Rendered(actions);
+        renderItems(screen.items(), into, rd);
+        return rd;
+    }
+
+    private void renderItems(List<Item> items, LinearLayout into,
+            final Rendered rd) {
         java.util.Map<String, TextView> slots = rd.slots;
-        for (Item it : screen.items()) {
+        for (Item it : items) {
             if (it instanceof Text) {
                 Text t = (Text) it;
                 TextView v = text(t.text, t.size, color(t.tone), t.bold);
@@ -2597,35 +1937,91 @@ public final class BlastPane {
                 into.addView(line);
             } else if (it instanceof KeyRow) {
                 into.addView(keyRow((KeyRow) it));
+            } else if (it instanceof Section) {
+                Section sec = (Section) it;
+                LinearLayout l = vertical();
+                l.setVisibility(sec.visible ? View.VISIBLE : View.GONE);
+                renderItems(sec.items, l, rd);
+                rd.sections.put(sec.id, l);
+                into.addView(l);
+            } else if (it instanceof Check) {
+                final Check c = (Check) it;
+                CheckBox cb = new CheckBox(plugin);
+                cb.setText(c.label);
+                cb.setTextColor(TEXT);
+                if (c.checked)
+                    cb.setChecked(true);
+                cb.setOnCheckedChangeListener(
+                        new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton b,
+                                    boolean on) {
+                                if (!rd.quiet)
+                                    rd.actions.run(c.id);
+                            }
+                        });
+                rd.checks.put(c.id, cb);
+                into.addView(cb);
             } else if (it instanceof EntryRow) {
-                EntryRow er = (EntryRow) it;
+                final EntryRow er = (EntryRow) it;
                 LinearLayout row = horizontal();
-                row.setGravity(Gravity.CENTER_VERTICAL);
+                if (er.centered)
+                    row.setGravity(Gravity.CENTER_VERTICAL);
                 EditText e = inlineNumber(er.hint, er.maxLength);
                 if (er.digitsOnly)
                     e.setInputType(InputType.TYPE_CLASS_NUMBER);
+                if (er.value != null && !er.value.isEmpty())
+                    e.setText(er.value);
+                if (er.changeAction != null)
+                    e.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int a,
+                                int b, int c) {
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int a,
+                                int b, int c) {
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            if (!rd.quiet)
+                                rd.actions.run(er.changeAction);
+                        }
+                    });
                 row.addView(e, new LinearLayout.LayoutParams(0,
                         ViewGroup.LayoutParams.WRAP_CONTENT, er.weight));
                 rd.entries.put(er.id, e);
                 for (com.atakmap.android.blast.plugin.core.screen.Button b
                         : er.buttons)
-                    row.addView(screenButton(b, actions, rd),
+                    row.addView(screenButton(b, rd),
                             new LinearLayout.LayoutParams(0,
                                     ViewGroup.LayoutParams.WRAP_CONTENT,
                                     b.weight));
                 into.addView(row);
             } else if (it instanceof Buttons) {
                 Buttons bs = (Buttons) it;
+                boolean spaced = bs.marginTopDp != 0 || bs.marginBottomDp != 0;
                 LinearLayout row = bs.buttons.size() == 1 ? null : horizontal();
-                for (final com.atakmap.android.blast.plugin.core.screen.Button b
+                for (com.atakmap.android.blast.plugin.core.screen.Button b
                         : bs.buttons) {
-                    Button v = screenButton(b, actions, rd);
+                    Button v = screenButton(b, rd);
                     if (row == null) {
                         // A lone button spans the card.
                         LinearLayout.LayoutParams lp = full();
-                        if (bs.marginTopDp != 0)
-                            lp.setMargins(0, dp(bs.marginTopDp), 0, 0);
+                        if (spaced)
+                            lp.setMargins(0, dp(bs.marginTopDp), 0,
+                                    dp(bs.marginBottomDp));
                         into.addView(v, lp);
+                    } else if (bs.tiles) {
+                        v.setLines(2);
+                        LinearLayout.LayoutParams lp =
+                                new LinearLayout.LayoutParams(0,
+                                        ViewGroup.LayoutParams.MATCH_PARENT,
+                                        b.weight);
+                        lp.setMargins(dp(1), dp(1), dp(1), dp(1));
+                        row.addView(v, lp);
                     } else {
                         row.addView(v, new LinearLayout.LayoutParams(0,
                                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -2633,9 +2029,10 @@ public final class BlastPane {
                     }
                 }
                 if (row != null) {
-                    if (bs.marginTopDp != 0) {
+                    if (spaced) {
                         LinearLayout.LayoutParams lp = full();
-                        lp.setMargins(0, dp(bs.marginTopDp), 0, 0);
+                        lp.setMargins(0, dp(bs.marginTopDp), 0,
+                                dp(bs.marginBottomDp));
                         into.addView(row, lp);
                     } else {
                         into.addView(row);
@@ -2643,7 +2040,6 @@ public final class BlastPane {
                 }
             }
         }
-        return rd;
     }
 
     private static int buttonColor(
@@ -2655,6 +2051,8 @@ public final class BlastPane {
                 return NUC_SEL;
             case SELECTED_UXO:
                 return UXO_SEL;
+            case SELECTED_STANDOFF:
+                return SEL;
             default:
                 return BTN;
         }

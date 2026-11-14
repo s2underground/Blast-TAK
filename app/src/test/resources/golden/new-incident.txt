@@ -1,0 +1,1022 @@
+=== start
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" NORMAL w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" NORMAL w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" NORMAL w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo hidden {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi false | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" NORMAL w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 disabled hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc hidden {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied hidden {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" NORMAL w=1
+    section qty_row hidden {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 DIM pad=4/4 slot=ied_sel | Choose the threat that best matches what you see.
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 disabled hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 disabled | ied_self "My position" NORMAL w=1 disabled | ied_center "Map center" NORMAL w=1 disabled
+    check auto_send false | Send new incidents to everyone right away
+  }
+
+=== tap mode_ied -> MODE_CHANGED mode=NONE
+now IED; ready IED/UXO/NUC false/false/false
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" SELECTED_STANDOFF w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" NORMAL w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" NORMAL w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo hidden {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi false | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" NORMAL w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 disabled hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc hidden {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" NORMAL w=1
+    section qty_row hidden {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 DIM pad=4/4 slot=ied_sel | Choose the threat that best matches what you see.
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 disabled hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 disabled | ied_self "My position" NORMAL w=1 disabled | ied_center "Map center" NORMAL w=1 disabled
+    check auto_send false | Send new incidents to everyone right away
+  }
+
+=== tap row_PIPE_BOMB -> NONE mode=NONE
+now IED; ready IED/UXO/NUC true/false/false
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" SELECTED_STANDOFF w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" NORMAL w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" NORMAL w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo hidden {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi false | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" NORMAL w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 disabled hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc hidden {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" SELECTED_STANDOFF w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" NORMAL w=1
+    section qty_row hidden {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 TEXT pad=4/4 slot=ied_sel | Pipe Bomb row (5 lb).\nMandatory evac 70 ft (21 m) · Shelter-in-place to 1,199 ft · Preferred 1,200 ft+ (366 m)
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 | ied_self "My position" NORMAL w=1 | ied_center "Map center" NORMAL w=1
+    check auto_send false | Send new incidents to everyone right away
+  }
+
+=== tap row_SEMI_TRAILER -> NONE mode=NONE
+now IED; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Semi-Trailer row (60,000 lb).\nMandatory evac 1,570 ft (475 m) · Shelter-in-place to 9,299 ft · Preferred 9,300 ft+ (2,835 m)
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap custom -> FOCUS mode=IED focus=qty
+now IED; ready IED/UXO/NUC false/false/false
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" SELECTED_STANDOFF w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" NORMAL w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" NORMAL w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo hidden {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi false | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" NORMAL w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 disabled hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc hidden {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" SELECTED_STANDOFF w=1
+    section qty_row {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 DIM pad=4/4 slot=ied_sel | Enter your estimate. The card row at or above it is used.
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 disabled hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 disabled | ied_self "My position" NORMAL w=1 disabled | ied_center "Map center" NORMAL w=1 disabled
+    check auto_send false | Send new incidents to everyone right away
+  }
+
+=== tap qty_changed [qty=800] -> NONE mode=NONE
+now IED; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Using the SUV/Van row (1,000 lb), the next row at or above your 800 lb estimate. The card is never scaled down.\nMandatory evac 400 ft (122 m) · Shelter-in-place to 2,399 ft · Preferred 2,400 ft+ (732 m)
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap unit_kg [qty=800] -> NONE mode=NONE
+now IED; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Using the Small Delivery Truck row (4,000 lb), the next row at or above your 800 kg (1,763.7 lb) estimate. The card is never scaled down.\nMandatory evac 640 ft (195 m) · Shelter-in-place to 3,799 ft · Preferred 3,800 ft+ (1,159 m)
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap qty_changed [qty=abc] -> NONE mode=NONE
+now IED; ready IED/UXO/NUC false/false/false
+  text 13 DIM pad=4/4 slot=ied_sel | Enter your estimate. The card row at or above it is used.
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap qty_changed [qty=1,000,000] -> NONE mode=NONE
+now IED; ready IED/UXO/NUC false/false/false
+  text 13 RED pad=4/4 slot=ied_sel | Your 1,000,000 kg (2,204,622.7 lb) estimate is above 60,000 lb, the largest row on the card (Semi-Trailer). The card publishes no distance for this quantity, so no zone is drawn. Get expert guidance; distances will be greater than the Semi-Trailer row (9,300 ft+).
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap qty_changed [qty=0] -> NONE mode=NONE
+now IED; ready IED/UXO/NUC false/false/false
+  text 13 RED pad=4/4 slot=ied_sel | Enter a quantity greater than zero.
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap unit_lb [qty=50] -> NONE mode=NONE
+now IED; ready IED/UXO/NUC true/false/false
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" SELECTED_STANDOFF w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" NORMAL w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" NORMAL w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo hidden {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi false | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" NORMAL w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 disabled hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc hidden {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" SELECTED_STANDOFF w=1
+    section qty_row {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [50] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 | ied_self "My position" NORMAL w=1 | ied_center "Map center" NORMAL w=1
+    check auto_send false | Send new incidents to everyone right away
+  }
+
+=== tap auto_send [auto_send=true] -> AUTO_SEND mode=NONE
+now IED; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap ied_pick -> PICK mode=IED
+now IED; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap ied_self -> PLACE_SELF mode=IED
+now IED; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap ied_center -> PLACE_CENTER mode=IED
+now IED; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap ied_target -> PLACE_TARGET mode=IED
+now IED; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap mode_uxo -> MODE_CHANGED mode=NONE
+now UXO; ready IED/UXO/NUC true/false/false
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" NORMAL w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" SELECTED_UXO w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" NORMAL w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi false | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" NORMAL w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 disabled hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc hidden {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied hidden {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" SELECTED_STANDOFF w=1
+    section qty_row {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [50] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 | ied_self "My position" NORMAL w=1 | ied_center "Map center" NORMAL w=1
+    check auto_send false | Send new incidents to everyone right away
+  }
+
+=== tap uxo_cat_UNKNOWN -> NONE mode=NONE
+now UXO; ready IED/UXO/NUC true/false/false
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" NORMAL w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" SELECTED_UXO w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" NORMAL w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" SELECTED_UXO w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1
+    check uxo_multi false | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" NORMAL w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 AMBER pad=4/4 slot=uxo_sel | Cordon 300 m (990 ft), minimum. Fragments may travel farther.\nNow choose where you are.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 disabled hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc hidden {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied hidden {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" SELECTED_STANDOFF w=1
+    section qty_row {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [50] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 | ied_self "My position" NORMAL w=1 | ied_center "Map center" NORMAL w=1
+    check auto_send false | Send new incidents to everyone right away
+  }
+
+=== tap uxo_large -> NONE mode=NONE
+now UXO; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 AMBER pad=4/4 slot=uxo_sel | Cordon 675 m (2,220 ft), minimum. Fragments may travel farther.\nNow choose where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap uxo_multi [uxo_multi=true] -> NONE mode=NONE
+now UXO; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 AMBER pad=4/4 slot=uxo_sel | Cordon 725 m (2,380 ft), minimum. Fragments may travel farther.\nNow choose where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap uxo_cat_MISSILE_ROCKET -> NONE mode=NONE
+now UXO; ready IED/UXO/NUC true/false/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 AMBER pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nNow choose where you are.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap uxo_where_AREA -> NONE mode=NONE
+now UXO; ready IED/UXO/NUC true/true/false
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" NORMAL w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" SELECTED_UXO w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" NORMAL w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" SELECTED_UXO w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi true | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" SELECTED_UXO w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 | uxo_rb "Range & bearing" NORMAL w=1 | uxo_center "Map center" NORMAL w=1
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc hidden {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied hidden {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" SELECTED_STANDOFF w=1
+    section qty_row {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [50] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 | ied_self "My position" NORMAL w=1 | ied_center "Map center" NORMAL w=1
+    check auto_send false | Send new incidents to everyone right away
+  }
+
+=== tap uxo_rb -> RANGE_BEARING mode=UXO
+now UXO; ready IED/UXO/NUC true/true/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap mode_nuc -> MODE_CHANGED mode=NONE
+now NUC; ready IED/UXO/NUC true/true/false
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" NORMAL w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" NORMAL w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" SELECTED w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo hidden {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" SELECTED_UXO w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi true | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" SELECTED_UXO w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 | uxo_rb "Range & bearing" NORMAL w=1 | uxo_center "Map center" NORMAL w=1
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied hidden {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" SELECTED_STANDOFF w=1
+    section qty_row {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [50] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 | ied_self "My position" NORMAL w=1 | ied_center "Map center" NORMAL w=1
+    check auto_send false | Send new incidents to everyone right away
+  }
+
+=== tap yield_changed [yield=abc] -> NONE mode=NONE
+now NUC; ready IED/UXO/NUC true/true/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+
+=== tap yield_changed [yield=0.05] -> NONE mode=NONE
+now NUC; ready IED/UXO/NUC true/true/false
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 RED pad=4/4 slot=nuc_sel | Enter 0.1 kt to 50 Mt.
+
+=== tap yield_changed [yield=20] -> NONE mode=NONE
+now NUC; ready IED/UXO/NUC true/true/true
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 TEXT pad=4/4 slot=nuc_sel | 20 kt, unknown (worst case of both). Will draw:
+
+=== tap nuc_mt [yield=20] -> NONE mode=NONE
+now NUC; ready IED/UXO/NUC true/true/true
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 TEXT pad=4/4 slot=nuc_sel | 20 Mt, unknown (worst case of both). Will draw:\nOutside Glasstone's 1 kt-10 Mt charts: burn and radiation rings are extrapolated.
+
+=== tap nuc_mt [yield=1.2] -> NONE mode=NONE
+now NUC; ready IED/UXO/NUC true/true/true
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 TEXT pad=4/4 slot=nuc_sel | 1.2 Mt, unknown (worst case of both). Will draw:
+
+=== tap nuc_kt [yield=1.2] -> NONE mode=NONE
+now NUC; ready IED/UXO/NUC true/true/true
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 TEXT pad=4/4 slot=nuc_sel | 1.2 kt, unknown (worst case of both). Will draw:
+
+=== tap nuc_burst_SURFACE [yield=1.2] -> NONE mode=NONE
+now NUC; ready IED/UXO/NUC true/true/true
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 TEXT pad=4/4 slot=nuc_sel | 1.2 kt, surface / ground level. Will draw:
+
+=== tap wind_from_6 [yield=1.2] -> NONE mode=NUC
+now NUC; ready IED/UXO/NUC true/true/true
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 TEXT pad=4/4 slot=nuc_sel | 1.2 kt, surface / ground level. Will draw:
+
+=== tap wind_set_speed [yield=1.2;wind_exact_speed=9999] -> NONE mode=NUC toast=Enter a speed of at least 1 mph (2 km/h).
+now NUC; ready IED/UXO/NUC true/true/true
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 TEXT pad=4/4 slot=nuc_sel | 1.2 kt, surface / ground level. Will draw:
+
+=== tap nuc_presets_FIELDED -> PRESETS mode=NUC group=FIELDED
+now NUC; ready IED/UXO/NUC true/true/true
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 TEXT pad=4/4 slot=nuc_sel | 1.2 kt, surface / ground level. Will draw:
+
+=== tap nuc_presets_YIELD -> PRESETS mode=NUC group=YIELD
+now NUC; ready IED/UXO/NUC true/true/true
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 TEXT pad=4/4 slot=nuc_sel | 1.2 kt, surface / ground level. Will draw:
+
+=== tap nuc_polar -> POLAR mode=NUC
+now NUC; ready IED/UXO/NUC true/true/true
+  text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+  text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+  text 13 TEXT pad=4/4 slot=nuc_sel | 1.2 kt, surface / ground level. Will draw:
+
+=== tap uxo_nothing -> not this screen's
+
+=== tap row_ -> not this screen's
+
+=== tap nuc_burst_X -> not this screen's
+
+=== nuclear, picking, opened on a marker
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" NORMAL w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" NORMAL w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" SELECTED w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo hidden {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" SELECTED_UXO w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi true | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" SELECTED_UXO w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 TEXT pad=4/4 slot=uxo_sel | Cordon 525 m (1,730 ft), minimum. Fragments may travel farther.\nIf you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "Place at Rally Point 2" PRIMARY w=1
+    buttons | uxo_pick "Tap map" NORMAL w=1 | uxo_rb "Range & bearing" NORMAL w=1 | uxo_center "Map center" NORMAL w=1
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [1.2] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" SELECTED w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" SELECTED w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [9999] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" NORMAL w=1
+    text 12 TEXT slot=wind_status | Wind FROM 270° (W) at 15 mph / 24 km/h: fallout drifts toward 90° (E). Surface wind is a rough guide: fallout follows the winds aloft.
+    text 13 TEXT pad=4/4 slot=nuc_sel | 1.2 kt, surface / ground level. Will draw:
+    section nuc_preview rebuilt {
+      key TALL bar=#FFFF5252 #FFFF5252 | Severe Damage Zone: 0.25 mi (0.40 km)
+      key TALL bar=#FFFF9100 #FFFF9100 | Moderate Damage Zone: 0.49 mi (0.79 km)
+      key TALL bar=#FFFFEA00 #FFFFEA00 | Light Damage Zone: 1.5 mi (2.4 km)
+      key TALL bar=#FF18FFFF #FF18FFFF | Burns (2nd degree): 0.41 mi (0.66 km)
+      key TALL bar=#FF8C9EFF #FF8C9EFF | Initial radiation 100 rad: 0.71 mi (1.1 km)
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "Place at Rally Point 2" PRIMARY w=1
+    buttons | nuc_pick "Cancel" NORMAL w=1 | nuc_center "Map center" NORMAL w=1 | nuc_polar "From what I saw" NORMAL w=1
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied hidden {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" SELECTED_STANDOFF w=1
+    section qty_row {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [50] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 TEXT pad=4/4 slot=ied_sel | Your 50 lb estimate matches the Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "Place at Rally Point 2" PRIMARY w=1
+    buttons | ied_pick "Tap map" NORMAL w=1 | ied_self "My position" NORMAL w=1 | ied_center "Map center" NORMAL w=1
+    check auto_send true | Send new incidents to everyone right away
+  }
+
+=== records
+<__blast v="1" src="CISA-BTSOC" ed="2025-08" row="BRIEFCASE" lbl="Briefcase/Suitcase" cap_lb="50" mand_ft="150" sip_ft="1849" pref_ft="1850" req="50" req_u="lb" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+<__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="MISSILE_ROCKET" lbl="Missiles and Rockets" cord_m="525" multi="1" where="AREA" plc="RB" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+<__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="1.2" burst="SURFACE" wfrom="270" wmph="15" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="397" mdz_m="794" ldz_m="2381" burn_m="660" rad_m="1149"/>
+
+=== preset FEMA_0.1
+  text 13 TEXT pad=4/4 slot=nuc_sel | Improvised device, 0.1 kT (0.1 kT): 0.1 kt, surface / ground level. Will draw:\nOutside Glasstone's 1 kt-10 Mt charts: burn and radiation rings are extrapolated.
+  entry yield decimal max=8 w=2 [Yield] = [0.1] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+  entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+  entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [9999] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+  entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [50] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+
+=== reset
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" NORMAL w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" NORMAL w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" NORMAL w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo hidden {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi false | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" NORMAL w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 disabled hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc hidden {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied hidden {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" NORMAL w=1
+    section qty_row hidden {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 DIM pad=4/4 slot=ied_sel | Choose the threat that best matches what you see.
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 disabled hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 disabled | ied_self "My position" NORMAL w=1 disabled | ied_center "Map center" NORMAL w=1 disabled
+    check auto_send false | Send new incidents to everyone right away
+  }
+notReady IED: Choose a threat first.
+prompt IED: Tap the map or a marker where the device is. Press Cancel to stop.
+notReady UXO: Choose what you see and where you are first.
+prompt UXO: Tap the map where the item is (don't go closer). Press Cancel to stop.
+notReady NUC: Enter a yield from 0.1 kt to 50 Mt first.
+prompt NUC: Tap the map at ground zero. Press Cancel to stop.
+
+=== preset lists
+Fielded weapons: choose a country
+  United States (11)
+  Russia (6)
+  China (2)
+  United Kingdom (1)
+  France (2)
+  India (2)
+  Pakistan (2)
+  North Korea (1)
+United States: public estimates, upper value of ranges
+Planning scenarios
+  Improvised device, 0.1 kT — 0.1 kT
+  Improvised device, 1 kT — 1 kT
+  Improvised device, 10 kT (FEMA's main scenario) — 10 kT
+Tests and historical weapons: published estimates
+  North Korea test, Oct 2006 — est. 0.7-2 kt (upper); possibly a partial failure
+  North Korea test, May 2009 — est. 2-5.4 kt (upper)
+  Hiroshima, 1945 (Little Boy) — about 15 kt (air burst)
+  North Korea test, Feb 2013 — est. 6-16 kt (upper)
+  Nagasaki, 1945 (Fat Man) — about 21 kt (air burst)
+  Trinity test, 1945 — 24.8 kt (2021 revision)
+  North Korea test, Sep 2016 — est. 15-25 kt (upper)
+  Pakistan largest test, 1998 — claimed 30-36 kt (upper); seismic estimates far lower
+  India thermonuclear test, 1998 — claimed 43-45 kt (upper); seismic estimates far lower
+  US B61-3/-4 bombs (Europe, replaced by B61-12) — 0.3-170 kt (upper)
+  North Korea test, Sep 2017 — est. 70-280 kt (upper; often quoted 250)
+  France TN 81 (retired) — 300 kt
+  Ivy King test, 1952 — 500 kt, largest unboosted fission test
+  China JL-2 SLBM (replaced by JL-3) — 700 kt
+  US W59 (Minuteman I, retired) — 1 Mt
+  Soviet R-12 / SS-4 (Cuban Missile Crisis) — 1-2.3 Mt (upper)
+  US Mk 39 bomb (Goldsboro, 1961) — 3.8 Mt
+  US W53 (Titan II, retired) — 9 Mt
+  Ivy Mike test, 1952 (first thermonuclear) — 10.4 Mt
+  Castle Bravo test, 1954 — about 15 Mt (surface)
+  Tsar Bomba test, 1961 (largest ever) — about 50 Mt (air burst)
+By yield
+  0.1 kt
+  0.3 kt
+  1 kt
+  5 kt
+  10 kt
+  20 kt
+  50 kt
+  100 kt
+  300 kt
+  500 kt
+  1 Mt
+  5 Mt
+  10 Mt
+  20 Mt
+  50 Mt

@@ -26,6 +26,11 @@ public final class FormValues {
         return v == null ? "" : v;
     }
 
+    /** True if the host reported a value (text or check) for id. */
+    public boolean has(String id) {
+        return text.containsKey(id) || checks.containsKey(id);
+    }
+
     public boolean checked(String id) {
         Boolean b = checks.get(id);
         return b != null && b;
