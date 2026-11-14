@@ -1,5 +1,7 @@
 package com.atakmap.android.blast.plugin.core;
 
+import com.atakmap.android.blast.plugin.core.overlay.Overlays;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -101,11 +103,11 @@ public final class Exports {
         sb.append("<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n<Document>\n");
         tag(sb, "name", in.name);
         tag(sb, "description", Labels.remarks(r));
-        style(sb, "mand", grey ? "ff9e9e9e" : "ff0000d5",
-                grey ? "149e9e9e" : "550000d5", 3, null);
-        style(sb, "pref", grey ? "ff9e9e9e" : "ff53c800",
-                grey ? "149e9e9e" : "3300abff", 4, null);
-        style(sb, "device", null, null, 0, grey ? "ff9e9e9e" : "ff0000ff");
+        style(sb, "mand", grey ? K_GREY : kmlColor(Overlays.RED),
+                grey ? K_GREY_FILL : kmlColor(Overlays.RED_FILL), 3, null);
+        style(sb, "pref", grey ? K_GREY : kmlColor(Overlays.GREEN),
+                grey ? K_GREY_FILL : kmlColor(Overlays.AMBER_FILL), 4, null);
+        style(sb, "device", null, null, 0, grey ? K_GREY : "ff0000ff");
         sb.append("<Folder>\n");
         tag(sb, "name", in.name);
         // Shelter-in-place band: preferred ring with the mandatory ring cut out.
@@ -176,9 +178,10 @@ public final class Exports {
         tag(sb, "name", nm);
         tag(sb, "description", UxoText.remarks(r));
         // KML colours are aabbggrr: dark orange E65100 -> ff0051e6.
-        style(sb, "cordon", grey ? "ff9e9e9e" : "ff0051e6",
-                grey ? "149e9e9e" : "400051e6", 4, null);
-        style(sb, "item", null, null, 0, grey ? "ff9e9e9e" : "ff0051e6");
+        style(sb, "cordon", grey ? K_GREY : kmlColor(Overlays.ORANGE),
+                grey ? K_GREY_FILL : kmlColor(Overlays.ORANGE_FILL), 4, null);
+        style(sb, "item", null, null, 0, grey ? K_GREY
+                : kmlColor(Overlays.ORANGE));
         sb.append("<Folder>\n");
         tag(sb, "name", nm);
         sb.append("<Placemark>\n");
@@ -243,11 +246,18 @@ public final class Exports {
         return h.length() < 2 ? "0" + h : h;
     }
 
-    /** Nuclear ring colours (ARGB, as drawn on the map). */
+    /** Nuclear ring colours (ARGB, as drawn on the map), in Ring order. */
     static final int[][] NUC_STYLE = {
-            { 0xFFB71C1C, 0x40B71C1C }, { 0xFFFF6D00, 0x30FF6D00 },
-            { 0xFFFFD600, 0x1AFFD600 }, { 0xFF00B8D4, 0x00000000 },
-            { 0xFF536DFE, 0x00000000 }, { 0xFFE0E0E0, 0x00000000 } };
+            { Overlays.NUC_SDZ, Overlays.NUC_SDZ_FILL },
+            { Overlays.NUC_MDZ, Overlays.NUC_MDZ_FILL },
+            { Overlays.NUC_LDZ, Overlays.NUC_LDZ_FILL },
+            { Overlays.NUC_BURN, Overlays.NO_FILL },
+            { Overlays.NUC_RAD, Overlays.NO_FILL },
+            { Overlays.NUC_GI, Overlays.NO_FILL } };
+
+    /** Cleared incidents (KML aabbggrr). */
+    private static final String K_GREY = kmlColor(Overlays.GREY),
+            K_GREY_FILL = kmlColor(Overlays.GREY_FILL);
 
     /** KML for a nuclear reference incident: rings, fallout and the point. */
     public static String kmlNuc(String name, double lat, double lon,
@@ -261,19 +271,20 @@ public final class Exports {
         tag(sb, "description", NucText.remarks(r));
         NucText.Ring[] rings = NucText.Ring.values();
         for (int i = 0; i < rings.length; i++)
-            style(sb, "ring" + i, grey ? "ff9e9e9e" : kmlColor(NUC_STYLE[i][0]),
-                    grey ? "149e9e9e" : kmlColor(NUC_STYLE[i][1]), 3, null);
+            style(sb, "ring" + i, grey ? K_GREY : kmlColor(NUC_STYLE[i][0]),
+                    grey ? K_GREY_FILL : kmlColor(NUC_STYLE[i][1]), 3, null);
         for (int i = 0; i < NucText.FALLOUT_STROKE.length; i++)
-            style(sb, "fo" + i, grey ? "ff9e9e9e"
-                    : kmlColor(NucText.FALLOUT_STROKE[i]), grey ? "149e9e9e"
+            style(sb, "fo" + i, grey ? K_GREY
+                    : kmlColor(NucText.FALLOUT_STROKE[i]), grey ? K_GREY_FILL
                             : kmlColor(NucText.FALLOUT_FILL[i]), 2, null);
-        style(sb, "z1", grey ? "ff9e9e9e" : kmlColor(NucText.ZONE_I_STROKE),
-                grey ? "149e9e9e" : kmlColor(NucText.ZONE_I_FILL), 3, null);
-        style(sb, "z2", grey ? "ff9e9e9e" : kmlColor(NucText.ZONE_II_STROKE),
-                grey ? "149e9e9e" : kmlColor(NucText.ZONE_II_FILL), 3, null);
-        style(sb, "toa", grey ? "ff9e9e9e" : kmlColor(NucText.ARC_STROKE),
+        style(sb, "z1", grey ? K_GREY : kmlColor(NucText.ZONE_I_STROKE),
+                grey ? K_GREY_FILL : kmlColor(NucText.ZONE_I_FILL), 3, null);
+        style(sb, "z2", grey ? K_GREY : kmlColor(NucText.ZONE_II_STROKE),
+                grey ? K_GREY_FILL : kmlColor(NucText.ZONE_II_FILL), 3, null);
+        style(sb, "toa", grey ? K_GREY : kmlColor(NucText.ARC_STROKE),
                 null, 2, null);
-        style(sb, "gz", null, null, 0, grey ? "ff9e9e9e" : "ff1c1cb7");
+        style(sb, "gz", null, null, 0, grey ? K_GREY
+                : kmlColor(Overlays.NUC_SDZ));
         sb.append("<Folder>\n");
         tag(sb, "name", nm);
         for (int i = rings.length - 1; i >= 0; i--) {

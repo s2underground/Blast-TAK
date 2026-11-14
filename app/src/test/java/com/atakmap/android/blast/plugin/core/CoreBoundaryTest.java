@@ -101,21 +101,33 @@ public class CoreBoundaryTest {
     @Test
     public void coreUsesPlainJavaOnly() throws Exception {
         File dir = coreDir();
-        File[] files = dir.listFiles();
-        assertTrue(files != null && files.length > 10);
+        List<File> files = new ArrayList<>();
+        collect(dir, files);
         List<String> bad = new ArrayList<>();
         int checked = 0;
         for (File f : files) {
-            if (!f.getName().endsWith(".java"))
-                continue;
             checked++;
-            bad.addAll(violations(f.getName(), new String(Files.readAllBytes(
+            String name = dir.toPath().relativize(f.toPath()).toString();
+            bad.addAll(violations(name, new String(Files.readAllBytes(
                     f.toPath()), StandardCharsets.UTF_8)));
         }
         assertTrue("no core sources checked", checked > 10);
         if (!bad.isEmpty())
             fail("core must stay platform-free:\n  " + String.join("\n  ",
                     bad));
+    }
+
+    /** All .java files under dir, subpackages included. */
+    static void collect(File dir, List<File> out) {
+        File[] fs = dir.listFiles();
+        if (fs == null)
+            return;
+        for (File f : fs) {
+            if (f.isDirectory())
+                collect(f, out);
+            else if (f.getName().endsWith(".java"))
+                out.add(f);
+        }
     }
 
     /** The checker itself catches what it should and nothing else. */

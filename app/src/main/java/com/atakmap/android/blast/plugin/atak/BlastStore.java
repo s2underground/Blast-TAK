@@ -5,17 +5,17 @@ import android.os.Looper;
 
 import com.atakmap.android.blast.plugin.core.BlastCodec;
 import com.atakmap.android.blast.plugin.core.BlastRecord;
-import com.atakmap.android.blast.plugin.core.StandoffRow;
 import com.atakmap.android.blast.plugin.core.Labels;
 import com.atakmap.android.blast.plugin.core.Names;
 import com.atakmap.android.blast.plugin.core.NucCodec;
-import com.atakmap.android.blast.plugin.core.NucGeo;
-import com.atakmap.android.blast.plugin.core.NucModel;
 import com.atakmap.android.blast.plugin.core.NucRecord;
 import com.atakmap.android.blast.plugin.core.NucText;
 import com.atakmap.android.blast.plugin.core.UxoCodec;
 import com.atakmap.android.blast.plugin.core.UxoRecord;
 import com.atakmap.android.blast.plugin.core.UxoText;
+import com.atakmap.android.blast.plugin.core.overlay.OverlayShape;
+import com.atakmap.android.blast.plugin.core.overlay.Overlays;
+import com.atakmap.android.blast.plugin.core.overlay.Style;
 import com.atakmap.android.drawing.DrawingToolsMapComponent;
 import com.atakmap.android.drawing.mapItems.DrawingCircle;
 import com.atakmap.android.drawing.mapItems.DrawingShape;
@@ -75,44 +75,12 @@ public final class BlastStore {
 
     /** Hostile ground (red diamond). 0.1 used a-u-G; those markers keep it. */
     public static final String MARKER_TYPE = "a-h-G";
-    public static final String MAND_SUFFIX = ".mand";
-    public static final String PREF_SUFFIX = ".pref";
-    public static final String CORDON_SUFFIX = ".cordon";
-    private static final String[] SUFFIXES = buildSuffixes();
-
-    private static String[] buildSuffixes() {
-        List<String> l = new ArrayList<>();
-        l.add(PREF_SUFFIX);
-        l.add(MAND_SUFFIX);
-        l.add(CORDON_SUFFIX);
-        for (NucText.Ring r : NucText.Ring.values())
-            l.add(r.suffix);
-        for (int rate : NucModel.FALLOUT_RATES)
-            l.add(NucText.falloutSuffix(rate));
-        l.add(NucText.zoneSuffix(1));
-        l.add(NucText.zoneSuffix(2));
-        for (int h = 1; h <= NucText.MAX_ARCS; h++)
-            l.add(NucText.arcSuffix(h));
-        return l.toArray(new String[0]);
-    }
-
-    static final int RED = 0xFFD50000;
-    static final int RED_FILL = 0x55D50000;
-    static final int GREEN = 0xFF00C853;
-    static final int AMBER_FILL = 0x33FFAB00;
-    static final int GREY = 0xFF9E9E9E;
-    static final int GREY_FILL = 0x149E9E9E;
-    /** UXO cordon: dark orange, distinct from the IED card's colours. */
-    static final int ORANGE = 0xFFE65100;
-    static final int ORANGE_FILL = 0x40E65100;
-    /** Nuclear rings: FEMA's red / orange / yellow zones. */
-    static final int NUC_SDZ = 0xFFB71C1C, NUC_SDZ_FILL = 0x40B71C1C;
-    static final int NUC_MDZ = 0xFFFF6D00, NUC_MDZ_FILL = 0x30FF6D00;
-    static final int NUC_LDZ = 0xFFFFD600, NUC_LDZ_FILL = 0x1AFFD600;
-    static final int NUC_BURN = 0xFF00B8D4;
-    static final int NUC_RAD = 0xFF536DFE;
-    static final int NUC_GI = 0xFFE0E0E0;
-    static final int NO_FILL = 0x00000000;
+    public static final String MAND_SUFFIX = Overlays.MAND;
+    public static final String PREF_SUFFIX = Overlays.PREF;
+    public static final String CORDON_SUFFIX = Overlays.CORDON;
+    /** Every part any incident can have (rings, cordon, nuclear parts). */
+    private static final String[] SUFFIXES = Overlays.ALL_IDS
+            .toArray(new String[0]);
 
 
     private final MapView mapView;
@@ -598,46 +566,8 @@ public final class BlastStore {
             return;
         watch(m);
         followMoves(m);
-        boolean grey = r.isCleared();
-        for (NucText.Ring ring : NucText.Ring.values()) {
-            int stroke, fill;
-            int line = Shape.BASIC_LINE_STYLE_SOLID;
-            double weight = 3d;
-            switch (ring) {
-                case SDZ:
-                    stroke = NUC_SDZ;
-                    fill = NUC_SDZ_FILL;
-                    break;
-                case MDZ:
-                    stroke = NUC_MDZ;
-                    fill = NUC_MDZ_FILL;
-                    break;
-                case LDZ:
-                    stroke = NUC_LDZ;
-                    fill = NUC_LDZ_FILL;
-                    break;
-                case BURN:
-                    stroke = NUC_BURN;
-                    fill = NO_FILL;
-                    line = Shape.BASIC_LINE_STYLE_DASHED;
-                    break;
-                case RAD:
-                    stroke = NUC_RAD;
-                    fill = NO_FILL;
-                    break;
-                default:
-                    stroke = NUC_GI;
-                    fill = NO_FILL;
-                    line = Shape.BASIC_LINE_STYLE_DOTTED;
-                    weight = 2d;
-            }
-            if (grey) {
-                stroke = GREY;
-                fill = fill == NO_FILL ? NO_FILL : GREY_FILL;
-            }
-            circle(m, ring.suffix, ring.radiusM(r),
-                    NucText.ringTitle(r, ring), stroke, fill, line, weight);
-        }
+        for (OverlayShape s : Overlays.nucRings(r))
+            circle(m, s);
         ensureFallout(m, r);
     }
 
@@ -645,45 +575,29 @@ public final class BlastStore {
     void ensureFallout(Marker m, NucRecord r) {
         GeoPoint gz = m.getPoint();
         boolean ok = gz != null && gz.isValid();
-        double lat = ok ? gz.getLatitude() : 0, lon = ok ? gz.getLongitude() : 0;
-        boolean grey = r.isCleared();
-        int[] rates = NucModel.FALLOUT_RATES;
-        for (int i = 0; i < rates.length; i++)
-            shape(m, NucText.falloutSuffix(rates[i]),
-                    ok ? NucGeo.fallout(r, rates[i], lat, lon) : null, true,
-                    NucText.falloutTitle(r, rates[i]),
-                    grey ? GREY : NucText.FALLOUT_STROKE[i],
-                    grey ? GREY_FILL : NucText.FALLOUT_FILL[i],
-                    Shape.BASIC_LINE_STYLE_SOLID, 2d);
-        for (int z = 1; z <= 2; z++)
-            shape(m, NucText.zoneSuffix(z),
-                    ok ? NucGeo.zone(r, z, lat, lon) : null, true,
-                    com.atakmap.android.blast.plugin.core.NucReports
-                            .zoneTitle(r, z),
-                    grey ? GREY : z == 1 ? NucText.ZONE_I_STROKE
-                            : NucText.ZONE_II_STROKE,
-                    grey ? GREY_FILL : z == 1 ? NucText.ZONE_I_FILL
-                            : NucText.ZONE_II_FILL,
-                    Shape.BASIC_LINE_STYLE_SOLID, 3d);
-        for (int h = 1; h <= NucText.MAX_ARCS; h++)
-            shape(m, NucText.arcSuffix(h),
-                    ok ? NucGeo.arrivalArc(r, h, lat, lon) : null, false,
-                    com.atakmap.android.blast.plugin.core.NucReports
-                            .arcTitle(r, h),
-                    grey ? GREY : NucText.ARC_STROKE, NO_FILL,
-                    Shape.BASIC_LINE_STYLE_DASHED, 2d);
-    }
-
-    /** Create, update or (points == null) remove one outline shape. */
-    private void shape(Marker m, String suffix, double[][] ll, boolean closed,
-            String title, int stroke, int fill, int lineStyle, double weight) {
-        String uid = m.getUID() + suffix;
-        MapItem existing = liveItem(uid);
-        if (ll == null || ll.length < 2) {
+        List<OverlayShape> parts = ok ? Overlays.nucOutlines(r,
+                gz.getLatitude(), gz.getLongitude())
+                : new ArrayList<OverlayShape>();
+        java.util.Set<String> drawn = new java.util.HashSet<>();
+        for (OverlayShape s : parts) {
+            shape(m, s);
+            drawn.add(s.id);
+        }
+        // Parts that no longer apply (wind removed, picture switched, air
+        // burst, or no valid ground zero) are removed.
+        for (String id : Overlays.NUC_OUTLINE_IDS) {
+            if (drawn.contains(id))
+                continue;
+            MapItem existing = liveItem(m.getUID() + id);
             if (existing != null)
                 removePart(existing);
-            return;
         }
+    }
+
+    /** Create or update one outline shape from the core overlay model. */
+    private void shape(Marker m, OverlayShape s) {
+        String uid = m.getUID() + s.id;
+        MapItem existing = liveItem(uid);
         DrawingShape sh;
         boolean added = false;
         if (existing instanceof DrawingShape) {
@@ -697,19 +611,16 @@ public final class BlastStore {
             intendedRemovals.remove(uid);
             added = true;
         }
-        GeoPointMetaData[] pts = new GeoPointMetaData[ll.length];
-        for (int k = 0; k < ll.length; k++)
-            pts[k] = GeoPointMetaData.wrap(new GeoPoint(ll[k][0], ll[k][1]));
+        GeoPointMetaData[] pts = new GeoPointMetaData[s.pointCount()];
+        for (int k = 0; k < pts.length; k++)
+            pts[k] = GeoPointMetaData.wrap(new GeoPoint(s.lat(k), s.lon(k)));
         sh.setPoints(pts);
-        sh.setClosed(closed);
+        sh.setClosed(s.isClosed());
         sh.setMetaString(META_PARENT, m.getUID());
         sh.setMetaBoolean("editable", false);
         sh.setMovable(false);
-        sh.setTitle(title);
-        sh.setStrokeColor(stroke);
-        sh.setFillColor(fill);
-        sh.setStrokeWeight(weight);
-        sh.setBasicLineStyle(lineStyle);
+        sh.setTitle(s.title);
+        style(sh, s.style);
         if (added) {
             MapGroup g = DrawingToolsMapComponent.getGroup();
             if (g == null)
@@ -765,10 +676,30 @@ public final class BlastStore {
                 }
             };
 
-    /** One anchored, read-only circle. */
-    private void circle(Marker m, String suffix, double radiusM, String title,
-            int stroke, int fill, int lineStyle, double weight) {
-        String uid = m.getUID() + suffix;
+    /** Stroke, fill, weight and (unless DEFAULT) line style. */
+    private static void style(Shape sh, Style st) {
+        sh.setStrokeColor(st.strokeArgb);
+        sh.setFillColor(st.fillArgb);
+        sh.setStrokeWeight(st.width);
+        switch (st.line) {
+            case SOLID:
+                sh.setBasicLineStyle(Shape.BASIC_LINE_STYLE_SOLID);
+                break;
+            case DASHED:
+                sh.setBasicLineStyle(Shape.BASIC_LINE_STYLE_DASHED);
+                break;
+            case DOTTED:
+                sh.setBasicLineStyle(Shape.BASIC_LINE_STYLE_DOTTED);
+                break;
+            default:
+                // DEFAULT: leave the host's line style alone (1.1 behaviour).
+        }
+    }
+
+    /** One anchored, read-only circle from the core overlay model. */
+    private void circle(Marker m, OverlayShape s) {
+        String uid = m.getUID() + s.id;
+        double radiusM = s.radiusM;
         MapItem existing = liveItem(uid);
         DrawingCircle c;
         boolean added = false;
@@ -788,11 +719,8 @@ public final class BlastStore {
         c.setMovable(false);
         if (Math.abs(c.getRadius() - radiusM) > 0.01)
             c.setRadius(radiusM);
-        c.setTitle(title);
-        c.setStrokeColor(stroke);
-        c.setFillColor(fill);
-        c.setStrokeWeight(weight);
-        c.setBasicLineStyle(lineStyle);
+        c.setTitle(s.title);
+        style(c, s.style);
         if (c.getCenterMarker() != m)
             c.setCenterMarker(m);
         if (added) {
@@ -933,62 +861,8 @@ public final class BlastStore {
         if (r == null)
             return;
         watch(m);
-        ring(m, r, true);
-        ring(m, r, false);
-    }
-
-    private void ring(Marker m, BlastRecord r, boolean mandatory) {
-        String uid = m.getUID() + (mandatory ? MAND_SUFFIX : PREF_SUFFIX);
-        // A removed ring can linger in ATAK's UID index; only reuse it if it
-        // is still on the map, otherwise draw a fresh one.
-        MapItem existing = liveItem(uid);
-        DrawingCircle c;
-        boolean added = false;
-        if (existing instanceof DrawingCircle) {
-            c = (DrawingCircle) existing;
-        } else if (existing != null) {
-            Log.w(TAG, "uid " + uid + " is not a circle; not drawing ring");
-            return;
-        } else {
-            c = new DrawingCircle(mapView, uid);
-            ATAKUtilities.setAuthorInformation(c);
-            c.setCenterMarker(m);
-            added = true;
-        }
-        StandoffRow row = r.row();
-        double radiusM = mandatory ? row.mandatoryRadiusM()
-                : row.preferredRadiusM();
-        c.setMetaString(META_PARENT, m.getUID());
-        c.setMetaBoolean("editable", false);
-        c.setMovable(false);
-        if (Math.abs(c.getRadius() - radiusM) > 0.01)
-            c.setRadius(radiusM);
-        c.setTitle(mandatory ? Labels.mandatoryRing(r)
-                : Labels.preferredRing(r));
-        if (r.isCleared()) {
-            c.setStrokeColor(GREY);
-            c.setFillColor(GREY_FILL);
-        } else if (mandatory) {
-            c.setStrokeColor(RED);
-            c.setFillColor(RED_FILL);
-        } else {
-            c.setStrokeColor(GREEN);
-            c.setFillColor(AMBER_FILL);
-        }
-        c.setStrokeWeight(mandatory ? 3d : 4d);
-        if (c.getCenterMarker() != m)
-            c.setCenterMarker(m);
-        if (added) {
-            MapGroup g = DrawingToolsMapComponent.getGroup();
-            if (g == null)
-                g = mapView.getRootGroup();
-            g.addItem(c);
-            // Re-anchor after the group add (which may reset the centre).
-            if (c.getCenterMarker() != m)
-                c.setCenterMarker(m);
-        }
-        c.persist(mapView.getMapEventDispatcher(), null, BlastStore.class);
-        watch(c);
+        for (OverlayShape s : Overlays.standoff(r))
+            circle(m, s);
     }
 
     /** Create or restyle a UXO incident's cordon circle. */
@@ -996,42 +870,8 @@ public final class BlastStore {
         if (!isLive(m) || r == null)
             return;
         watch(m);
-        String uid = m.getUID() + CORDON_SUFFIX;
-        MapItem existing = liveItem(uid);
-        DrawingCircle c;
-        boolean added = false;
-        if (existing instanceof DrawingCircle) {
-            c = (DrawingCircle) existing;
-        } else if (existing != null) {
-            Log.w(TAG, "uid " + uid + " is not a circle; not drawing cordon");
-            return;
-        } else {
-            c = new DrawingCircle(mapView, uid);
-            ATAKUtilities.setAuthorInformation(c);
-            c.setCenterMarker(m);
-            added = true;
-        }
-        c.setMetaString(META_PARENT, m.getUID());
-        c.setMetaBoolean("editable", false);
-        c.setMovable(false);
-        if (Math.abs(c.getRadius() - r.cordonM) > 0.01)
-            c.setRadius(r.cordonM);
-        c.setTitle(UxoText.ringTitle(r));
-        c.setStrokeColor(r.isCleared() ? GREY : ORANGE);
-        c.setFillColor(r.isCleared() ? GREY_FILL : ORANGE_FILL);
-        c.setStrokeWeight(4d);
-        if (c.getCenterMarker() != m)
-            c.setCenterMarker(m);
-        if (added) {
-            MapGroup g = DrawingToolsMapComponent.getGroup();
-            if (g == null)
-                g = mapView.getRootGroup();
-            g.addItem(c);
-            if (c.getCenterMarker() != m)
-                c.setCenterMarker(m);
-        }
-        c.persist(mapView.getMapEventDispatcher(), null, BlastStore.class);
-        watch(c);
+        for (OverlayShape s : Overlays.uxo(r))
+            circle(m, s);
     }
 
     /** The marker and its rings, marker first (send order). */
