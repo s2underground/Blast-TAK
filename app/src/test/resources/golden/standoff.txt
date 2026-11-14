@@ -1,0 +1,516 @@
+ZoneCalculator.parseQuantity: [37]=37 [1,000]=1000 [2.5]=2.5 []=NaN [abc]=NaN [1e3]=1000 [-5]=-5 [60001]=60001
+
+=== BLAST 1 Pipe Bomb
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="PIPE_BOMB" lbl="Pipe Bomb" cap_lb="5" mand_ft="70" sip_ft="1199" pref_ft="1200" n="1" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+threat: Pipe Bomb (5 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Pipe Bomb row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–70 ft, 0–21 m]
+zoneRow: [Shelter-in-place zone, 71–1,199 ft, 22–365 m]
+zoneRow: [Preferred evacuation, 1,200 ft+, 366+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Pipe Bomb row. Placed by ALPHA-1 011452Z NOV 26.
+remarks:
+[BLAST] Pipe Bomb (5 lb): MANDATORY EVAC within 70 ft (21 m); SHELTER-IN-PLACE 71-1,199 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 1,200 ft+ (366 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Pipe Bomb row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 1 Pipe Bomb
+  .mand circle radius_m=21.336 stroke=FFD50000 fill=55D50000 line=default weight=3
+    title=MANDATORY EVAC 70 ft (21 m)
+  .pref circle radius_m=366 stroke=FF00C853 fill=33FFAB00 line=default weight=4
+    title=PREFERRED EVAC 1,200 ft+ (366 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=366 near=false
+check 20 m: MANDATORY toPref=346 near=false
+check 21.5 m: SHELTER toPref=344.5 near=true
+check 150 m: SHELTER toPref=216 near=false
+check 366 m: PREFERRED toPref=0 near=true
+check 400 m: PREFERRED toPref=0 near=false
+check 1000 m: PREFERRED toPref=0 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [2, 2, 4]
+
+=== BLAST 2 Suicide Bomber
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="SUICIDE_BOMBER" lbl="Suicide Bomber" cap_lb="20" mand_ft="110" sip_ft="1699" pref_ft="1700" n="2" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+threat: Suicide Bomber (20 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Suicide Bomber row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–110 ft, 0–34 m]
+zoneRow: [Shelter-in-place zone, 111–1,699 ft, 35–518 m]
+zoneRow: [Preferred evacuation, 1,700 ft+, 519+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Suicide Bomber row. Placed by ALPHA-1 011452Z NOV 26.
+remarks:
+[BLAST] Suicide Bomber (20 lb): MANDATORY EVAC within 110 ft (34 m); SHELTER-IN-PLACE 111-1,699 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 1,700 ft+ (519 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Suicide Bomber row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 2 Suicide Bomber
+  .mand circle radius_m=34 stroke=FFD50000 fill=55D50000 line=default weight=3
+    title=MANDATORY EVAC 110 ft (34 m)
+  .pref circle radius_m=519 stroke=FF00C853 fill=33FFAB00 line=default weight=4
+    title=PREFERRED EVAC 1,700 ft+ (519 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=519 near=false
+check 20 m: MANDATORY toPref=499 near=false
+check 21.5 m: MANDATORY toPref=497.5 near=false
+check 150 m: SHELTER toPref=369 near=false
+check 366 m: SHELTER toPref=153 near=false
+check 400 m: SHELTER toPref=119 near=false
+check 1000 m: PREFERRED toPref=0 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [3, 3, 2]
+
+=== BLAST 3 Briefcase/Suitcase
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="BRIEFCASE" lbl="Briefcase/Suitcase" cap_lb="50" mand_ft="150" sip_ft="1849" pref_ft="1850" n="3" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+threat: Briefcase/Suitcase (50 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Briefcase/Suitcase row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–150 ft, 0–46 m]
+zoneRow: [Shelter-in-place zone, 151–1,849 ft, 47–563 m]
+zoneRow: [Preferred evacuation, 1,850 ft+, 564+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Briefcase/Suitcase row. Placed by ALPHA-1 011452Z NOV 26.
+remarks:
+[BLAST] Briefcase/Suitcase (50 lb): MANDATORY EVAC within 150 ft (46 m); SHELTER-IN-PLACE 151-1,849 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 1,850 ft+ (564 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Briefcase/Suitcase row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 3 Briefcase/Suitcase
+  .mand circle radius_m=46 stroke=FFD50000 fill=55D50000 line=default weight=3
+    title=MANDATORY EVAC 150 ft (46 m)
+  .pref circle radius_m=564 stroke=FF00C853 fill=33FFAB00 line=default weight=4
+    title=PREFERRED EVAC 1,850 ft+ (564 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=564 near=false
+check 20 m: MANDATORY toPref=544 near=false
+check 21.5 m: MANDATORY toPref=542.5 near=false
+check 150 m: SHELTER toPref=414 near=false
+check 366 m: SHELTER toPref=198 near=false
+check 400 m: SHELTER toPref=164 near=false
+check 1000 m: PREFERRED toPref=0 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [3, 3, 2]
+
+=== BLAST 4 Car
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="CAR" lbl="Car" cap_lb="500" mand_ft="320" sip_ft="1899" pref_ft="1900" n="4" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+threat: Car (500 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–320 ft, 0–98 m]
+zoneRow: [Shelter-in-place zone, 321–1,899 ft, 99–579 m]
+zoneRow: [Preferred evacuation, 1,900 ft+, 580+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Placed by ALPHA-1 011452Z NOV 26.
+remarks:
+[BLAST] Car (500 lb): MANDATORY EVAC within 320 ft (98 m); SHELTER-IN-PLACE 321-1,899 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 1,900 ft+ (580 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 4 Car
+  .mand circle radius_m=98 stroke=FFD50000 fill=55D50000 line=default weight=3
+    title=MANDATORY EVAC 320 ft (98 m)
+  .pref circle radius_m=580 stroke=FF00C853 fill=33FFAB00 line=default weight=4
+    title=PREFERRED EVAC 1,900 ft+ (580 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=580 near=false
+check 20 m: MANDATORY toPref=560 near=false
+check 21.5 m: MANDATORY toPref=558.5 near=false
+check 150 m: SHELTER toPref=430 near=false
+check 366 m: SHELTER toPref=214 near=false
+check 400 m: SHELTER toPref=180 near=false
+check 1000 m: PREFERRED toPref=0 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [3, 3, 2]
+
+=== BLAST 5 SUV/Van
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="SUV_VAN" lbl="SUV/Van" cap_lb="1000" mand_ft="400" sip_ft="2399" pref_ft="2400" n="5" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+threat: SUV/Van (1,000 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, SUV/Van row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–400 ft, 0–122 m]
+zoneRow: [Shelter-in-place zone, 401–2,399 ft, 123–731 m]
+zoneRow: [Preferred evacuation, 2,400 ft+, 732+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, SUV/Van row. Placed by ALPHA-1 011452Z NOV 26.
+remarks:
+[BLAST] SUV/Van (1,000 lb): MANDATORY EVAC within 400 ft (122 m); SHELTER-IN-PLACE 401-2,399 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 2,400 ft+ (732 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, SUV/Van row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 5 SUV/Van
+  .mand circle radius_m=122 stroke=FFD50000 fill=55D50000 line=default weight=3
+    title=MANDATORY EVAC 400 ft (122 m)
+  .pref circle radius_m=732 stroke=FF00C853 fill=33FFAB00 line=default weight=4
+    title=PREFERRED EVAC 2,400 ft+ (732 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=732 near=false
+check 20 m: MANDATORY toPref=712 near=false
+check 21.5 m: MANDATORY toPref=710.5 near=false
+check 150 m: SHELTER toPref=582 near=false
+check 366 m: SHELTER toPref=366 near=false
+check 400 m: SHELTER toPref=332 near=false
+check 1000 m: PREFERRED toPref=0 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [3, 3, 2]
+
+=== BLAST 6 Small Delivery Truck
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="SMALL_TRUCK" lbl="Small Delivery Truck" cap_lb="4000" mand_ft="640" sip_ft="3799" pref_ft="3800" n="6" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+threat: Small Delivery Truck (4,000 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Small Delivery Truck row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–640 ft, 0–195 m]
+zoneRow: [Shelter-in-place zone, 641–3,799 ft, 196–1,158 m]
+zoneRow: [Preferred evacuation, 3,800 ft+, 1,159+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Small Delivery Truck row. Placed by ALPHA-1 011452Z NOV 26.
+remarks:
+[BLAST] Small Delivery Truck (4,000 lb): MANDATORY EVAC within 640 ft (195 m); SHELTER-IN-PLACE 641-3,799 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 3,800 ft+ (1,159 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Small Delivery Truck row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 6 Small Delivery Truck
+  .mand circle radius_m=195.072 stroke=FFD50000 fill=55D50000 line=default weight=3
+    title=MANDATORY EVAC 640 ft (195 m)
+  .pref circle radius_m=1159 stroke=FF00C853 fill=33FFAB00 line=default weight=4
+    title=PREFERRED EVAC 3,800 ft+ (1,159 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=1159 near=false
+check 20 m: MANDATORY toPref=1139 near=false
+check 21.5 m: MANDATORY toPref=1137.5 near=false
+check 150 m: MANDATORY toPref=1009 near=false
+check 366 m: SHELTER toPref=793 near=false
+check 400 m: SHELTER toPref=759 near=false
+check 1000 m: SHELTER toPref=159 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [4, 3, 1]
+
+=== BLAST 7 Container/Water Truck
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="CONTAINER_TRUCK" lbl="Container/Water Truck" cap_lb="10000" mand_ft="860" sip_ft="5099" pref_ft="5100" n="7" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+threat: Container/Water Truck (10,000 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Container/Water Truck row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–860 ft, 0–263 m]
+zoneRow: [Shelter-in-place zone, 861–5,099 ft, 264–1,554 m]
+zoneRow: [Preferred evacuation, 5,100 ft+, 1,555+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Container/Water Truck row. Placed by ALPHA-1 011452Z NOV 26.
+remarks:
+[BLAST] Container/Water Truck (10,000 lb): MANDATORY EVAC within 860 ft (263 m); SHELTER-IN-PLACE 861-5,099 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 5,100 ft+ (1,555 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Container/Water Truck row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 7 Container/Water Truck
+  .mand circle radius_m=263 stroke=FFD50000 fill=55D50000 line=default weight=3
+    title=MANDATORY EVAC 860 ft (263 m)
+  .pref circle radius_m=1555 stroke=FF00C853 fill=33FFAB00 line=default weight=4
+    title=PREFERRED EVAC 5,100 ft+ (1,555 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=1555 near=false
+check 20 m: MANDATORY toPref=1535 near=false
+check 21.5 m: MANDATORY toPref=1533.5 near=false
+check 150 m: MANDATORY toPref=1405 near=false
+check 366 m: SHELTER toPref=1189 near=false
+check 400 m: SHELTER toPref=1155 near=false
+check 1000 m: SHELTER toPref=555 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [4, 3, 1]
+
+=== BLAST 8 Semi-Trailer
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="SEMI_TRAILER" lbl="Semi-Trailer" cap_lb="60000" mand_ft="1570" sip_ft="9299" pref_ft="9300" n="8" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+threat: Semi-Trailer (60,000 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Semi-Trailer row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–1,570 ft, 0–475 m]
+zoneRow: [Shelter-in-place zone, 1,571–9,299 ft, 476–2,834 m]
+zoneRow: [Preferred evacuation, 9,300 ft+, 2,835+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Semi-Trailer row. Placed by ALPHA-1 011452Z NOV 26.
+remarks:
+[BLAST] Semi-Trailer (60,000 lb): MANDATORY EVAC within 1,570 ft (475 m); SHELTER-IN-PLACE 1,571-9,299 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 9,300 ft+ (2,835 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Semi-Trailer row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 8 Semi-Trailer
+  .mand circle radius_m=478.536 stroke=FFD50000 fill=55D50000 line=default weight=3
+    title=MANDATORY EVAC 1,570 ft (475 m)
+  .pref circle radius_m=2835 stroke=FF00C853 fill=33FFAB00 line=default weight=4
+    title=PREFERRED EVAC 9,300 ft+ (2,835 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=2835 near=false
+check 20 m: MANDATORY toPref=2815 near=false
+check 21.5 m: MANDATORY toPref=2813.5 near=false
+check 150 m: MANDATORY toPref=2685 near=false
+check 366 m: MANDATORY toPref=2469 near=false
+check 400 m: MANDATORY toPref=2435 near=false
+check 1000 m: SHELTER toPref=1835 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [6, 1, 1]
+
+=== BLAST 9 Briefcase/Suitcase
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="BRIEFCASE" lbl="Briefcase/Suitcase" cap_lb="50" mand_ft="150" sip_ft="1849" pref_ft="1850" n="9" req="37" req_u="lb" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+threat: Briefcase/Suitcase (50 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Briefcase/Suitcase row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–150 ft, 0–46 m]
+zoneRow: [Shelter-in-place zone, 151–1,849 ft, 47–563 m]
+zoneRow: [Preferred evacuation, 1,850 ft+, 564+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Briefcase/Suitcase row. Estimate 37 lb, next row at or above. Placed by ALPHA-1 011452Z NOV 26.
+remarks:
+[BLAST] Briefcase/Suitcase (50 lb): MANDATORY EVAC within 150 ft (46 m); SHELTER-IN-PLACE 151-1,849 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 1,850 ft+ (564 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Briefcase/Suitcase row. Estimate 37 lb, next row at or above. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 9 Briefcase/Suitcase
+  .mand circle radius_m=46 stroke=FFD50000 fill=55D50000 line=default weight=3
+    title=MANDATORY EVAC 150 ft (46 m)
+  .pref circle radius_m=564 stroke=FF00C853 fill=33FFAB00 line=default weight=4
+    title=PREFERRED EVAC 1,850 ft+ (564 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=564 near=false
+check 20 m: MANDATORY toPref=544 near=false
+check 21.5 m: MANDATORY toPref=542.5 near=false
+check 150 m: SHELTER toPref=414 near=false
+check 366 m: SHELTER toPref=198 near=false
+check 400 m: SHELTER toPref=164 near=false
+check 1000 m: PREFERRED toPref=0 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [3, 3, 2]
+
+=== BLAST 10 Car
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="CAR" lbl="Car" cap_lb="500" mand_ft="320" sip_ft="1899" pref_ft="1900" n="10" req="100" req_u="kg" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+threat: Car (500 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–320 ft, 0–98 m]
+zoneRow: [Shelter-in-place zone, 321–1,899 ft, 99–579 m]
+zoneRow: [Preferred evacuation, 1,900 ft+, 580+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Estimate 100 kg, next row at or above. Placed by ALPHA-1 011452Z NOV 26.
+remarks:
+[BLAST] Car (500 lb): MANDATORY EVAC within 320 ft (98 m); SHELTER-IN-PLACE 321-1,899 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 1,900 ft+ (580 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Estimate 100 kg, next row at or above. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 10 Car
+  .mand circle radius_m=98 stroke=FFD50000 fill=55D50000 line=default weight=3
+    title=MANDATORY EVAC 320 ft (98 m)
+  .pref circle radius_m=580 stroke=FF00C853 fill=33FFAB00 line=default weight=4
+    title=PREFERRED EVAC 1,900 ft+ (580 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=580 near=false
+check 20 m: MANDATORY toPref=560 near=false
+check 21.5 m: MANDATORY toPref=558.5 near=false
+check 150 m: SHELTER toPref=430 near=false
+check 366 m: SHELTER toPref=214 near=false
+check 400 m: SHELTER toPref=180 near=false
+check 1000 m: PREFERRED toPref=0 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [3, 3, 2]
+
+=== BLAST 11 Car CLEARED
+cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="CAR" lbl="Car" cap_lb="500" mand_ft="320" sip_ft="1899" pref_ft="1900" n="11" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="CLEARED" cby="BRAVO-2" ct="2026-11-01T15:52:05.000Z"/>
+threat: Car (500 lb)
+source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row.
+metresNote: Metres as published in ERG2024 p. 367 (same table). Rings are drawn at the larger of the feet and metre values.
+zoneRow: [Mandatory evacuation, 0–320 ft, 0–98 m]
+zoneRow: [Shelter-in-place zone, 321–1,899 ft, 99–579 m]
+zoneRow: [Preferred evacuation, 1,900 ft+, 580+ m]
+provenance:
+CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Placed by ALPHA-1 011452Z NOV 26. CLEARED by BRAVO-2 011552Z NOV 26.
+remarks:
+[BLAST] CLEARED. Car (500 lb): MANDATORY EVAC within 320 ft (98 m); SHELTER-IN-PLACE 321-1,899 ft (inside, away from windows and exterior walls, only if you can't reach the preferred distance); PREFERRED EVAC 1,900 ft+ (580 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Placed by ALPHA-1 011452Z NOV 26. CLEARED by BRAVO-2 011552Z NOV 26. Minimum distances, not guarantees.
+draw:
+  marker type=a-h-G title=BLAST 11 Car CLEARED
+  .mand circle radius_m=98 stroke=FF9E9E9E fill=149E9E9E line=default weight=3
+    title=CLEARED MANDATORY EVAC 320 ft (98 m)
+  .pref circle radius_m=580 stroke=FF9E9E9E fill=149E9E9E line=default weight=4
+    title=CLEARED PREFERRED EVAC 1,900 ft+ (580 m) / SHELTER INSIDE
+check 0 m: MANDATORY toPref=580 near=false
+check 20 m: MANDATORY toPref=560 near=false
+check 21.5 m: MANDATORY toPref=558.5 near=false
+check 150 m: SHELTER toPref=430 near=false
+check 366 m: SHELTER toPref=214 near=false
+check 400 m: SHELTER toPref=180 near=false
+check 1000 m: PREFERRED toPref=0 near=false
+check 5000 m: PREFERRED toPref=0 near=false
+count: [3, 3, 2]
+
+=== exports (Car)
+fileStem: BLAST_4_011452Z
+kml:
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+<name>BLAST 4</name>
+<description>[BLAST] Car (500 lb): MANDATORY EVAC within 320 ft (98 m); SHELTER-IN-PLACE 321-1,899 ft (inside, away from windows and exterior walls, only if you can&apos;t reach the preferred distance); PREFERRED EVAC 1,900 ft+ (580 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.</description>
+<Style id="mand"><LineStyle><color>ff0000d5</color><width>3</width></LineStyle><PolyStyle><color>550000d5</color></PolyStyle></Style>
+<Style id="pref"><LineStyle><color>ff53c800</color><width>4</width></LineStyle><PolyStyle><color>3300abff</color></PolyStyle></Style>
+<Style id="device"><IconStyle><color>ff0000ff</color></IconStyle></Style>
+<Folder>
+<name>BLAST 4</name>
+<Placemark>
+<name>PREFERRED EVAC 1,900 ft+ (580 m) / SHELTER INSIDE</name>
+<description>Shelter-in-place zone inside this line; preferred evacuation at or beyond it.</description>
+<styleUrl>#pref</styleUrl>
+<Polygon>
+<outerBoundaryIs><LinearRing><coordinates>-84.5037000,38.0458303,0 -84.5031236,38.0458104,0 -84.5025515,38.0457509,0 -84.5019882,38.0456521,0 -84.5014379,38.0455149,0 -84.5009049,38.0453403,0 -84.5003931,38.0451296,0 -84.4999065,38.0448844,0 -84.4994487,38.0446066,0 -84.4990234,38.0442983,0 -84.4986336,38.0439619,0 -84.4982824,38.0435999,0 -84.4979724,38.0432150,0 -84.4977060,38.0428103,0 -84.4974853,38.0423887,0 -84.4973118,38.0419535,0 -84.4971870,38.0415081,0 -84.4971117,38.0410557,0 -84.4970866,38.0405998,0 -84.4971118,38.0401440,0 -84.4971871,38.0396916,0 -84.4973120,38.0392461,0 -84.4974856,38.0388110,0 -84.4977064,38.0383894,0 -84.4979728,38.0379847,0 -84.4982828,38.0375999,0 -84.4986341,38.0372379,0 -84.4990238,38.0369015,0 -84.4994492,38.0365933,0 -84.4999069,38.0363155,0 -84.5003935,38.0360704,0 -84.5009052,38.0358597,0 -84.5014382,38.0356851,0 -84.5019884,38.0355479,0 -84.5025517,38.0354491,0 -84.5031236,38.0353896,0 -84.5037000,38.0353697,0 -84.5042764,38.0353896,0 -84.5048483,38.0354491,0 -84.5054116,38.0355479,0 -84.5059618,38.0356851,0 -84.5064948,38.0358597,0 -84.5070065,38.0360704,0 -84.5074931,38.0363155,0 -84.5079508,38.0365933,0 -84.5083762,38.0369015,0 -84.5087659,38.0372379,0 -84.5091172,38.0375999,0 -84.5094272,38.0379847,0 -84.5096936,38.0383894,0 -84.5099144,38.0388110,0 -84.5100880,38.0392461,0 -84.5102129,38.0396916,0 -84.5102882,38.0401440,0 -84.5103134,38.0405998,0 -84.5102883,38.0410557,0 -84.5102130,38.0415081,0 -84.5100882,38.0419535,0 -84.5099147,38.0423887,0 -84.5096940,38.0428103,0 -84.5094276,38.0432150,0 -84.5091176,38.0435999,0 -84.5087664,38.0439619,0 -84.5083766,38.0442983,0 -84.5079513,38.0446066,0 -84.5074935,38.0448844,0 -84.5070069,38.0451296,0 -84.5064951,38.0453403,0 -84.5059621,38.0455149,0 -84.5054118,38.0456521,0 -84.5048485,38.0457509,0 -84.5042764,38.0458104,0 -84.5037000,38.0458303,0</coordinates></LinearRing></outerBoundaryIs>
+<innerBoundaryIs><LinearRing><coordinates>-84.5037000,38.0414837,0 -84.5036026,38.0414804,0 -84.5035060,38.0414703,0 -84.5034108,38.0414536,0 -84.5033178,38.0414304,0 -84.5032277,38.0414009,0 -84.5031413,38.0413653,0 -84.5030591,38.0413239,0 -84.5029817,38.0412770,0 -84.5029098,38.0412249,0 -84.5028440,38.0411681,0 -84.5027846,38.0411069,0 -84.5027323,38.0410419,0 -84.5026873,38.0409735,0 -84.5026499,38.0409023,0 -84.5026206,38.0408287,0 -84.5025995,38.0407535,0 -84.5025868,38.0406770,0 -84.5025826,38.0406000,0 -84.5025868,38.0405230,0 -84.5025995,38.0404465,0 -84.5026206,38.0403713,0 -84.5026500,38.0402977,0 -84.5026873,38.0402265,0 -84.5027323,38.0401581,0 -84.5027847,38.0400931,0 -84.5028440,38.0400319,0 -84.5029099,38.0399751,0 -84.5029817,38.0399230,0 -84.5030591,38.0398761,0 -84.5031413,38.0398347,0 -84.5032278,38.0397991,0 -84.5033178,38.0397695,0 -84.5034108,38.0397464,0 -84.5035060,38.0397297,0 -84.5036026,38.0397196,0 -84.5037000,38.0397163,0 -84.5037974,38.0397196,0 -84.5038940,38.0397297,0 -84.5039892,38.0397464,0 -84.5040822,38.0397695,0 -84.5041722,38.0397991,0 -84.5042587,38.0398347,0 -84.5043409,38.0398761,0 -84.5044183,38.0399230,0 -84.5044901,38.0399751,0 -84.5045560,38.0400319,0 -84.5046153,38.0400931,0 -84.5046677,38.0401581,0 -84.5047127,38.0402265,0 -84.5047500,38.0402977,0 -84.5047794,38.0403713,0 -84.5048005,38.0404465,0 -84.5048132,38.0405230,0 -84.5048174,38.0406000,0 -84.5048132,38.0406770,0 -84.5048005,38.0407535,0 -84.5047794,38.0408287,0 -84.5047501,38.0409023,0 -84.5047127,38.0409735,0 -84.5046677,38.0410419,0 -84.5046154,38.0411069,0 -84.5045560,38.0411681,0 -84.5044902,38.0412249,0 -84.5044183,38.0412770,0 -84.5043409,38.0413239,0 -84.5042587,38.0413653,0 -84.5041723,38.0414009,0 -84.5040822,38.0414304,0 -84.5039892,38.0414536,0 -84.5038940,38.0414703,0 -84.5037974,38.0414804,0 -84.5037000,38.0414837,0</coordinates></LinearRing></innerBoundaryIs>
+</Polygon>
+</Placemark>
+<Placemark>
+<name>MANDATORY EVAC 320 ft (98 m)</name>
+<description>Mandatory evacuation zone.</description>
+<styleUrl>#mand</styleUrl>
+<Polygon>
+<outerBoundaryIs><LinearRing><coordinates>-84.5037000,38.0414837,0 -84.5036026,38.0414804,0 -84.5035060,38.0414703,0 -84.5034108,38.0414536,0 -84.5033178,38.0414304,0 -84.5032277,38.0414009,0 -84.5031413,38.0413653,0 -84.5030591,38.0413239,0 -84.5029817,38.0412770,0 -84.5029098,38.0412249,0 -84.5028440,38.0411681,0 -84.5027846,38.0411069,0 -84.5027323,38.0410419,0 -84.5026873,38.0409735,0 -84.5026499,38.0409023,0 -84.5026206,38.0408287,0 -84.5025995,38.0407535,0 -84.5025868,38.0406770,0 -84.5025826,38.0406000,0 -84.5025868,38.0405230,0 -84.5025995,38.0404465,0 -84.5026206,38.0403713,0 -84.5026500,38.0402977,0 -84.5026873,38.0402265,0 -84.5027323,38.0401581,0 -84.5027847,38.0400931,0 -84.5028440,38.0400319,0 -84.5029099,38.0399751,0 -84.5029817,38.0399230,0 -84.5030591,38.0398761,0 -84.5031413,38.0398347,0 -84.5032278,38.0397991,0 -84.5033178,38.0397695,0 -84.5034108,38.0397464,0 -84.5035060,38.0397297,0 -84.5036026,38.0397196,0 -84.5037000,38.0397163,0 -84.5037974,38.0397196,0 -84.5038940,38.0397297,0 -84.5039892,38.0397464,0 -84.5040822,38.0397695,0 -84.5041722,38.0397991,0 -84.5042587,38.0398347,0 -84.5043409,38.0398761,0 -84.5044183,38.0399230,0 -84.5044901,38.0399751,0 -84.5045560,38.0400319,0 -84.5046153,38.0400931,0 -84.5046677,38.0401581,0 -84.5047127,38.0402265,0 -84.5047500,38.0402977,0 -84.5047794,38.0403713,0 -84.5048005,38.0404465,0 -84.5048132,38.0405230,0 -84.5048174,38.0406000,0 -84.5048132,38.0406770,0 -84.5048005,38.0407535,0 -84.5047794,38.0408287,0 -84.5047501,38.0409023,0 -84.5047127,38.0409735,0 -84.5046677,38.0410419,0 -84.5046154,38.0411069,0 -84.5045560,38.0411681,0 -84.5044902,38.0412249,0 -84.5044183,38.0412770,0 -84.5043409,38.0413239,0 -84.5042587,38.0413653,0 -84.5041723,38.0414009,0 -84.5040822,38.0414304,0 -84.5039892,38.0414536,0 -84.5038940,38.0414703,0 -84.5037974,38.0414804,0 -84.5037000,38.0414837,0</coordinates></LinearRing></outerBoundaryIs>
+</Polygon>
+</Placemark>
+<Placemark>
+<name>BLAST 4</name>
+<description>[BLAST] Car (500 lb): MANDATORY EVAC within 320 ft (98 m); SHELTER-IN-PLACE 321-1,899 ft (inside, away from windows and exterior walls, only if you can&apos;t reach the preferred distance); PREFERRED EVAC 1,900 ft+ (580 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.</description>
+<styleUrl>#device</styleUrl>
+<Point><coordinates>-84.5037000,38.0406000,0</coordinates></Point>
+</Placemark>
+</Folder>
+</Document>
+</kml>
+
+gpx:
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Blast for ATAK" xmlns="http://www.topografix.com/GPX/1/1">
+<metadata><name>BLAST 4</name><desc>CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row.</desc><time>2026-11-01T15:52:05.000Z</time></metadata>
+<wpt lat="38.0406000" lon="-84.5037000"><name>BLAST 4</name><cmt>Car (500 lb): mandatory 320 ft, preferred 1,900 ft+</cmt><desc>[BLAST] Car (500 lb): MANDATORY EVAC within 320 ft (98 m); SHELTER-IN-PLACE 321-1,899 ft (inside, away from windows and exterior walls, only if you can&apos;t reach the preferred distance); PREFERRED EVAC 1,900 ft+ (580 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.</desc><sym>Danger Area</sym></wpt>
+<trk><name>BLAST 4 MAND 98 m</name><desc>MANDATORY EVAC 320 ft (98 m)</desc><trkseg>
+<trkpt lat="38.0414837" lon="-84.5037000"/>
+<trkpt lat="38.0414804" lon="-84.5036026"/>
+<trkpt lat="38.0414703" lon="-84.5035060"/>
+<trkpt lat="38.0414536" lon="-84.5034108"/>
+<trkpt lat="38.0414304" lon="-84.5033178"/>
+<trkpt lat="38.0414009" lon="-84.5032277"/>
+<trkpt lat="38.0413653" lon="-84.5031413"/>
+<trkpt lat="38.0413239" lon="-84.5030591"/>
+<trkpt lat="38.0412770" lon="-84.5029817"/>
+<trkpt lat="38.0412249" lon="-84.5029098"/>
+<trkpt lat="38.0411681" lon="-84.5028440"/>
+<trkpt lat="38.0411069" lon="-84.5027846"/>
+<trkpt lat="38.0410419" lon="-84.5027323"/>
+<trkpt lat="38.0409735" lon="-84.5026873"/>
+<trkpt lat="38.0409023" lon="-84.5026499"/>
+<trkpt lat="38.0408287" lon="-84.5026206"/>
+<trkpt lat="38.0407535" lon="-84.5025995"/>
+<trkpt lat="38.0406770" lon="-84.5025868"/>
+<trkpt lat="38.0406000" lon="-84.5025826"/>
+<trkpt lat="38.0405230" lon="-84.5025868"/>
+<trkpt lat="38.0404465" lon="-84.5025995"/>
+<trkpt lat="38.0403713" lon="-84.5026206"/>
+<trkpt lat="38.0402977" lon="-84.5026500"/>
+<trkpt lat="38.0402265" lon="-84.5026873"/>
+<trkpt lat="38.0401581" lon="-84.5027323"/>
+<trkpt lat="38.0400931" lon="-84.5027847"/>
+<trkpt lat="38.0400319" lon="-84.5028440"/>
+<trkpt lat="38.0399751" lon="-84.5029099"/>
+<trkpt lat="38.0399230" lon="-84.5029817"/>
+<trkpt lat="38.0398761" lon="-84.5030591"/>
+<trkpt lat="38.0398347" lon="-84.5031413"/>
+<trkpt lat="38.0397991" lon="-84.5032278"/>
+<trkpt lat="38.0397695" lon="-84.5033178"/>
+<trkpt lat="38.0397464" lon="-84.5034108"/>
+<trkpt lat="38.0397297" lon="-84.5035060"/>
+<trkpt lat="38.0397196" lon="-84.5036026"/>
+<trkpt lat="38.0397163" lon="-84.5037000"/>
+<trkpt lat="38.0397196" lon="-84.5037974"/>
+<trkpt lat="38.0397297" lon="-84.5038940"/>
+<trkpt lat="38.0397464" lon="-84.5039892"/>
+<trkpt lat="38.0397695" lon="-84.5040822"/>
+<trkpt lat="38.0397991" lon="-84.5041722"/>
+<trkpt lat="38.0398347" lon="-84.5042587"/>
+<trkpt lat="38.0398761" lon="-84.5043409"/>
+<trkpt lat="38.0399230" lon="-84.5044183"/>
+<trkpt lat="38.0399751" lon="-84.5044901"/>
+<trkpt lat="38.0400319" lon="-84.5045560"/>
+<trkpt lat="38.0400931" lon="-84.5046153"/>
+<trkpt lat="38.0401581" lon="-84.5046677"/>
+<trkpt lat="38.0402265" lon="-84.5047127"/>
+<trkpt lat="38.0402977" lon="-84.5047500"/>
+<trkpt lat="38.0403713" lon="-84.5047794"/>
+<trkpt lat="38.0404465" lon="-84.5048005"/>
+<trkpt lat="38.0405230" lon="-84.5048132"/>
+<trkpt lat="38.0406000" lon="-84.5048174"/>
+<trkpt lat="38.0406770" lon="-84.5048132"/>
+<trkpt lat="38.0407535" lon="-84.5048005"/>
+<trkpt lat="38.0408287" lon="-84.5047794"/>
+<trkpt lat="38.0409023" lon="-84.5047501"/>
+<trkpt lat="38.0409735" lon="-84.5047127"/>
+<trkpt lat="38.0410419" lon="-84.5046677"/>
+<trkpt lat="38.0411069" lon="-84.5046154"/>
+<trkpt lat="38.0411681" lon="-84.5045560"/>
+<trkpt lat="38.0412249" lon="-84.5044902"/>
+<trkpt lat="38.0412770" lon="-84.5044183"/>
+<trkpt lat="38.0413239" lon="-84.5043409"/>
+<trkpt lat="38.0413653" lon="-84.5042587"/>
+<trkpt lat="38.0414009" lon="-84.5041723"/>
+<trkpt lat="38.0414304" lon="-84.5040822"/>
+<trkpt lat="38.0414536" lon="-84.5039892"/>
+<trkpt lat="38.0414703" lon="-84.5038940"/>
+<trkpt lat="38.0414804" lon="-84.5037974"/>
+<trkpt lat="38.0414837" lon="-84.5037000"/>
+</trkseg></trk>
+<trk><name>BLAST 4 PREF 580 m</name><desc>PREFERRED EVAC 1,900 ft+ (580 m) / SHELTER INSIDE</desc><trkseg>
+<trkpt lat="38.0458303" lon="-84.5037000"/>
+<trkpt lat="38.0458104" lon="-84.5031236"/>
+<trkpt lat="38.0457509" lon="-84.5025515"/>
+<trkpt lat="38.0456521" lon="-84.5019882"/>
+<trkpt lat="38.0455149" lon="-84.5014379"/>
+<trkpt lat="38.0453403" lon="-84.5009049"/>
+<trkpt lat="38.0451296" lon="-84.5003931"/>
+<trkpt lat="38.0448844" lon="-84.4999065"/>
+<trkpt lat="38.0446066" lon="-84.4994487"/>
+<trkpt lat="38.0442983" lon="-84.4990234"/>
+<trkpt lat="38.0439619" lon="-84.4986336"/>
+<trkpt lat="38.0435999" lon="-84.4982824"/>
+<trkpt lat="38.0432150" lon="-84.4979724"/>
+<trkpt lat="38.0428103" lon="-84.4977060"/>
+<trkpt lat="38.0423887" lon="-84.4974853"/>
+<trkpt lat="38.0419535" lon="-84.4973118"/>
+<trkpt lat="38.0415081" lon="-84.4971870"/>
+<trkpt lat="38.0410557" lon="-84.4971117"/>
+<trkpt lat="38.0405998" lon="-84.4970866"/>
+<trkpt lat="38.0401440" lon="-84.4971118"/>
+<trkpt lat="38.0396916" lon="-84.4971871"/>
+<trkpt lat="38.0392461" lon="-84.4973120"/>
+<trkpt lat="38.0388110" lon="-84.4974856"/>
+<trkpt lat="38.0383894" lon="-84.4977064"/>
+<trkpt lat="38.0379847" lon="-84.4979728"/>
+<trkpt lat="38.0375999" lon="-84.4982828"/>
+<trkpt lat="38.0372379" lon="-84.4986341"/>
+<trkpt lat="38.0369015" lon="-84.4990238"/>
+<trkpt lat="38.0365933" lon="-84.4994492"/>
+<trkpt lat="38.0363155" lon="-84.4999069"/>
+<trkpt lat="38.0360704" lon="-84.5003935"/>
+<trkpt lat="38.0358597" lon="-84.5009052"/>
+<trkpt lat="38.0356851" lon="-84.5014382"/>
+<trkpt lat="38.0355479" lon="-84.5019884"/>
+<trkpt lat="38.0354491" lon="-84.5025517"/>
+<trkpt lat="38.0353896" lon="-84.5031236"/>
+<trkpt lat="38.0353697" lon="-84.5037000"/>
+<trkpt lat="38.0353896" lon="-84.5042764"/>
+<trkpt lat="38.0354491" lon="-84.5048483"/>
+<trkpt lat="38.0355479" lon="-84.5054116"/>
+<trkpt lat="38.0356851" lon="-84.5059618"/>
+<trkpt lat="38.0358597" lon="-84.5064948"/>
+<trkpt lat="38.0360704" lon="-84.5070065"/>
+<trkpt lat="38.0363155" lon="-84.5074931"/>
+<trkpt lat="38.0365933" lon="-84.5079508"/>
+<trkpt lat="38.0369015" lon="-84.5083762"/>
+<trkpt lat="38.0372379" lon="-84.5087659"/>
+<trkpt lat="38.0375999" lon="-84.5091172"/>
+<trkpt lat="38.0379847" lon="-84.5094272"/>
+<trkpt lat="38.0383894" lon="-84.5096936"/>
+<trkpt lat="38.0388110" lon="-84.5099144"/>
+<trkpt lat="38.0392461" lon="-84.5100880"/>
+<trkpt lat="38.0396916" lon="-84.5102129"/>
+<trkpt lat="38.0401440" lon="-84.5102882"/>
+<trkpt lat="38.0405998" lon="-84.5103134"/>
+<trkpt lat="38.0410557" lon="-84.5102883"/>
+<trkpt lat="38.0415081" lon="-84.5102130"/>
+<trkpt lat="38.0419535" lon="-84.5100882"/>
+<trkpt lat="38.0423887" lon="-84.5099147"/>
+<trkpt lat="38.0428103" lon="-84.5096940"/>
+<trkpt lat="38.0432150" lon="-84.5094276"/>
+<trkpt lat="38.0435999" lon="-84.5091176"/>
+<trkpt lat="38.0439619" lon="-84.5087664"/>
+<trkpt lat="38.0442983" lon="-84.5083766"/>
+<trkpt lat="38.0446066" lon="-84.5079513"/>
+<trkpt lat="38.0448844" lon="-84.5074935"/>
+<trkpt lat="38.0451296" lon="-84.5070069"/>
+<trkpt lat="38.0453403" lon="-84.5064951"/>
+<trkpt lat="38.0455149" lon="-84.5059621"/>
+<trkpt lat="38.0456521" lon="-84.5054118"/>
+<trkpt lat="38.0457509" lon="-84.5048485"/>
+<trkpt lat="38.0458104" lon="-84.5042764"/>
+<trkpt lat="38.0458303" lon="-84.5037000"/>
+</trkseg></trk>
+</gpx>
+
+guidance:
+Don't touch the item. Notify authorities / call 911. Keep witnesses available for first responders. Use these distances together with your own evacuation plan.
+caveat: Minimum distances to prevent life-threatening injury, not guarantees. Other injuries (e.g. hearing damage) can occur farther out.
+caveat: Use larger distances in open or rural areas: less cover from fragments.
+caveat: Move people out of line of sight of the scene and away from windows (ERG2024 Guide 112).
+caveat: Watch for secondary devices.
+caveat: Rings are drawn at the larger of the card's feet and the metres published in ERG2024 p. 367.
+caveat: This tool doesn't replace professional EOD, bomb squad or department procedures.
+disclaimer: Built on the public DHS/DOJ Bomb Threat Stand-Off Card (CISA Office for Bombing Prevention and FBI Counter-IED Unit) and the 2024 Emergency Response Guidebook. Not endorsed by any of these agencies.

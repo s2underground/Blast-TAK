@@ -1,0 +1,694 @@
+category: GREN_MINE_SUBMUN | Grenades, Landmines, Submunitions
+category: PROJ_MORTAR | Projectiles and Mortars
+category: MISSILE_ROCKET | Missiles and Rockets
+category: LARGE_GUIDED_MISSILE | Large and Guided Missiles
+category: BOMB_DISPENSER | Bombs and Dispensers
+category: STOCKPILE | Stockpiles of EO or UXO
+picker: GREN_MINE_SUBMUN PROJ_MORTAR MISSILE_ROCKET LARGE_GUIDED_MISSILE BOMB_DISPENSER STOCKPILE UNKNOWN
+table1M(0)=-1
+table1M(1)=300
+table1M(27)=300
+table1M(100)=475
+table1M(500)=800
+table1M(1000)=-1
+table1M(100000)=-1
+where PATH: a road or path known to be safe | drill: On a road or path you know is safe: stop. Don't go closer. Leave the way you came, on that path, and get outside the cordon.
+where AREA: possibly inside a minefield or bomblet area | drill: If you may be in a minefield or bomblet area: stop and don't move your feet. Call or shout for help and wait. Only move if you can reach a surface you know is safe (paved road, well-used path) without stepping on unknown ground. Don't try to retrace your footsteps unless you have been trained.
+where VEHICLE: a vehicle | drill: In a vehicle: stop. Don't reverse or turn the wheel. Stay in the vehicle unless it is on fire, and call for help.
+where UNSET:  | drill: 
+placement MAP: tapped on the map
+placement RB: range and bearing from the reporter (approximate)
+placement CENTER: map center
+placement MARKER: on an existing marker
+placement UNKNOWN: 
+
+=== UXO 1 Grenades, Landmines, Submunitions
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="GREN_MINE_SUBMUN" lbl="Grenades, Landmines, Submunitions" cord_m="300" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1"/>
+threat: Grenade, landmine or bomblet
+cordon: 300 m (990 ft)
+basis: Grenades, Landmines, Submunitions, 300 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+doNow: Where there is one, expect more: mines and bomblets are rarely alone.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Grenades, Landmines, Submunitions. Placed by ALPHA-1 011452Z NOV 26. Position: tapped on the map. Reported from: a road or path known to be safe.
+remarks:
+[BLAST-UXO] Grenade, landmine or bomblet. Minimum cordon 300 m / 990 ft (Grenades, Landmines, Submunitions, 300 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890
+3. CONTACT: ALPHA-1
+4. TYPE: Grenades, Landmines, Submunitions (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 300 m (990 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 1 Grenades, Landmines, Submunitions
+  .cordon circle radius_m=300 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 300 m (990 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=300 near=false
+check 20 m: inside=true toCordon=280 near=false
+check 21.5 m: inside=true toCordon=278.5 near=false
+check 150 m: inside=true toCordon=150 near=false
+check 366 m: inside=false toCordon=0 near=false
+check 400 m: inside=false toCordon=0 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [4, 4]
+
+=== UXO 2 Grenades, Landmines, Submunitions
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="GREN_MINE_SUBMUN" lbl="Grenades, Landmines, Submunitions" cord_m="350" multi="1" where="AREA" plc="RB" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="2"/>
+threat: Grenade, landmine or bomblet (more than one item)
+cordon: 350 m (1,150 ft)
+basis: Grenades, Landmines, Submunitions, 300 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+doNow: Where there is one, expect more: mines and bomblets are rarely alone.
+doNow: Several items: extend the cordon further if they are spread out.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Grenades, Landmines, Submunitions. Placed by ALPHA-1 011452Z NOV 26. Position: range and bearing from the reporter (approximate). Reported from: possibly inside a minefield or bomblet area.
+remarks:
+[BLAST-UXO] Grenade, landmine or bomblet (more than one item). Minimum cordon 350 m / 1,150 ft (Grenades, Landmines, Submunitions, 300 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890 (approx.)
+3. CONTACT: ALPHA-1
+4. TYPE: Grenades, Landmines, Submunitions, multiple items (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 350 m (1,150 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 2 Grenades, Landmines, Submunitions
+  .cordon circle radius_m=350 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 350 m (1,150 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=350 near=false
+check 20 m: inside=true toCordon=330 near=false
+check 21.5 m: inside=true toCordon=328.5 near=false
+check 150 m: inside=true toCordon=200 near=false
+check 366 m: inside=false toCordon=0 near=false
+check 400 m: inside=false toCordon=0 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [4, 4]
+
+=== UXO 3 Projectiles and Mortars
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="3"/>
+threat: Artillery shell or mortar
+cordon: 375 m (1,240 ft)
+basis: Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Projectiles and Mortars. Placed by ALPHA-1 011452Z NOV 26. Position: tapped on the map. Reported from: a road or path known to be safe.
+remarks:
+[BLAST-UXO] Artillery shell or mortar. Minimum cordon 375 m / 1,240 ft (Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890
+3. CONTACT: ALPHA-1
+4. TYPE: Projectiles and Mortars (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 375 m (1,240 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 3 Projectiles and Mortars
+  .cordon circle radius_m=375 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 375 m (1,240 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=375 near=false
+check 20 m: inside=true toCordon=355 near=false
+check 21.5 m: inside=true toCordon=353.5 near=false
+check 150 m: inside=true toCordon=225 near=false
+check 366 m: inside=true toCordon=9 near=false
+check 400 m: inside=false toCordon=0 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [5, 3]
+
+=== UXO 4 Projectiles and Mortars
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="425" multi="1" where="AREA" plc="RB" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="4"/>
+threat: Artillery shell or mortar (more than one item)
+cordon: 425 m (1,400 ft)
+basis: Projectiles and Mortars, 375 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+doNow: Several items: extend the cordon further if they are spread out.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Projectiles and Mortars. Placed by ALPHA-1 011452Z NOV 26. Position: range and bearing from the reporter (approximate). Reported from: possibly inside a minefield or bomblet area.
+remarks:
+[BLAST-UXO] Artillery shell or mortar (more than one item). Minimum cordon 425 m / 1,400 ft (Projectiles and Mortars, 375 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890 (approx.)
+3. CONTACT: ALPHA-1
+4. TYPE: Projectiles and Mortars, multiple items (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 425 m (1,400 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 4 Projectiles and Mortars
+  .cordon circle radius_m=425 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 425 m (1,400 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=425 near=false
+check 20 m: inside=true toCordon=405 near=false
+check 21.5 m: inside=true toCordon=403.5 near=false
+check 150 m: inside=true toCordon=275 near=false
+check 366 m: inside=true toCordon=59 near=false
+check 400 m: inside=true toCordon=25 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [6, 2]
+
+=== UXO 5 Missiles and Rockets
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="MISSILE_ROCKET" lbl="Missiles and Rockets" cord_m="475" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="5"/>
+threat: Rocket or missile
+cordon: 475 m (1,560 ft)
+basis: Missiles and Rockets, 475 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+doNow: Keep to the side: never stand in line with the nose or tail. Anti-tank (shaped-charge) items can throw a jet far along their axis.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Missiles and Rockets. Placed by ALPHA-1 011452Z NOV 26. Position: tapped on the map. Reported from: a road or path known to be safe.
+remarks:
+[BLAST-UXO] Rocket or missile. Minimum cordon 475 m / 1,560 ft (Missiles and Rockets, 475 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890
+3. CONTACT: ALPHA-1
+4. TYPE: Missiles and Rockets (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 475 m (1,560 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 5 Missiles and Rockets
+  .cordon circle radius_m=475 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 475 m (1,560 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=475 near=false
+check 20 m: inside=true toCordon=455 near=false
+check 21.5 m: inside=true toCordon=453.5 near=false
+check 150 m: inside=true toCordon=325 near=false
+check 366 m: inside=true toCordon=109 near=false
+check 400 m: inside=true toCordon=75 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [6, 2]
+
+=== UXO 6 Missiles and Rockets
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="MISSILE_ROCKET" lbl="Missiles and Rockets" cord_m="525" multi="1" where="AREA" plc="RB" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="6"/>
+threat: Rocket or missile (more than one item)
+cordon: 525 m (1,730 ft)
+basis: Missiles and Rockets, 475 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+doNow: Keep to the side: never stand in line with the nose or tail. Anti-tank (shaped-charge) items can throw a jet far along their axis.
+doNow: Several items: extend the cordon further if they are spread out.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Missiles and Rockets. Placed by ALPHA-1 011452Z NOV 26. Position: range and bearing from the reporter (approximate). Reported from: possibly inside a minefield or bomblet area.
+remarks:
+[BLAST-UXO] Rocket or missile (more than one item). Minimum cordon 525 m / 1,730 ft (Missiles and Rockets, 475 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890 (approx.)
+3. CONTACT: ALPHA-1
+4. TYPE: Missiles and Rockets, multiple items (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 525 m (1,730 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 6 Missiles and Rockets
+  .cordon circle radius_m=525 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 525 m (1,730 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=525 near=false
+check 20 m: inside=true toCordon=505 near=false
+check 21.5 m: inside=true toCordon=503.5 near=false
+check 150 m: inside=true toCordon=375 near=false
+check 366 m: inside=true toCordon=159 near=false
+check 400 m: inside=true toCordon=125 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [6, 2]
+
+=== UXO 7 Large and Guided Missiles
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="LARGE_GUIDED_MISSILE" lbl="Large and Guided Missiles" cord_m="600" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="7"/>
+threat: Large or guided missile
+cordon: 600 m (1,970 ft)
+basis: Large and Guided Missiles, 600 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+doNow: Keep to the side: never stand in line with the nose or tail. Anti-tank (shaped-charge) items can throw a jet far along their axis.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Large and Guided Missiles. Placed by ALPHA-1 011452Z NOV 26. Position: tapped on the map. Reported from: a road or path known to be safe.
+remarks:
+[BLAST-UXO] Large or guided missile. Minimum cordon 600 m / 1,970 ft (Large and Guided Missiles, 600 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890
+3. CONTACT: ALPHA-1
+4. TYPE: Large and Guided Missiles (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 600 m (1,970 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 7 Large and Guided Missiles
+  .cordon circle radius_m=600 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 600 m (1,970 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=600 near=false
+check 20 m: inside=true toCordon=580 near=false
+check 21.5 m: inside=true toCordon=578.5 near=false
+check 150 m: inside=true toCordon=450 near=false
+check 366 m: inside=true toCordon=234 near=false
+check 400 m: inside=true toCordon=200 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [6, 2]
+
+=== UXO 8 Large and Guided Missiles
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="LARGE_GUIDED_MISSILE" lbl="Large and Guided Missiles" cord_m="650" multi="1" where="AREA" plc="RB" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="8"/>
+threat: Large or guided missile (more than one item)
+cordon: 650 m (2,140 ft)
+basis: Large and Guided Missiles, 600 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+doNow: Keep to the side: never stand in line with the nose or tail. Anti-tank (shaped-charge) items can throw a jet far along their axis.
+doNow: Several items: extend the cordon further if they are spread out.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Large and Guided Missiles. Placed by ALPHA-1 011452Z NOV 26. Position: range and bearing from the reporter (approximate). Reported from: possibly inside a minefield or bomblet area.
+remarks:
+[BLAST-UXO] Large or guided missile (more than one item). Minimum cordon 650 m / 2,140 ft (Large and Guided Missiles, 600 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890 (approx.)
+3. CONTACT: ALPHA-1
+4. TYPE: Large and Guided Missiles, multiple items (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 650 m (2,140 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 8 Large and Guided Missiles
+  .cordon circle radius_m=650 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 650 m (2,140 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=650 near=false
+check 20 m: inside=true toCordon=630 near=false
+check 21.5 m: inside=true toCordon=628.5 near=false
+check 150 m: inside=true toCordon=500 near=false
+check 366 m: inside=true toCordon=284 near=false
+check 400 m: inside=true toCordon=250 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [6, 2]
+
+=== UXO 9 Bombs and Dispensers
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="BOMB_DISPENSER" lbl="Bombs and Dispensers" cord_m="675" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="9"/>
+threat: Aircraft bomb or dispenser
+cordon: 675 m (2,220 ft)
+basis: Bombs and Dispensers, 675 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Bombs and Dispensers. Placed by ALPHA-1 011452Z NOV 26. Position: tapped on the map. Reported from: a road or path known to be safe.
+remarks:
+[BLAST-UXO] Aircraft bomb or dispenser. Minimum cordon 675 m / 2,220 ft (Bombs and Dispensers, 675 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890
+3. CONTACT: ALPHA-1
+4. TYPE: Bombs and Dispensers (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 675 m (2,220 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 9 Bombs and Dispensers
+  .cordon circle radius_m=675 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 675 m (2,220 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=675 near=false
+check 20 m: inside=true toCordon=655 near=false
+check 21.5 m: inside=true toCordon=653.5 near=false
+check 150 m: inside=true toCordon=525 near=false
+check 366 m: inside=true toCordon=309 near=false
+check 400 m: inside=true toCordon=275 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [6, 2]
+
+=== UXO 10 Bombs and Dispensers
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="BOMB_DISPENSER" lbl="Bombs and Dispensers" cord_m="725" multi="1" where="AREA" plc="RB" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="10"/>
+threat: Aircraft bomb or dispenser (more than one item)
+cordon: 725 m (2,380 ft)
+basis: Bombs and Dispensers, 675 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+doNow: Several items: extend the cordon further if they are spread out.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Bombs and Dispensers. Placed by ALPHA-1 011452Z NOV 26. Position: range and bearing from the reporter (approximate). Reported from: possibly inside a minefield or bomblet area.
+remarks:
+[BLAST-UXO] Aircraft bomb or dispenser (more than one item). Minimum cordon 725 m / 2,380 ft (Bombs and Dispensers, 675 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890 (approx.)
+3. CONTACT: ALPHA-1
+4. TYPE: Bombs and Dispensers, multiple items (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 725 m (2,380 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 10 Bombs and Dispensers
+  .cordon circle radius_m=725 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 725 m (2,380 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=725 near=false
+check 20 m: inside=true toCordon=705 near=false
+check 21.5 m: inside=true toCordon=703.5 near=false
+check 150 m: inside=true toCordon=575 near=false
+check 366 m: inside=true toCordon=359 near=false
+check 400 m: inside=true toCordon=325 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [6, 2]
+
+=== UXO 11 Stockpiles of EO or UXO
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="STOCKPILE" lbl="Stockpiles of EO or UXO" cord_m="800" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="11"/>
+threat: Pile or cache of ordnance
+cordon: 800 m (2,630 ft)
+basis: Stockpiles of EO or UXO, 800 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+doNow: If it is burning, move much farther away now and keep everyone back.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Stockpiles of EO or UXO. Placed by ALPHA-1 011452Z NOV 26. Position: tapped on the map. Reported from: a road or path known to be safe.
+remarks:
+[BLAST-UXO] Pile or cache of ordnance. Minimum cordon 800 m / 2,630 ft (Stockpiles of EO or UXO, 800 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890
+3. CONTACT: ALPHA-1
+4. TYPE: Stockpiles of EO or UXO (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 800 m (2,630 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 11 Stockpiles of EO or UXO
+  .cordon circle radius_m=800 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 800 m (2,630 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=800 near=false
+check 20 m: inside=true toCordon=780 near=false
+check 21.5 m: inside=true toCordon=778.5 near=false
+check 150 m: inside=true toCordon=650 near=false
+check 366 m: inside=true toCordon=434 near=false
+check 400 m: inside=true toCordon=400 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [6, 2]
+
+=== UXO 12 Stockpiles of EO or UXO
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="STOCKPILE" lbl="Stockpiles of EO or UXO" cord_m="850" multi="1" where="AREA" plc="RB" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="12"/>
+threat: Pile or cache of ordnance (more than one item)
+cordon: 850 m (2,790 ft)
+basis: Stockpiles of EO or UXO, 800 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+doNow: If it is burning, move much farther away now and keep everyone back.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Stockpiles of EO or UXO. Placed by ALPHA-1 011452Z NOV 26. Position: range and bearing from the reporter (approximate). Reported from: possibly inside a minefield or bomblet area.
+remarks:
+[BLAST-UXO] Pile or cache of ordnance (more than one item). Minimum cordon 850 m / 2,790 ft (Stockpiles of EO or UXO, 800 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890 (approx.)
+3. CONTACT: ALPHA-1
+4. TYPE: Stockpiles of EO or UXO, multiple items (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 850 m (2,790 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 12 Stockpiles of EO or UXO
+  .cordon circle radius_m=850 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 850 m (2,790 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=850 near=false
+check 20 m: inside=true toCordon=830 near=false
+check 21.5 m: inside=true toCordon=828.5 near=false
+check 150 m: inside=true toCordon=700 near=false
+check 366 m: inside=true toCordon=484 near=false
+check 400 m: inside=true toCordon=450 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [6, 2]
+
+=== UXO 13 Projectiles and Mortars
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="VEHICLE" plc="CENTER" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="13"/>
+threat: Artillery shell or mortar
+cordon: 375 m (1,240 ft)
+basis: Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Projectiles and Mortars. Placed by ALPHA-1 011452Z NOV 26. Position: map center. Reported from: a vehicle.
+remarks:
+[BLAST-UXO] Artillery shell or mortar. Minimum cordon 375 m / 1,240 ft (Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890
+3. CONTACT: ALPHA-1
+4. TYPE: Projectiles and Mortars (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: -
+7. IMPACT ON MISSION: -
+8. PROTECTIVE MEASURES: Cordon 375 m (1,240 ft) advised
+9. RECOMMENDED PRIORITY: -
+draw:
+  marker type=a-h-G title=UXO 13 Projectiles and Mortars
+  .cordon circle radius_m=375 stroke=FFE65100 fill=40E65100 line=default weight=4
+    title=UXO CORDON 375 m (1,240 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=375 near=false
+check 20 m: inside=true toCordon=355 near=false
+check 21.5 m: inside=true toCordon=353.5 near=false
+check 150 m: inside=true toCordon=225 near=false
+check 366 m: inside=true toCordon=9 near=false
+check 400 m: inside=false toCordon=0 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [5, 3]
+
+=== UXO 14 Projectiles and Mortars CLEARED
+cot: <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" plc="MARKER" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="CLEARED" cby="BRAVO-2" ct="2026-11-01T15:52:05.000Z" n="14" r_n="3" r_desc="Three 81 mm mortar rounds, rusted" r_land="North of the water tower" r_emp="Projected" r_cbrn="None seen" r_res="Road closed" r_imp="Main supply route blocked" r_prot="Cordon set at 375 m" r_pri="INDIRECT" r_poc="BRAVO-2 on channel 3"/>
+threat: Artillery shell or mortar (3 items)
+cordon: 375 m (1,240 ft)
+basis: Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.
+doNow: Don't touch it, move it or go closer, not even for a photo (use zoom).
+doNow: Keep everyone out of the cordon.
+doNow: Stay out of line of sight; get behind hard cover. Cover helps but doesn't make it safe to be closer.
+doNow: Use radios and phones only outside the cordon, never within 50 m of the item.
+doNow: Report it (EOD 9-LINE REPORT on this card) once you are outside the cordon.
+provenance:
+ATP 4-32.2 (01 Mar 2024), Fig. 31, Projectiles and Mortars. Placed by ALPHA-1 011452Z NOV 26. Position: on an existing marker. CLEARED by BRAVO-2 011552Z NOV 26.
+remarks:
+[BLAST-UXO] CLEARED. Artillery shell or mortar (3 items). Minimum cordon 375 m / 1,240 ft (Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don't approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Description: Three 81 mm mortar rounds, rusted. Location: North of the water tower. Priority: Indirect. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.
+nineLine:
+EOD 9-LINE (UXO)
+1. DTG: 011452Z NOV 26
+2. UNIT/LOCATION: ALPHA-1, 16S GH 12345 67890, North of the water tower
+3. CONTACT: BRAVO-2 on channel 3
+4. TYPE: Projectiles and Mortars, Projected, 3 items, Three 81 mm mortar rounds, rusted (observed without touching, disturbing or approaching)
+5. CBRN: None seen
+6. RESOURCES THREATENED: Road closed
+7. IMPACT ON MISSION: Main supply route blocked
+8. PROTECTIVE MEASURES: Cordon set at 375 m
+9. RECOMMENDED PRIORITY: INDIRECT
+draw:
+  marker type=a-h-G title=UXO 14 Projectiles and Mortars CLEARED
+  .cordon circle radius_m=375 stroke=FF9E9E9E fill=149E9E9E line=default weight=4
+    title=CLEARED UXO CORDON 375 m (1,240 ft) MIN - fragments may go farther
+check 0 m: inside=true toCordon=375 near=false
+check 20 m: inside=true toCordon=355 near=false
+check 21.5 m: inside=true toCordon=353.5 near=false
+check 150 m: inside=true toCordon=225 near=false
+check 366 m: inside=true toCordon=9 near=false
+check 400 m: inside=false toCordon=0 near=false
+check 1000 m: inside=false toCordon=0 near=false
+check 5000 m: inside=false toCordon=0 near=false
+count: [5, 3]
+
+=== exports
+kml:
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+<name>UXO 14</name>
+<description>[BLAST-UXO] CLEARED. Artillery shell or mortar (3 items). Minimum cordon 375 m / 1,240 ft (Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don&apos;t approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Description: Three 81 mm mortar rounds, rusted. Location: North of the water tower. Priority: Indirect. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.</description>
+<Style id="cordon"><LineStyle><color>ff9e9e9e</color><width>4</width></LineStyle><PolyStyle><color>149e9e9e</color></PolyStyle></Style>
+<Style id="item"><IconStyle><color>ff9e9e9e</color></IconStyle></Style>
+<Folder>
+<name>UXO 14</name>
+<Placemark>
+<name>CLEARED UXO CORDON 375 m (1,240 ft) MIN - fragments may go farther</name>
+<description>Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.</description>
+<styleUrl>#cordon</styleUrl>
+<Polygon>
+<outerBoundaryIs><LinearRing><coordinates>-84.5037000,38.0439817,0 -84.5033273,38.0439688,0 -84.5029575,38.0439303,0 -84.5025933,38.0438664,0 -84.5022375,38.0437777,0 -84.5018928,38.0436648,0 -84.5015620,38.0435286,0 -84.5012473,38.0433701,0 -84.5009514,38.0431905,0 -84.5006764,38.0429912,0 -84.5004244,38.0427737,0 -84.5001973,38.0425396,0 -84.4999969,38.0422908,0 -84.4998246,38.0420291,0 -84.4996819,38.0417565,0 -84.4995697,38.0414752,0 -84.4994890,38.0411871,0 -84.4994403,38.0408947,0 -84.4994241,38.0405999,0 -84.4994404,38.0403052,0 -84.4994891,38.0400127,0 -84.4995698,38.0397247,0 -84.4996820,38.0394433,0 -84.4998248,38.0391708,0 -84.4999970,38.0389091,0 -84.5001975,38.0386603,0 -84.5004246,38.0384263,0 -84.5006766,38.0382088,0 -84.5009516,38.0380094,0 -84.5012475,38.0378299,0 -84.5015621,38.0376714,0 -84.5018930,38.0375351,0 -84.5022376,38.0374222,0 -84.5025934,38.0373335,0 -84.5029575,38.0372697,0 -84.5033273,38.0372312,0 -84.5037000,38.0372183,0 -84.5040727,38.0372312,0 -84.5044425,38.0372697,0 -84.5048066,38.0373335,0 -84.5051624,38.0374222,0 -84.5055070,38.0375351,0 -84.5058379,38.0376714,0 -84.5061525,38.0378299,0 -84.5064484,38.0380094,0 -84.5067234,38.0382088,0 -84.5069754,38.0384263,0 -84.5072025,38.0386603,0 -84.5074030,38.0389091,0 -84.5075752,38.0391708,0 -84.5077180,38.0394433,0 -84.5078302,38.0397247,0 -84.5079109,38.0400127,0 -84.5079596,38.0403052,0 -84.5079759,38.0405999,0 -84.5079597,38.0408947,0 -84.5079110,38.0411871,0 -84.5078303,38.0414752,0 -84.5077181,38.0417565,0 -84.5075754,38.0420291,0 -84.5074031,38.0422908,0 -84.5072027,38.0425396,0 -84.5069756,38.0427737,0 -84.5067236,38.0429912,0 -84.5064486,38.0431905,0 -84.5061527,38.0433701,0 -84.5058380,38.0435286,0 -84.5055072,38.0436648,0 -84.5051625,38.0437777,0 -84.5048067,38.0438664,0 -84.5044425,38.0439303,0 -84.5040727,38.0439688,0 -84.5037000,38.0439817,0</coordinates></LinearRing></outerBoundaryIs>
+</Polygon>
+</Placemark>
+<Placemark>
+<name>UXO 14</name>
+<description>[BLAST-UXO] CLEARED. Artillery shell or mortar (3 items). Minimum cordon 375 m / 1,240 ft (Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don&apos;t approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Description: Three 81 mm mortar rounds, rusted. Location: North of the water tower. Priority: Indirect. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.</description>
+<styleUrl>#item</styleUrl>
+<Point><coordinates>-84.5037000,38.0406000,0</coordinates></Point>
+</Placemark>
+</Folder>
+</Document>
+</kml>
+
+gpx:
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Blast for ATAK" xmlns="http://www.topografix.com/GPX/1/1">
+<metadata><name>UXO 14</name><desc>Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.</desc><time>2026-11-01T15:52:05.000Z</time></metadata>
+<wpt lat="38.0406000" lon="-84.5037000"><name>UXO 14</name><cmt>Artillery shell or mortar (3 items): minimum cordon 375 m (1,240 ft)</cmt><desc>[BLAST-UXO] CLEARED. Artillery shell or mortar (3 items). Minimum cordon 375 m / 1,240 ft (Projectiles and Mortars, 375 m. ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don&apos;t approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Description: Three 81 mm mortar rounds, rusted. Location: North of the water tower. Priority: Indirect. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.</desc><sym>Danger Area</sym></wpt>
+<trk><name>UXO 14 CORDON 375 m</name><desc>CLEARED UXO CORDON 375 m (1,240 ft) MIN - fragments may go farther</desc><trkseg>
+<trkpt lat="38.0439817" lon="-84.5037000"/>
+<trkpt lat="38.0439688" lon="-84.5033273"/>
+<trkpt lat="38.0439303" lon="-84.5029575"/>
+<trkpt lat="38.0438664" lon="-84.5025933"/>
+<trkpt lat="38.0437777" lon="-84.5022375"/>
+<trkpt lat="38.0436648" lon="-84.5018928"/>
+<trkpt lat="38.0435286" lon="-84.5015620"/>
+<trkpt lat="38.0433701" lon="-84.5012473"/>
+<trkpt lat="38.0431905" lon="-84.5009514"/>
+<trkpt lat="38.0429912" lon="-84.5006764"/>
+<trkpt lat="38.0427737" lon="-84.5004244"/>
+<trkpt lat="38.0425396" lon="-84.5001973"/>
+<trkpt lat="38.0422908" lon="-84.4999969"/>
+<trkpt lat="38.0420291" lon="-84.4998246"/>
+<trkpt lat="38.0417565" lon="-84.4996819"/>
+<trkpt lat="38.0414752" lon="-84.4995697"/>
+<trkpt lat="38.0411871" lon="-84.4994890"/>
+<trkpt lat="38.0408947" lon="-84.4994403"/>
+<trkpt lat="38.0405999" lon="-84.4994241"/>
+<trkpt lat="38.0403052" lon="-84.4994404"/>
+<trkpt lat="38.0400127" lon="-84.4994891"/>
+<trkpt lat="38.0397247" lon="-84.4995698"/>
+<trkpt lat="38.0394433" lon="-84.4996820"/>
+<trkpt lat="38.0391708" lon="-84.4998248"/>
+<trkpt lat="38.0389091" lon="-84.4999970"/>
+<trkpt lat="38.0386603" lon="-84.5001975"/>
+<trkpt lat="38.0384263" lon="-84.5004246"/>
+<trkpt lat="38.0382088" lon="-84.5006766"/>
+<trkpt lat="38.0380094" lon="-84.5009516"/>
+<trkpt lat="38.0378299" lon="-84.5012475"/>
+<trkpt lat="38.0376714" lon="-84.5015621"/>
+<trkpt lat="38.0375351" lon="-84.5018930"/>
+<trkpt lat="38.0374222" lon="-84.5022376"/>
+<trkpt lat="38.0373335" lon="-84.5025934"/>
+<trkpt lat="38.0372697" lon="-84.5029575"/>
+<trkpt lat="38.0372312" lon="-84.5033273"/>
+<trkpt lat="38.0372183" lon="-84.5037000"/>
+<trkpt lat="38.0372312" lon="-84.5040727"/>
+<trkpt lat="38.0372697" lon="-84.5044425"/>
+<trkpt lat="38.0373335" lon="-84.5048066"/>
+<trkpt lat="38.0374222" lon="-84.5051624"/>
+<trkpt lat="38.0375351" lon="-84.5055070"/>
+<trkpt lat="38.0376714" lon="-84.5058379"/>
+<trkpt lat="38.0378299" lon="-84.5061525"/>
+<trkpt lat="38.0380094" lon="-84.5064484"/>
+<trkpt lat="38.0382088" lon="-84.5067234"/>
+<trkpt lat="38.0384263" lon="-84.5069754"/>
+<trkpt lat="38.0386603" lon="-84.5072025"/>
+<trkpt lat="38.0389091" lon="-84.5074030"/>
+<trkpt lat="38.0391708" lon="-84.5075752"/>
+<trkpt lat="38.0394433" lon="-84.5077180"/>
+<trkpt lat="38.0397247" lon="-84.5078302"/>
+<trkpt lat="38.0400127" lon="-84.5079109"/>
+<trkpt lat="38.0403052" lon="-84.5079596"/>
+<trkpt lat="38.0405999" lon="-84.5079759"/>
+<trkpt lat="38.0408947" lon="-84.5079597"/>
+<trkpt lat="38.0411871" lon="-84.5079110"/>
+<trkpt lat="38.0414752" lon="-84.5078303"/>
+<trkpt lat="38.0417565" lon="-84.5077181"/>
+<trkpt lat="38.0420291" lon="-84.5075754"/>
+<trkpt lat="38.0422908" lon="-84.5074031"/>
+<trkpt lat="38.0425396" lon="-84.5072027"/>
+<trkpt lat="38.0427737" lon="-84.5069756"/>
+<trkpt lat="38.0429912" lon="-84.5067236"/>
+<trkpt lat="38.0431905" lon="-84.5064486"/>
+<trkpt lat="38.0433701" lon="-84.5061527"/>
+<trkpt lat="38.0435286" lon="-84.5058380"/>
+<trkpt lat="38.0436648" lon="-84.5055072"/>
+<trkpt lat="38.0437777" lon="-84.5051625"/>
+<trkpt lat="38.0438664" lon="-84.5048067"/>
+<trkpt lat="38.0439303" lon="-84.5044425"/>
+<trkpt lat="38.0439688" lon="-84.5040727"/>
+<trkpt lat="38.0439817" lon="-84.5037000"/>
+</trkseg></trk>
+</gpx>
+
