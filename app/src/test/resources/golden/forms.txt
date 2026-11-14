@@ -122,7 +122,7 @@ LIMA/013DEG//
 YANKEE/090DGT/016KPH//
 reopened:
   text 12 DEFAULT pad=2/2 | Precedence: FLASH for the first nuclear use against your forces, otherwise IMMEDIATE. Send it to the next higher headquarters (unit SOP).
-  input az numeric max=4 | BRAVO: direction to the burst from you, degrees = [119]
+  input az numeric max=4 | BRAVO: direction to the burst from you, degrees (saved as a true bearing) = [119]
   check mag false | Magnetic (from a compass)
   text 12 DEFAULT pad=2/2 | Flash-to-bang (JULIET): at the flash cover your eyes, get down and count seconds until the shock wave arrives (there will be two). Distance = seconds x 0.35 km.
   input ftb numeric max=4 | JULIET: flash-to-bang, seconds = [22]

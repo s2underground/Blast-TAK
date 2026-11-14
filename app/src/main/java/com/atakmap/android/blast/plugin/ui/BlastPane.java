@@ -1689,7 +1689,8 @@ public final class BlastPane {
             }
         };
         fv[0] = renderForm(Nbc1Form.form(r0, self != null && gz != null
-                ? self.bearingTo(gz) : Double.NaN), ctx, box, update);
+                ? self.bearingTo(gz) : Double.NaN, nbc1Entries.get(m.getUID())),
+                ctx, box, update);
         update.run();
         showTyping(new AlertDialog.Builder(ctx)
                 .setTitle(Nbc1Form.TITLE)
@@ -1699,9 +1700,12 @@ public final class BlastPane {
                     public void onClick(DialogInterface d, int w) {
                         update.run();
                         NucRecord cur = BlastStore.readNuc(m);
-                        if (cur != null)
+                        if (cur != null) {
+                            nbc1Entries.put(m.getUID(), Nbc1Form.entry(
+                                    fv[0].values(), built[0].obs));
                             saveNuc(m, cur.withObs(built[0].obs),
                                     "Observations saved on the incident.");
+                        }
                     }
                 })
                 .setNeutralButton("Copy text",
@@ -1715,6 +1719,10 @@ public final class BlastPane {
                         })
                 .setNegativeButton("Cancel", null));
     }
+
+    /** BRAVO as typed at the last NBC 1 save, per incident (this run). */
+    private final java.util.Map<String, Nbc1Form.Entry> nbc1Entries =
+            new java.util.HashMap<>();
 
     /**
      * The Magnetic port for a position: ATAK's declination there (NaN if it

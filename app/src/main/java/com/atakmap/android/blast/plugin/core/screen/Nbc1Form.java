@@ -24,20 +24,58 @@ public final class Nbc1Form {
     static final int DIGITS = 4;
 
     /**
+     * What was typed in BRAVO when the report was last saved on this
+     * device. The record only keeps the true bearing (that is what is
+     * shared), so without this a compass reading would be shown as the
+     * saved true bearing and converted again if Magnetic were ticked.
+     */
+    public static final class Entry {
+        final String typed;
+        final boolean magnetic;
+        /** The true bearing that was saved from it. */
+        final double savedTrueDeg;
+
+        Entry(String typed, boolean magnetic, double savedTrueDeg) {
+            this.typed = typed;
+            this.magnetic = magnetic;
+            this.savedTrueDeg = savedTrueDeg;
+        }
+    }
+
+    /** Remember what was typed for the next time the form opens. */
+    public static Entry entry(FormValues v, NucRecord.Obs saved) {
+        return new Entry(v.get(AZ), v.checked(MAG), saved.azDeg);
+    }
+
+    /** As {@link #form(NucRecord, double, Entry)} with no saved entry. */
+    public static Screen form(NucRecord r, double gpsAzToGz) {
+        return form(r, gpsAzToGz, null);
+    }
+
+    /**
      * @param gpsAzToGz true bearing from your GPS position to ground zero,
      *        used when no azimuth was saved (NaN if unknown)
+     * @param last what was typed when this device last saved the report,
+     *        or null; used only if the saved bearing still comes from it
      */
-    public static Screen form(NucRecord r, double gpsAzToGz) {
+    public static Screen form(NucRecord r, double gpsAzToGz, Entry last) {
         NucRecord.Obs o = r.obs;
-        double az0 = Double.isNaN(o.azDeg) ? gpsAzToGz : o.azDeg;
+        boolean saved = !Double.isNaN(o.azDeg);
+        boolean reuse = saved && last != null && last.magnetic
+                && Math.abs(last.savedTrueDeg - o.azDeg) < 1e-6;
+        double az0 = saved ? o.azDeg : gpsAzToGz;
+        String value = reuse ? last.typed
+                : Double.isNaN(az0) ? "" : Long.toString(Math.round(az0));
+        String note = reuse ? " (as you entered it, magnetic)"
+                : saved ? " (saved as a true bearing)"
+                        : !Double.isNaN(az0)
+                                ? " (filled from your GPS to ground zero, true)"
+                                : "";
         Screen s = new Screen();
         s.add(Text.note(NucReports.PRECEDENCE));
         s.add(new Input(AZ, "BRAVO: direction to the burst from you, degrees"
-                + (Double.isNaN(o.azDeg) && !Double.isNaN(az0)
-                        ? " (filled from your GPS to ground zero, true)" : ""),
-                Double.isNaN(az0) ? "" : Long.toString(Math.round(az0)), true,
-                DIGITS));
-        s.add(new Check(MAG, "Magnetic (from a compass)", false));
+                + note, value, true, DIGITS));
+        s.add(new Check(MAG, "Magnetic (from a compass)", reuse));
         s.add(Text.note(NucReports.FLASH_HELP));
         s.add(new Input(FTB, "JULIET: flash-to-bang, seconds",
                 Double.isNaN(o.flashToBangS) ? ""
