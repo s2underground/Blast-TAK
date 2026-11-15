@@ -1812,12 +1812,52 @@ public final class BlastPane {
             v.setPadding(dp(t.indentDp), dp(t.padTopDp), 0,
                     dp(t.padBottomDp));
         if (t.links)
-            // As 1.1: set after the text, so it takes effect on the next
-            // setText only.
-            v.setAutoLinkMask(android.text.util.Linkify.WEB_URLS);
+            linkify(v, t.text);
         if (t.slot != null)
             rd.slots.put(t.slot, v);
         return v;
+    }
+
+    /**
+     * Make web addresses in {@code text} tappable. They open in the
+     * phone's browser (from ATAK's activity, as the plugin's own context
+     * can't start one); text without an address is left as it is.
+     */
+    private void linkify(TextView v, String text) {
+        android.text.SpannableString sp = new android.text.SpannableString(
+                text);
+        if (!android.text.util.Linkify.addLinks(sp,
+                android.text.util.Linkify.WEB_URLS))
+            return;
+        for (android.text.style.URLSpan u : sp.getSpans(0, sp.length(),
+                android.text.style.URLSpan.class)) {
+            int a = sp.getSpanStart(u), b = sp.getSpanEnd(u);
+            final String url = u.getURL();
+            sp.removeSpan(u);
+            sp.setSpan(new android.text.style.ClickableSpan() {
+                @Override
+                public void onClick(View w) {
+                    openUrl(url);
+                }
+            }, a, b, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        v.setLinkTextColor(BLUE);
+        v.setText(sp);
+        v.setMovementMethod(android.text.method.LinkMovementMethod
+                .getInstance());
+    }
+
+    private void openUrl(String url) {
+        try {
+            android.content.Intent i = new android.content.Intent(
+                    android.content.Intent.ACTION_VIEW,
+                    android.net.Uri.parse(url));
+            i.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+            mapView.getContext().startActivity(i);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "cannot open " + url, e);
+            toast("No app on this device can open " + url);
+        }
     }
 
     /** An incident-list style row: colour bar, text, small buttons. */
