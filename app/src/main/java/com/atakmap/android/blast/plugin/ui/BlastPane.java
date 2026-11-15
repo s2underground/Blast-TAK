@@ -55,6 +55,10 @@ import com.atakmap.android.blast.plugin.core.screen.MainPane;
 import com.atakmap.android.blast.plugin.core.screen.RangeBearingForm;
 import com.atakmap.android.blast.plugin.core.screen.ReferenceTab;
 import com.atakmap.android.blast.plugin.core.screen.TitleRow;
+import com.atakmap.android.blast.plugin.core.screen.Live;
+import com.atakmap.android.blast.plugin.core.port.PositionSource;
+import com.atakmap.android.blast.plugin.core.port.Team;
+import com.atakmap.android.blast.plugin.atak.AtakPorts;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
 import com.atakmap.android.blast.plugin.core.screen.StandoffCard;
@@ -67,9 +71,6 @@ import com.atakmap.android.blast.plugin.core.StandoffTable;
 import com.atakmap.android.blast.plugin.core.UxoRecord;
 import com.atakmap.android.blast.plugin.core.UxoReference;
 import com.atakmap.android.blast.plugin.core.UxoText;
-import com.atakmap.android.contact.Contact;
-import com.atakmap.android.contact.Contacts;
-import com.atakmap.android.contact.IndividualContact;
 import com.atakmap.android.maps.MapEvent;
 import com.atakmap.android.maps.MapEventDispatcher;
 import com.atakmap.android.maps.MapItem;
@@ -91,8 +92,6 @@ import com.atakmap.coremap.maps.coords.GeoPoint;
 import com.atakmap.coremap.maps.coords.GeoPointMetaData;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -138,6 +137,9 @@ public final class BlastPane {
     private final SharedPreferences prefs;
     private final StandoffTable table = StandoffTable.current();
     private final Handler main = new Handler(Looper.getMainLooper());
+    /** Core ports: own position and the other contacts. */
+    private final PositionSource position;
+    private final Team team;
 
     private final ScrollView root;
     private LinearLayout incidentsView, referenceView;
@@ -185,6 +187,8 @@ public final class BlastPane {
         this.store = store;
         this.sharing = sharing;
         this.exporter = new Exporter(store);
+        this.position = AtakPorts.position(mapView);
+        this.team = AtakPorts.team(mapView);
         this.prefs = AtakPreferences.getInstance(mapView.getContext())
                 .getSharedPrefs();
         this.root = new ScrollView(plugin);
@@ -1003,41 +1007,14 @@ public final class BlastPane {
                 .show();
     }
 
-    /** East/north metres of a point from ground zero (local tangent plane). */
-    private static double[] eastNorth(GeoPoint gz, GeoPoint p) {
-        double d = distance(gz, p);
-        if (Double.isNaN(d))
-            return null;
-        double brg = Math.toRadians(gz.bearingTo(p));
-        return new double[] { d * Math.sin(brg), d * Math.cos(brg) };
-    }
-
     private void updateYouNuc(Marker m, NucRecord r) {
-        if (youText == null)
-            return;
         GeoPoint gz = m.getPoint();
-        Marker self = ATAKUtilities.findSelf(mapView);
-        GeoPoint sp = selfPoint();
-        double[] en = gz == null || sp == null ? null : eastNorth(gz, sp);
-        apply(youText, NucCard.you(r, en));
-        if (teamText != null && gz != null) {
-            List<double[]> pts = new ArrayList<>();
-            try {
-                for (Contact c : Contacts.getInstance().getAllContacts()) {
-                    if (!(c instanceof IndividualContact))
-                        continue;
-                    MapItem mi = ((IndividualContact) c).getMapItem();
-                    if (!(mi instanceof PointMapItem) || mi == self)
-                        continue;
-                    GeoPoint gp = ((PointMapItem) mi).getPoint();
-                    if (gp != null && gp.isValid())
-                        pts.add(eastNorth(gz, gp));
-                }
-            } catch (RuntimeException e) {
-                Log.w(TAG, "contact scan failed", e);
-            }
-            apply(teamText, NucCard.team(r, pts.toArray(new double[0][])));
-        }
+        if (youText == null || gz == null)
+            return;
+        Text[] t = Live.nuc(r, gz.getLatitude(), gz.getLongitude(), position,
+                team);
+        apply(youText, t[0]);
+        apply(teamText, t[1]);
     }
 
     // ------------------------------------------------------------------
@@ -1116,45 +1093,13 @@ public final class BlastPane {
     }
 
     private void updateYouUxo(Marker m, UxoRecord r) {
-        if (youText == null)
+        GeoPoint c = m.getPoint();
+        if (youText == null || c == null)
             return;
-        GeoPoint center = m.getPoint();
-        Marker self = ATAKUtilities.findSelf(mapView);
-        GeoPoint sp = self != null ? self.getPoint() : null;
-        boolean fix = !(center == null || sp == null || !sp.isValid()
-                || (sp.getLatitude() == 0 && sp.getLongitude() == 0));
-        double dist = Double.NaN, acc = Double.NaN;
-        if (fix) {
-            double ce = sp.getCE();
-            boolean ceKnown = !Double.isNaN(ce) && ce > 0 && ce < 9999999;
-            dist = distance(center, sp);
-            acc = ceKnown ? ce : Double.NaN;
-        }
-        apply(youText, UxoCard.you(r, fix, dist, acc));
-        if (teamText != null && center != null)
-            apply(teamText, UxoCard.team(r, teamDistances(center, self)));
-    }
-
-    private double[] teamDistances(GeoPoint center, Marker self) {
-        List<Double> ds = new ArrayList<>();
-        try {
-            for (Contact c : Contacts.getInstance().getAllContacts()) {
-                if (!(c instanceof IndividualContact))
-                    continue;
-                MapItem mi = ((IndividualContact) c).getMapItem();
-                if (!(mi instanceof PointMapItem) || mi == self)
-                    continue;
-                GeoPoint gp = ((PointMapItem) mi).getPoint();
-                if (gp != null && gp.isValid())
-                    ds.add(distance(center, gp));
-            }
-        } catch (RuntimeException e) {
-            Log.w(TAG, "contact scan failed", e);
-        }
-        double[] arr = new double[ds.size()];
-        for (int i = 0; i < arr.length; i++)
-            arr[i] = ds.get(i);
-        return arr;
+        Text[] t = Live.uxo(r, c.getLatitude(), c.getLongitude(), position,
+                team);
+        apply(youText, t[0]);
+        apply(teamText, t[1]);
     }
 
     /** The item's position in MGRS (as ATAK formats it). */
@@ -2229,43 +2174,13 @@ public final class BlastPane {
     }
 
     private void updateYou(Marker m, BlastRecord r) {
-        if (youText == null)
+        GeoPoint c = m.getPoint();
+        if (youText == null || c == null)
             return;
-        GeoPoint center = m.getPoint();
-        Marker self = ATAKUtilities.findSelf(mapView);
-        GeoPoint sp = self != null ? self.getPoint() : null;
-        boolean fix = !(center == null || sp == null || !sp.isValid()
-                || (sp.getLatitude() == 0 && sp.getLongitude() == 0));
-        double dist = Double.NaN, acc = Double.NaN;
-        if (fix) {
-            // CE is NaN when unknown; CotPoint uses 9999999 for unknown.
-            double ce = sp.getCE();
-            boolean ceKnown = !Double.isNaN(ce) && ce > 0 && ce < 9999999;
-            dist = distance(center, sp);
-            acc = ceKnown ? ce : Double.NaN;
-        }
-        apply(youText, StandoffCard.you(r, fix, dist, acc));
-        if (teamText != null && center != null) {
-            List<Double> ds = new ArrayList<>();
-            try {
-                for (Contact c : Contacts.getInstance().getAllContacts()) {
-                    if (!(c instanceof IndividualContact))
-                        continue;
-                    MapItem mi = ((IndividualContact) c).getMapItem();
-                    if (!(mi instanceof PointMapItem) || mi == self)
-                        continue;
-                    GeoPoint gp = ((PointMapItem) mi).getPoint();
-                    if (gp != null && gp.isValid())
-                        ds.add(distance(center, gp));
-                }
-            } catch (RuntimeException e) {
-                Log.w(TAG, "contact scan failed", e);
-            }
-            double[] arr = new double[ds.size()];
-            for (int i = 0; i < arr.length; i++)
-                arr[i] = ds.get(i);
-            apply(teamText, StandoffCard.team(r, arr));
-        }
+        Text[] t = Live.standoff(r, c.getLatitude(), c.getLongitude(),
+                position, team);
+        apply(youText, t[0]);
+        apply(teamText, t[1]);
     }
 
     private void refreshList() {

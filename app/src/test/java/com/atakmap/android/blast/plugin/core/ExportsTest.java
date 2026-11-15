@@ -65,6 +65,25 @@ public class ExportsTest {
     }
 
     @Test
+    public void bearingMatchesGeographicLib() {
+        double[][] cases = {
+                { 36.4, -79.93, 36.405, -79.925, 38.949963524 },
+                { 51.5, -0.12, 48.85, 2.35, 148.140664476 },
+                { -33.87, 151.21, -33.86, 151.22, 39.838032408 },
+                { 38.0406, -84.5037, 38.0406, -84.4, 89.968049003 },
+                { 38.0406, -84.5037, 37.5, -84.5037, 180.0 },
+                { 64.84, -147.72, 64.0, -150.0, 230.594381482 },
+        };
+        for (double[] c : cases)
+            assertEquals(c[4], Geo.bearing(c[0], c[1], c[2], c[3]), 1e-7);
+        assertEquals(0, Geo.bearing(10, 10, 10, 10), 0);
+        // Nearly antipodal: any finite 0-360 answer (spherical fallback).
+        double b = Geo.bearing(0, 0, 0.5, 179.7);
+        assertTrue(b >= 0 && b < 360);
+        assertTrue(Double.isNaN(Geo.bearing(Double.NaN, 0, 1, 1)));
+    }
+
+    @Test
     public void ringOutlineIsNeverInsideTheCircle() {
         for (StandoffRow row : T.rows()) {
             double r = row.preferredRadiusM();

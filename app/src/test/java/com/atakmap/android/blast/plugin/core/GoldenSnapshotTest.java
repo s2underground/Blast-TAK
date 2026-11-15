@@ -10,6 +10,7 @@ import java.util.TimeZone;
 
 import com.atakmap.android.blast.plugin.core.screen.Item;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
+import com.atakmap.android.blast.plugin.core.screen.Text;
 
 /**
  * Refactor step 1: locks everything the core produces today, and what the
@@ -88,6 +89,11 @@ public class GoldenSnapshotTest {
     }
 
     @Test
+    public void live() {
+        Golden.check("live.txt", liveSnapshot());
+    }
+
+    @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
     }
@@ -111,6 +117,7 @@ public class GoldenSnapshotTest {
             Golden.check("wind.txt", windSnapshot());
             Golden.check("new-incident.txt", newIncidentSnapshot());
             Golden.check("pane.txt", paneSnapshot());
+            Golden.check("live.txt", liveSnapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);
@@ -1022,5 +1029,97 @@ public class GoldenSnapshotTest {
                                 : Golden.ll(r.lat, r.lon)).append("\n");
             }
         return sb.toString();
+    }
+
+    private static com.atakmap.android.blast.plugin.core.port.PositionSource at(
+            final double lat, final double lon, final double ce) {
+        return new com.atakmap.android.blast.plugin.core.port.PositionSource() {
+            @Override
+            public Fix fix() {
+                return Double.isNaN(lat) ? null : new Fix(lat, lon, ce);
+            }
+        };
+    }
+
+    private static com.atakmap.android.blast.plugin.core.port.Team team(
+            final double[]... pts) {
+        return new com.atakmap.android.blast.plugin.core.port.Team() {
+            @Override
+            public List<double[]> others() {
+                return new ArrayList<>(Arrays.asList(pts));
+            }
+        };
+    }
+
+    /**
+     * Refactor step 5a: the YOU and Team lines from the position and team
+     * ports, for each kind of incident, at a range of offsets.
+     */
+    static String liveSnapshot() {
+        StringBuilder sb = new StringBuilder();
+        StandoffTable table = StandoffTable.current();
+        BlastRecord car = BlastRecord.create(ZoneCalculator.forRow(table,
+                "CAR"), BY, T);
+        UxoRecord shell = UxoRecord.create("PROJ_MORTAR", false, false,
+                UxoRecord.Where.PATH, UxoRecord.Placement.RB, BY, T);
+        NucRecord nuc = NucRecord.create(10, NucModel.Burst.SURFACE,
+                "FEMA_10", 270, 15, BY, T);
+        // Offsets (azimuth deg, distance m) from the incident.
+        double[][] offs = { { 0, 0 }, { 0, 50 }, { 45, 120 }, { 90, 380 },
+                { 180, 600 }, { 270, 1500 }, { 90, 3000 }, { 80, 20000 },
+                { 100, 60000 }, { 315, 90000 } };
+        double[] ces = { Double.NaN, 5, 60, 400 };
+        com.atakmap.android.blast.plugin.core.port.Team crowd = team(
+                Geo.destination(LAT, LON, 10, 30), Geo.destination(LAT, LON,
+                        200, 700), Geo.destination(LAT, LON, 95, 25000),
+                Geo.destination(LAT, LON, 0, 200000));
+        com.atakmap.android.blast.plugin.core.port.Team nobody = team();
+        String[] kinds = { "standoff CAR", "uxo PROJ_MORTAR (RB)",
+                "nuclear 10 kt surface, wind from 270 at 15 mph" };
+        for (int k = 0; k < 3; k++) {
+            for (boolean cleared : new boolean[] { false, true }) {
+                sb.append("\n=== ").append(kinds[k]).append(cleared
+                        ? ", cleared" : "").append("\n");
+                for (double[] o : offs)
+                    for (int j = 0; j < ces.length; j++) {
+                        double ce = ces[j];
+                        if (j > 0 && o[1] != 50 && o[1] != 380)
+                            continue;
+                        double[] p = Geo.destination(LAT, LON, o[0], o[1]);
+                        Text[] t = live(k, cleared, car, shell, nuc,
+                                at(p[0], p[1], ce), crowd);
+                        sb.append("at ").append(Golden.num(o[0], 0))
+                                .append("° ").append(Golden.num(o[1], 0))
+                                .append(" m, CE ").append(Golden.num(ce, 0))
+                                .append(":\n").append(ScreenDump.item(t[0]))
+                                .append("\n");
+                    }
+                Text[] none = live(k, cleared, car, shell, nuc,
+                        at(Double.NaN, 0, 0), nobody);
+                sb.append("no fix, nobody:\n").append(ScreenDump.item(
+                        none[0])).append("\n").append(ScreenDump.item(
+                                none[1])).append("\n");
+                Text[] t = live(k, cleared, car, shell, nuc, null, crowd);
+                sb.append("team of 4:\n").append(ScreenDump.item(t[1]))
+                        .append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    private static Text[] live(int kind, boolean cleared, BlastRecord car,
+            UxoRecord shell, NucRecord nuc,
+            com.atakmap.android.blast.plugin.core.port.PositionSource pos,
+            com.atakmap.android.blast.plugin.core.port.Team team) {
+        if (kind == 0)
+            return com.atakmap.android.blast.plugin.core.screen.Live.standoff(
+                    cleared ? car.cleared("BRAVO-2", T) : car, LAT, LON, pos,
+                    team);
+        if (kind == 1)
+            return com.atakmap.android.blast.plugin.core.screen.Live.uxo(
+                    cleared ? shell.cleared("BRAVO-2", T) : shell, LAT, LON,
+                    pos, team);
+        return com.atakmap.android.blast.plugin.core.screen.Live.nuc(cleared
+                ? nuc.cleared("BRAVO-2", T) : nuc, LAT, LON, pos, team);
     }
 }

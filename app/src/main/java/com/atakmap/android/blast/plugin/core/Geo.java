@@ -87,6 +87,33 @@ public final class Geo {
     /** Vincenty inverse; NaN if it doesn't converge. */
     static double vincenty(double lat1, double lon1, double lat2,
             double lon2) {
+        return inverse(lat1, lon1, lat2, lon2)[0];
+    }
+
+    /**
+     * Initial azimuth (degrees true, 0-360) of the geodesic from point 1 to
+     * point 2 on WGS84 (Vincenty inverse). 0 for coincident points; the
+     * spherical great-circle azimuth for nearly antipodal points where
+     * Vincenty doesn't converge; NaN only for non-finite input.
+     */
+    public static double bearing(double lat1, double lon1, double lat2,
+            double lon2) {
+        if (!finite(lat1) || !finite(lon1) || !finite(lat2) || !finite(lon2))
+            return Double.NaN;
+        double az = inverse(lat1, lon1, lat2, lon2)[1];
+        if (Double.isNaN(az)) {
+            double p1 = Math.toRadians(lat1), p2 = Math.toRadians(lat2);
+            double dl = Math.toRadians(lon2 - lon1);
+            az = Math.toDegrees(Math.atan2(Math.sin(dl) * Math.cos(p2),
+                    Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2)
+                            * Math.cos(dl)));
+        }
+        return ((az % 360) + 360) % 360;
+    }
+
+    /** {distance m, initial azimuth deg}; both NaN if no convergence. */
+    private static double[] inverse(double lat1, double lon1, double lat2,
+            double lon2) {
         double l = Math.toRadians(lon2 - lon1);
         double u1 = Math.atan((1 - F) * Math.tan(Math.toRadians(lat1)));
         double u2 = Math.atan((1 - F) * Math.tan(Math.toRadians(lat2)));
@@ -101,7 +128,7 @@ public final class Geo {
                     + (cosU1 * sinU2 - sinU1 * cosU2 * cosL)
                             * (cosU1 * sinU2 - sinU1 * cosU2 * cosL));
             if (sinSigma == 0)
-                return 0;
+                return new double[] { 0, 0 };
             cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosL;
             sigma = Math.atan2(sinSigma, cosSigma);
             double sinAlpha = cosU1 * cosU2 * sinL / sinSigma;
@@ -114,7 +141,7 @@ public final class Geo {
                     * (cos2SigmaM + c * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
         } while (Math.abs(lambda - lambdaP) > 1e-12 && ++guard < 200);
         if (guard >= 200)
-            return Double.NaN;
+            return new double[] { Double.NaN, Double.NaN };
         double u2b = cos2Alpha * (A * A - B * B) / (B * B);
         double bigA = 1 + u2b / 16384 * (4096 + u2b * (-768 + u2b * (320 - 175 * u2b)));
         double bigB = u2b / 1024 * (256 + u2b * (-128 + u2b * (74 - 47 * u2b)));
@@ -122,7 +149,10 @@ public final class Geo {
                 * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)
                         - bigB / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma)
                                 * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
-        return B * bigA * (sigma - dSigma);
+        double sinL = Math.sin(lambda), cosL = Math.cos(lambda);
+        double az = Math.toDegrees(Math.atan2(cosU2 * sinL,
+                cosU1 * sinU2 - sinU1 * cosU2 * cosL));
+        return new double[] { B * bigA * (sigma - dSigma), az };
     }
 
     /** Vertices used for ring outlines in exported files. */
