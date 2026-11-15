@@ -18,10 +18,21 @@ public final class Text extends Item {
     public final boolean mono;
     /** The user can select and copy the text. */
     public final boolean selectable;
+    /** Space before the text (bullets), in dp. */
+    public final int indentDp;
+    /** Web addresses in the text open when tapped. */
+    public final boolean links;
 
     private Text(String slot, String text, float size, Tone tone,
             boolean bold, int padTopDp, int padBottomDp, String icon,
             boolean mono, boolean selectable) {
+        this(slot, text, size, tone, bold, padTopDp, padBottomDp, icon, mono,
+                selectable, 0, false);
+    }
+
+    private Text(String slot, String text, float size, Tone tone,
+            boolean bold, int padTopDp, int padBottomDp, String icon,
+            boolean mono, boolean selectable, int indentDp, boolean links) {
         super(slot);
         this.text = text == null ? "" : text;
         this.size = size;
@@ -32,6 +43,8 @@ public final class Text extends Item {
         this.icon = icon;
         this.mono = mono;
         this.selectable = selectable;
+        this.indentDp = indentDp;
+        this.links = links;
     }
 
     public static Text of(String text, float size, Tone tone, boolean bold) {
@@ -68,7 +81,19 @@ public final class Text extends Item {
     private Text copy(String slot2, String text2, Tone tone2, int top,
             int bottom, String icon2, boolean mono2) {
         return new Text(slot2, text2, size, tone2, bold, top, bottom, icon2,
-                mono2, selectable);
+                mono2, selectable, indentDp, links);
+    }
+
+    /** Indented by {@code dp} (bullets). */
+    public Text indented(int dp) {
+        return new Text(slot, text, size, tone, bold, padTopDp, padBottomDp,
+                icon, mono, selectable, dp, links);
+    }
+
+    /** Web addresses open when tapped. */
+    public Text linked() {
+        return new Text(slot, text, size, tone, bold, padTopDp, padBottomDp,
+                icon, mono, selectable, indentDp, true);
     }
 
     public Text monospace() {

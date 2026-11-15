@@ -1,0 +1,304 @@
+=== header, reference=false
+  text 18 bold TEXT | BLAST STANDOFF
+  text 12 DIM | Bomb threats: DHS/DOJ Bomb Threat Stand-Off Card (Aug 2025). Military ordnance (UXO): ATP 4-32.2 (01 Mar 2024). Nuclear reference: FEMA 2022, Glasstone & Dolan 1977.
+  buttons margin=6 below=2 | tab_incidents "INCIDENTS" SELECTED_STANDOFF w=1 | tab_reference "REFERENCE" NORMAL w=1
+=== header, reference=true
+  text 18 bold TEXT | BLAST STANDOFF
+  text 12 DIM | Bomb threats: DHS/DOJ Bomb Threat Stand-Off Card (Aug 2025). Military ordnance (UXO): ATP 4-32.2 (01 Mar 2024). Nuclear reference: FEMA 2022, Glasstone & Dolan 1977.
+  buttons margin=6 below=2 | tab_incidents "INCIDENTS" NORMAL w=1 | tab_reference "REFERENCE" SELECTED_STANDOFF w=1
+  text 11 DIM pad=12/4 | Built on the public DHS/DOJ Bomb Threat Stand-Off Card (CISA Office for Bombing Prevention and FBI Counter-IED Unit) and the 2024 Emergency Response Guidebook. Not endorsed by any of these agencies.
+
+=== list placeholder
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP
+    | delete_cleared "Delete all cleared" NORMAL w=1 hidden
+  section rows rebuilt {
+  }
+
+=== list empty
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 0 active
+    | delete_cleared "Delete all cleared" NORMAL w=1 hidden
+  section rows rebuilt {
+    text 13 DIM | None. Choose the kind of threat below and place it.
+  }
+
+=== list, u3 selected
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 7 active, 2 cleared
+    | delete_cleared "Delete all cleared (2)" NORMAL w=1
+  section rows rebuilt {
+    listrow sel:u8 bar=RED
+      text 14 TEXT icon=CAR | ▸ IED 4\n164 ft (50 m) · you: MANDATORY EVACUATION
+      | go:u8 "Go to" NORMAL w=1 | del:u8 "Delete" NORMAL w=1 danger
+    listrow sel:u3 selected bar=ORANGE
+      text 14 bold TEXT | ▾ UXO 1\n394 ft (120 m) · you: INSIDE cordon 375 m
+      | go:u3 "Go to" NORMAL w=1 | nine:u3 "9-line" NORMAL w=1 | del:u3 "Delete" NORMAL w=1 danger
+    listrow sel:u4 bar=ORANGE
+      text 14 TEXT | ▸ UXO 2\n2,953 ft (900 m) · you: outside cordon 375 m
+      | go:u4 "Go to" NORMAL w=1 | nine:u4 "9-line" NORMAL w=1 | del:u4 "Delete" NORMAL w=1 danger
+    listrow sel:u5 bar=NUC
+      text 14 TEXT | ▸ NUC 1\n4,921 ft (1,500 m) · you: Moderate Damage Zone
+      | go:u5 "Go to" NORMAL w=1 | del:u5 "Delete" NORMAL w=1 danger
+    listrow sel:u1 bar=RED
+      text 14 TEXT icon=CAR | ▸ IED 1\n6,562 ft (2,000 m) · you: PREFERRED EVACUATION
+      | go:u1 "Go to" NORMAL w=1 | del:u1 "Delete" NORMAL w=1 danger
+    listrow sel:u6 bar=NUC
+      text 14 TEXT | ▸ NUC 2\n37.3 mi (60.0 km) · you: outside the damage zones
+      | go:u6 "Go to" NORMAL w=1 | del:u6 "Delete" NORMAL w=1 danger
+    listrow sel:u7 bar=RED
+      text 14 TEXT icon=CAR | ▸ IED 3 (no position)
+      | go:u7 "Go to" NORMAL w=1 | del:u7 "Delete" NORMAL w=1 danger
+    listrow sel:u2 bar=DIM
+      text 14 DIM icon=CAR | ▸ IED 2 (cleared)\n16 ft (5 m)
+      | go:u2 "Go to" NORMAL w=1 | del:u2 "Delete" NORMAL w=1 danger
+    listrow sel:u9 bar=DIM
+      text 14 DIM | ▸ NUC 3 (cleared)\n33 ft (10 m)
+      | go:u9 "Go to" NORMAL w=1 | del:u9 "Delete" NORMAL w=1 danger
+  }
+signature: u8falseIED 45;u3falseUXO 112;u4falseUXO 290;u5falseNUC 1150;u1falseIED 1200;u6falseNUC 26000;u7falseIED 3 (no position)0;u2trueIED 2 (cleared)1;u9trueNUC 3 (cleared)1;u3
+uid of go:u5 = u5, of sel:u5 as go = null
+
+=== reference tab
+  titlerow
+    text 14 bold TEXT slot=emergency | Emergency number: 112
+    | change_emergency "Change…" NORMAL w=1
+  text 12 bold BLUE pad=10/4 slot=ref_FIND | IF YOU FIND SOMETHING
+  text 13 DIM pad=0/3 links | Recognize, Retreat, Report (US DoD 3Rs):
+  text 13 TEXT pad=0/3 indent=8 links | • RECOGNIZE: anything that looks like military ordnance, or is out of place, could explode. Old, rusty or damaged items are still dangerous.
+  text 13 TEXT pad=0/3 indent=8 links | • RETREAT: don't touch, move or disturb it. Leave carefully the way you came; don't run.
+  text 13 TEXT pad=0/3 indent=8 links | • REPORT: call the emergency number (or the local police, army or mine action centre) once you are away from it. Say what you saw, where and when.
+  text 13 DIM pad=0/3 links | Stay away from hazardous areas and suspicious objects. Do not touch, do not approach suspicious objects (IMAS risk education messages).
+  text 13 DIM pad=0/3 links | Never compromise safety to identify an item (ATP 4-32.2). Look from a safe distance, from cover, with binoculars or zoom.
+  text 12 bold BLUE pad=10/4 slot=ref_AREA | ON FOOT IN A MINEFIELD OR BOMBLET AREA
+  text 13 DIM pad=0/3 links | (UNMAS Safety Handbook, paraphrased)
+  text 13 TEXT pad=0/3 indent=8 links | • Stop. Stay still and don't move your feet.
+  text 13 TEXT pad=0/3 indent=8 links | • Warn the people around you. Call for help, but keep others away. Don't rush in to help an injured person: you will endanger yourself and others.
+  text 13 TEXT pad=0/3 indent=8 links | • Look around: mines, tripwires, signs? Find the nearest surface you know is safe (paved road, well-used path, concrete).
+  text 13 TEXT pad=0/3 indent=8 links | • If there is no safe area you can reach without stepping on unknown ground, don't move. Wait for help.
+  text 13 DIM pad=0/3 links | Retracing your footsteps is not a safe way out unless you have been trained: footprints are rarely visible and a tripwire you missed on the way in can still be there.
+  text 12 bold BLUE pad=10/4 slot=ref_VEHICLE | IN A VEHICLE
+  text 13 DIM pad=0/3 links | (UNMAS Safety Handbook, paraphrased)
+  text 13 TEXT pad=0/3 indent=8 links | • Stop. Don't reverse and don't turn the steering wheel.
+  text 13 TEXT pad=0/3 indent=8 links | • Stay in the vehicle unless it is on fire or in a life-threatening position. There are probably more mines nearby.
+  text 13 TEXT pad=0/3 indent=8 links | • Call for help; use the horn to get attention, but keep people away.
+  text 13 TEXT pad=0/3 indent=8 links | • If you must get out, step only into the vehicle's own wheel tracks, facing back the way you came, one person at a time, at least 5 m apart.
+  text 12 bold BLUE pad=10/4 slot=ref_RADIO | RADIOS AND PHONES
+  text 13 DIM pad=0/3 links | Some items can be set off by radio transmissions. ATAK itself is a transmitter.
+  text 13 TEXT pad=0/3 indent=8 links | • ATP 4-32.2: transmit only from at least 100 ft (30 m).
+  text 13 TEXT pad=0/3 indent=8 links | • UNMAS Safety Handbook: no radio or phone transmissions closer than 50 m.
+  text 13 DIM pad=0/3 links | Blast's rule: get outside the cordon (300 m or more) first, then report.
+  text 12 bold BLUE pad=10/4 slot=ref_MARK | MARKING
+  text 13 DIM pad=0/3 links | Mark the area, not the item, and only from where you already are.
+  text 13 TEXT pad=0/3 indent=8 links | • Never go closer to place a marker. ATP 4-32.2: no closer than where you first recognized it.
+  text 13 TEXT pad=0/3 indent=8 links | • Never leave a safe path to place a sign, and never mark individual mines (UNMAS).
+  text 13 TEXT pad=0/3 indent=8 links | • A map point in Blast is often the safest mark: place it by tapping the map or by range and bearing, not by walking to it.
+  text 12 bold BLUE pad=10/4 slot=ref_TYPES | WHAT AM I LOOKING AT?
+  text 13 DIM pad=0/3 links | The six types Blast uses are those of ATP 4-32.2 Fig. 31. Descriptions are general; many items look different, and damaged or buried items are hard to recognize. If unsure, choose Unknown.
+  text 13 TEXT pad=0/3 indent=8 links | • Grenade, landmine or bomblet (300 m): hand-sized or smaller. Grenades: egg or can shaped, sometimes with a lever. Mines: round or square, often partly buried, sometimes with wires. Bomblets (submunitions): small balls, cans or cylinders, often with ribbons, vanes or a small parachute; usually many spread over an area.
+  text 13 TEXT pad=0/3 indent=8 links | • Artillery shell or mortar (375 m): shells are pointed cylinders, often with a copper band near the base; mortars are teardrop shaped with tail fins.
+  text 13 TEXT pad=0/3 indent=8 links | • Rocket or missile (475 m): long tubes with fins, from shoulder-fired rockets to artillery rockets (USAF AFVA 32-4022: often 5 to 8 ft long).
+  text 13 TEXT pad=0/3 indent=8 links | • Large or guided missile (600 m): large, often with wings or control fins.
+  text 13 TEXT pad=0/3 indent=8 links | • Aircraft bomb or dispenser (675 m): large, with tail fins (AFVA 32-4022: often 3 to 6 ft long). Dispensers open to release bomblets.
+  text 13 TEXT pad=0/3 indent=8 links | • Pile or cache of ordnance (800 m): stacks of ammunition or several items together.
+  text 13 TEXT pad=0/3 indent=8 links | • Drone-dropped munitions: often small (grenades or mortar bombs with added tails); use the matching size, or Unknown.
+  text 13 DIM pad=0/3 links | For photographs, see the GICHD Explosive Ordnance Guide for Ukraine (3rd edition): gichd.org.
+  text 12 bold BLUE pad=10/4 slot=ref_RINGS | WHAT THE RINGS MEAN
+  text 13 DIM pad=0/3 links | The cordon is the distance ATP 4-32.2 Fig. 31 gives for each type (01 Mar 2024): the minimum for people in the open while the item is left alone. It is not a safe line. The same publication warns that fragments may travel farther.
+  text 13 DIM pad=0/3 links | Example, a 155 mm artillery shell:
+  text 13 TEXT pad=0/3 indent=8 links | • 127 m (415 ft): DoD hazardous fragment distance if one shell goes off by accident (DESR 6055.09, Table V3.E3.T3).
+  text 13 TEXT pad=0/3 indent=8 links | • 375 m: Blast's cordon (ATP 4-32.2 Fig. 31).
+  text 13 TEXT pad=0/3 indent=8 links | • About 820 m: DoD default maximum fragment range for a 6.1 in (155 mm) robust munition (DESR 6055.09, Table V5.E3.T1). Rare fragments can reach this far.
+  text 13 DIM pad=0/3 links | Example, a 500 lb Mk 82 bomb: 204 m (670 ft) accidental-detonation fragment distance; 675 m cordon; about 1,190 m maximum fragment range.
+  text 13 DIM pad=0/3 links | Shaped-charge (anti-tank) items can throw a jet up to about 1,800 m along their axis (IMAS TNMA 10.20/01): never stand in line with the nose or tail.
+  text 13 DIM pad=0/3 links | Authorities set their own cordons. For WWII aircraft bombs found in Europe and Japan they have ranged from about 300 m to 1.5 km. For planned demolitions, mine action teams keep the public roughly 0.8 to 1.6 km away (IMAS TNMA 10.20/01). Always follow their instructions.
+  text 13 DIM pad=0/3 links | More than one item: ATP 4-32.2 adds 50 m or more. Unknown item: the 300 m minimum; if it looks bomb or missile sized, Blast uses the bomb distance (675 m).
+  text 12 bold BLUE pad=10/4 slot=ref_PROS | HOW RESPONDERS WORK
+  text 13 DIM pad=0/3 links | The 5-Cs (ATP 4-32.2):
+  text 13 TEXT pad=0/3 indent=8 links | • CONFIRM from a safe distance, with cover and binoculars.
+  text 13 TEXT pad=0/3 indent=8 links | • CLEAR everyone to a safe distance (300 m minimum).
+  text 13 TEXT pad=0/3 indent=8 links | • CORDON the area to all foot and vehicle traffic; set an incident control point.
+  text 13 TEXT pad=0/3 indent=8 links | • CHECK for more items: 5 m and 25 m checks around where you stop.
+  text 13 TEXT pad=0/3 indent=8 links | • CONTROL the cordon until EOD, police or medics take over.
+  text 13 DIM pad=0/3 links | The EOD 9-line report (ATP 4-32.2 Table 2) is on every UXO card (EOD 9-LINE REPORT). Priorities:
+  text 13 TEXT pad=0/3 indent=8 links | • IMMEDIATE: stops movement or threatens vital assets.
+  text 13 TEXT pad=0/3 indent=8 links | • INDIRECT: slows movement or threatens important assets.
+  text 13 TEXT pad=0/3 indent=8 links | • MINOR: reduces movement or threatens non-critical assets.
+  text 13 TEXT pad=0/3 indent=8 links | • NO THREAT: little or no effect at present.
+  text 13 DIM pad=0/3 links | A priority of MINOR or NO THREAT (NO HAZARD) doesn't mean the item is safe.
+  text 12 bold BLUE pad=10/4 slot=ref_TERMS | TERMS (IMAS 04.10)
+  text 13 TEXT pad=0/3 indent=8 links | • Explosive ordnance (EO): mine action's response to mines, cluster munitions, unexploded ordnance, abandoned ordnance, booby traps, other devices and improvised explosive devices.
+  text 13 TEXT pad=0/3 indent=8 links | • Unexploded ordnance (UXO): "explosive ordnance that has been primed, fuzed, armed or otherwise prepared for use or used. It may have been fired, dropped, launched or projected yet remains unexploded either through malfunction or design or for any other reason."
+  text 13 TEXT pad=0/3 indent=8 links | • Abandoned explosive ordnance (AXO): "explosive ordnance that has not been used during an armed conflict, that has been left behind or dumped by a party to an armed conflict, and which is no longer under control of the party that left it behind or dumped it."
+  text 13 TEXT pad=0/3 indent=8 links | • Explosive remnants of war (ERW): "Unexploded Ordnance (UXO) and Abandoned Explosive Ordnance (AXO)."
+  text 13 TEXT pad=0/3 indent=8 links | • Mine: "munition designed to be placed under, on or near the ground or other surface area and to be exploded by the presence, proximity or contact of a person or a vehicle."
+  text 13 TEXT pad=0/3 indent=8 links | • Unexploded submunition: "an explosive submunition that has been dispersed or released by, or otherwise separated from, a cluster munition and has failed to explode as intended."
+  text 13 DIM pad=0/3 links | Used and reproduced with permission of the United Nations.
+  text 12 bold BLUE pad=10/4 slot=ref_SOURCES | SOURCES
+  text 13 TEXT pad=0/3 indent=8 links | • ATP 4-32.2 / MCRP 10-10D.1 / NTTP 3-02.4.1 / AFTTP 3-2.12, Multi-Service TTP for Explosive Ordnance, 01 Mar 2024 (Distribution A): Fig. 31 (p. 58), Table 1 (p. 18), para 3.a (p. 19), Ch. II warning (p. 11), Table 2 (p. 26).
+  text 13 TEXT pad=0/3 indent=8 links | • DESR 6055.09, DoD Explosives Safety Standards, Edition 1, Change 2, 25 Nov 2025: Tables V3.E3.T2, V3.E3.T3, V5.E3.T1.
+  text 13 TEXT pad=0/3 indent=8 links | • UNMAS Landmines, ERW and IED Safety Handbook, 3rd edition, 2015: sections 3.4.4, 4.1, 4.2 (paraphrased).
+  text 13 TEXT pad=0/3 indent=8 links | • IMAS 04.10 Ed. 2 Am. 12 (2024), IMAS 12.10 Ed. 2 Am. 3 (2020), TNMA 10.20/01 (2013), TNMA 12.10/01 (2022).
+  text 13 TEXT pad=0/3 indent=8 links | • USAF AFVA 32-4022, UXO Recognition and Reporting Chart, 30 Dec 2015.
+  text 13 TEXT pad=0/3 indent=8 links | • US DoD 3Rs Explosives Safety Education (denix.osd.mil/uxo).
+  text 13 DIM pad=0/3 links | Blast is not endorsed by any of these organizations.
+  text 12 bold BLUE pad=10/4 slot=ref_NUC_ACTIONS | NUCLEAR DETONATION: WHAT TO DO
+  text 13 DIM pad=0/3 links | FEMA: "Get Inside, Stay Inside, Stay Tuned" is the most important protective action, because it reduces fallout exposure.
+  text 13 TEXT pad=0/3 indent=8 links | • GET INSIDE a basement or the middle of a large, dense building. It is best to be in a shelter when fallout arrives. Any shelter is better than being outside for long.
+  text 13 TEXT pad=0/3 indent=8 links | • STAY INSIDE for 12-24 hours, unless given other instructions. Leave earlier only for fire, building collapse or a medical emergency.
+  text 13 TEXT pad=0/3 indent=8 links | • STAY TUNED: AM/FM radio is best; TV, phone or internet if available.
+  text 13 DIM pad=0/3 links | FEMA gives this message to everyone within 50 miles until fallout areas are identified. Fallout will likely take 10 minutes or more to arrive.
+  text 13 DIM pad=0/3 links | If you see an intense, unexpected flash, take cover at once, away from windows: the blast wave can follow by seconds.
+  text 13 DIM pad=0/3 links | Caught outside while fallout fell? Once inside, remove the outer layer of clothing and shoes (this can remove up to 90% of radioactive material, FEMA 2024) and brush or wipe off exposed skin and hair.
+  text 12 bold BLUE pad=10/4 slot=ref_NUC_RINGS | NUCLEAR RINGS: WHAT THEY MEAN
+  text 13 DIM pad=0/3 links | The damage zones are FEMA's: Severe, Moderate and Light Damage Zones end about 0.5, 1 and 3 miles from a 10 kT ground-level detonation, and grow about twofold for each tenfold increase in yield (cube-root scaling):
+  text 13 TEXT pad=0/3 indent=8 links | • 0.1 kt surface: severe 0.11 mi (0.17 km), moderate 0.22 mi (0.35 km), light 0.65 mi (1.0 km).
+  text 13 TEXT pad=0/3 indent=8 links | • 1 kt surface: severe 0.23 mi (0.37 km), moderate 0.46 mi (0.75 km), light 1.4 mi (2.2 km).
+  text 13 TEXT pad=0/3 indent=8 links | • 10 kt surface: severe 0.50 mi (0.80 km), moderate 1.0 mi (1.6 km), light 3.0 mi (4.8 km).
+  text 13 TEXT pad=0/3 indent=8 links | • 100 kt surface: severe 1.1 mi (1.7 km), moderate 2.2 mi (3.5 km), light 6.5 mi (10.4 km).
+  text 13 TEXT pad=0/3 indent=8 links | • 1 Mt surface: severe 2.3 mi (3.7 km), moderate 4.6 mi (7.5 km), light 13.9 mi (22.4 km).
+  text 13 DIM pad=0/3 links | Air burst: Blast never asks for a burst height. Each zone is enlarged by the ratio of the farthest ground range of its overpressure (over all burst heights) to the surface range, from Glasstone & Dolan Fig. 3.73c: severe x1.58, moderate x1.67, light x2.0 (the light ratio extends Glasstone's lowest, 1 psi, curve). Burn and radiation rings use the air values with slant range drawn as ground range. Each ring is an outer bound; no single burst produces all of them. Unknown draws the larger of surface and air for every ring, plus fallout.
+  text 13 DIM pad=0/3 links | Burns: 50% chance of second-degree burns to bare skin with a direct view of the fireball, using the most sensitive skin curve of Glasstone Fig. 12.64 (about 3.9 cal/cm² at 10 kt, 5.5 at 1 Mt) and the clear-day (12-mile visibility) ranges of Fig. 7.42. A surface burst delivers about half the heat of an air burst (thermal partition 0.18 vs 0.35).
+  text 13 DIM pad=0/3 links | Initial radiation: 100 rad (1 Gy) total gamma and neutron dose outdoors without shielding (Glasstone Figs. 8.33 and 8.64; surface bursts corrected by Table 8.37 and §8.65). FEMA uses the same 100 rad line for "radiation injuries". It is received within the first minute.
+  text 13 DIM pad=0/3 links | Fallout: idealized H+1 reference dose-rate contours for a contact surface burst, 100% fission, from Glasstone Table 9.93, scaled for wind speed (§9.96-9.97, valid about 8-45 mph) and drawn downwind of the wind you enter. Real fallout follows the winds aloft, which can differ from the surface wind. Drawn only for surface or unknown bursts.
+  text 13 DIM pad=0/3 links | Accuracy: blast ±20% (Glasstone §5.142), thermal ±25% (§7.85), initial radiation within a factor of 0.5-2 for fission and 0.25-1.5 for thermonuclear weapons (Figs. 8.33a/b).
+  text 12 bold BLUE pad=10/4 slot=ref_NUC_SHELTER | SHELTER: PROTECTION FACTORS
+  text 13 DIM pad=0/3 links | A protection factor (PF) is how many times less radiation you receive inside than outside (LLNL-TR-410067, Table 1):
+  text 13 TEXT pad=0/3 indent=8 links | • Wood-frame house: 2-3. Vehicle: 1.7-2.
+  text 13 TEXT pad=0/3 indent=8 links | • House basement: 10-20.
+  text 13 TEXT pad=0/3 indent=8 links | • Apartment building, lower floors: 10; upper floors (core): 100.
+  text 13 TEXT pad=0/3 indent=8 links | • Concrete blockhouse: 10-150 (9-inch walls), 30-1,000 (12-inch walls). Underground, 3 ft cover: 5,000.
+  text 13 DIM pad=0/3 links | LLNL rates shelter Good at PF 100 (core of a large office building, basement of a multistory building), Adequate at PF 10 (periphery or top floor of office buildings, shallow basements) and Inadequate at PF 3 (cars, light single-story buildings without basements). FEMA calls shelter adequate when it cuts the dose tenfold or more.
+  text 12 bold BLUE pad=10/4 slot=ref_NUC_FALLOUT | FALLOUT AND DOSE RATE
+  text 13 DIM pad=0/3 links | For every sevenfold increase in time after the explosion, the dose rate decreases by a factor of ten (Glasstone & Dolan §9.15): 100 R/h at 1 hour is about 10 R/h at 7 hours and 1 R/h at 2 days.
+  text 13 TEXT pad=0/3 indent=8 links | • Fraction of the H+1 rate left: H+2 0.44, H+6 0.12, H+7 0.10, H+24 0.022, H+48 0.0096.
+  text 13 DIM pad=0/3 links | FEMA's radiation zones are set by measurement, never by a model:
+  text 13 TEXT pad=0/3 indent=8 links | • Dangerous Radiation Zone: above 10 R/h outdoors. Can reach tens of miles downwind in the first hours, then shrinks fast.
+  text 13 TEXT pad=0/3 indent=8 links | • Hot Zone: 0.01 R/h (10 mR/h) to 10 R/h.
+  text 13 DIM pad=0/3 links | Blast's contours are H+1 reference rates. Fallout reaches distant points hours later, already decayed, so a contour is not the Dangerous Radiation Zone.
+  text 13 DIM pad=0/3 links | Lack of visible fallout does not indicate the absence of fallout; appropriate radiation measurements are required (LLNL NARAC). Fallout at lower levels extends well beyond any drawn zone, particularly downwind.
+  text 12 bold BLUE pad=10/4 slot=ref_NUC_MIL | MILITARY FALLOUT PREDICTION (ZONES I AND II)
+  text 13 DIM pad=0/3 links | The military picture is the simplified fallout prediction of FM 3-3-1 (1994) and FM 3-11.3 (2006, Change 1 2009), the last public US versions. Current manuals (TM 3-11.32, NATO ATP-45) are restricted and may differ.
+  text 13 TEXT pad=0/3 indent=8 links | • Zone I: immediate operational concern. Exposed, unprotected personnel may receive 125 cGy or more in a relatively short time (less than 4 hours after the actual arrival of fallout). Casualties and major disruption may occur in parts of this zone.
+  text 13 TEXT pad=0/3 indent=8 links | • Zone II: secondary hazard. The total dose to exposed, unprotected personnel is not expected to reach 125 cGy within 4 hours of arrival, but may reach 75 cGy or more within the first 24 hours.
+  text 13 TEXT pad=0/3 indent=8 links | • Outside both zones, exposed, unprotected personnel may receive a total dose that does not reach 75 cGy in the first 24 hours after arrival.
+  text 13 DIM pad=0/3 links | Method: Zone I downwind distance from FM 3-3-1 Table E-4 (yield and effective wind speed); Zone II is twice Zone I. Radial lines 20° either side of the effective downwind direction (40° sector) unless the EDM gives a wider angle; tangents from the cloud-radius semicircle of the yield group to the Zone I arc; dashed time-of-arrival arcs every effective wind speed (H+1, H+2, ...).
+  text 13 DIM pad=0/3 links | Effective downwind message (EDM) lines: 6 digits = downwind direction and speed (090016 = toward 090° at 16 km/h); 9 digits = plus an expanded angle; 3 digits = winds below 8 km/h, the Zone I radius in km, drawn as two circles. Use the line for the yield group (ALFA ≤2 kt, BRAVO ≤5, CHARLIE ≤30, DELTA ≤100, ECHO ≤300, FOXTROT ≤1 MT, GOLF ≤3 MT). EDMs older than 12 hours are not used (FM 3-3-1).
+  text 13 DIM pad=0/3 links | Arrival: fallout may arrive as early as half the estimated time. If none has arrived by twice the estimate (or 12 hours, whichever is earlier), assume the area will not receive fallout.
+  text 13 DIM pad=0/3 links | No fallout predictions are made for air bursts over land. Overlapping predictions take the higher zone. The prediction is an estimate only; its boundaries are not dose-rate contours.
+  text 13 DIM pad=0/3 links | Table E-4 is used as published, except where it prints a smaller distance for a larger yield or wind (a few cells between 6 and 13 km): there the larger neighbouring value is used. Worked examples reproduced: 16 kt at 16 km/h = 18 km (FM 3-3-1); 35 kt at 29 km/h ≈ 33 km (FM 3-11.3); 100 kt at 16 knots ≈ 30 nmi (FM 3-3-1).
+  text 12 bold BLUE pad=10/4 slot=ref_NUC_NBC | NBC 1 NUC OBSERVER REPORT
+  text 13 DIM pad=0/3 links | The NBC 1 NUC is the observer's report (FM 3-11.3 Fig. G-3). Mandatory lines: BRAVO (your position and the direction to the burst), DELTA (time), GOLF (delivery), HOTEL (burst type). Optional: FOXTROT (GZ, actual or estimated), JULIET (flash-to-bang), KILO (crater), LIMA (cloud width), YANKEE (wind). ALFA (strike serial number) is assigned by the CBRN cell.
+  text 13 TEXT pad=0/3 indent=8 links | • Do not look at the fireball. After the second shock wave has passed, uncover your eyes and note the time to the nearest minute.
+  text 13 TEXT pad=0/3 indent=8 links | • Flash-to-bang (JULIET): at the flash cover your eyes, get down and count seconds until the shock wave arrives (there will be two). Distance = seconds x 0.35 km.
+  text 13 TEXT pad=0/3 indent=8 links | • Burst type (HOTEL): if the cloud is lighter in colour than the stem, or the stem is ragged or broken (not solidly joined to the cloud), it was an AIR burst. If the stem is thick and dark and joins the cloud, SURFACE. Otherwise, or at night, UNKNOWN.
+  text 13 TEXT pad=0/3 indent=8 links | • Cloud width (LIMA): at H+5 minutes, take compass bearings to the left and right edges of the cloud; the difference is the angular width. Cloud measurements are not taken after H+10 minutes.
+  text 13 TEXT pad=0/3 indent=8 links | • GZ by polar plot: your position, the azimuth to the stem or cloud, and flash-to-bang x 0.35 km.
+  text 13 DIM pad=0/3 links | Precedence: FLASH for the first nuclear use against your forces, otherwise IMMEDIATE. Send it to the next higher headquarters (unit SOP).
+  text 12 bold BLUE pad=10/4 slot=ref_NUC_RES | RADIATION EXPOSURE STATUS (MILITARY)
+  text 13 DIM pad=0/3 links | Radiation exposure status (RES) by total cumulative dose (JP 3-11, 2008, Fig. D-2):
+  text 13 TEXT pad=0/3 indent=8 links | • R0: 0-0.05 cGy. R1A: 0.05-0.5. R1B: 0.5-5. R1C: 5-10 (priority tasks only). R1D: 10-25 (critical tasks only). R1E: 25-75 (monitor for acute radiation syndrome). R2: 75-125 (further exposure exceeds moderate operational risk). R3: over 125 cGy (all further exposure exceeds emergency risk).
+  text 13 DIM pad=0/3 links | Severity of radiological threat (Fig. D-3): negligible over 20 cGy total or 0.01 cGy/h; marginal over 75 cGy or 0.5 cGy/h; critical over 200 cGy or 10 cGy/h; catastrophic over 450 cGy or 200 cGy/h.
+  text 13 DIM pad=0/3 links | Recommended operational exposure guidance, cGy per mission (Fig. D-6), critical / priority / routine: extremely high risk 125 / 75 / 25; high 75 / 25 / 5; moderate 25 / 5 / 0.5; low 5 / 0.5 / 0.5. The commander may set any OEG.
+  text 13 DIM pad=0/3 links | 1 rad = 1 cGy. These are military risk guides. For civilians, FEMA's advice is to shelter and avoid any dose that can be avoided.
+  text 12 bold BLUE pad=10/4 slot=ref_NUC_DOSE | RADIATION DOSE AND EFFECTS
+  text 13 DIM pad=0/3 links | Approximate short-term whole-body dose effects for adults (LLNL-TR-410067, Table 2; deaths without / with medical treatment, nausea and vomiting within 4 hours):
+  text 13 TEXT pad=0/3 indent=8 links | • 100 rad: deaths under 5% / 0%; symptoms 5-30%.
+  text 13 TEXT pad=0/3 indent=8 links | • 200 rad: under 5% / under 5%; symptoms 60%.
+  text 13 TEXT pad=0/3 indent=8 links | • 300 rad: 30-50% / 15-30%; symptoms 75%.
+  text 13 TEXT pad=0/3 indent=8 links | • 600 rad: 95-100% / 50%; symptoms 100%.
+  text 13 TEXT pad=0/3 indent=8 links | • 1,000 rad: 100% / 90% or more; symptoms 100%.
+  text 13 DIM pad=0/3 links | Children and people with other injuries are at greater risk.
+  text 12 bold BLUE pad=10/4 slot=ref_NUC_YIELDS | YIELD PRESETS
+  text 13 DIM pad=0/3 links | Yield presets are public, unofficial estimates. Ranged estimates use the upper value. Any yield from 0.1 kt to 50 Mt can be typed instead. Above 10 Mt every ring is extrapolated beyond the source charts.
+  text 13 TEXT pad=0/3 indent=8 links | • Improvised device, 0.1 kT: 0.1 kT. FEMA Planning Guidance, 3rd ed. (2022).
+  text 13 TEXT pad=0/3 indent=8 links | • Improvised device, 1 kT: 1 kT. FEMA Planning Guidance, 3rd ed. (2022).
+  text 13 TEXT pad=0/3 indent=8 links | • Improvised device, 10 kT (FEMA's main scenario): 10 kT. FEMA Planning Guidance, 3rd ed. (2022).
+  text 13 TEXT pad=0/3 indent=8 links | • North Korea test, Oct 2006: est. 0.7-2 kt (upper); possibly a partial failure. Published seismic estimates (BGR, USTC, NORSAR, US intelligence), as compiled in public lists.
+  text 13 TEXT pad=0/3 indent=8 links | • North Korea test, May 2009: est. 2-5.4 kt (upper). Published seismic estimates (BGR, USTC, NORSAR, US intelligence), as compiled in public lists.
+  text 13 TEXT pad=0/3 indent=8 links | • Hiroshima, 1945 (Little Boy): about 15 kt (air burst). LANL LA-8819 (Hiroshima, Nagasaki).
+  text 13 TEXT pad=0/3 indent=8 links | • North Korea test, Feb 2013: est. 6-16 kt (upper). Published seismic estimates (BGR, USTC, NORSAR, US intelligence), as compiled in public lists.
+  text 13 TEXT pad=0/3 indent=8 links | • Nagasaki, 1945 (Fat Man): about 21 kt (air burst). LANL LA-8819 (Hiroshima, Nagasaki).
+  text 13 TEXT pad=0/3 indent=8 links | • Trinity test, 1945: 24.8 kt (2021 revision). LANL 1663 (2022): revised Trinity yield 24.8 ±2 kt (was 21 kt).
+  text 13 TEXT pad=0/3 indent=8 links | • North Korea test, Sep 2016: est. 15-25 kt (upper). Published seismic estimates (BGR, USTC, NORSAR, US intelligence), as compiled in public lists.
+  text 13 TEXT pad=0/3 indent=8 links | • Pakistan largest test, 1998: claimed 30-36 kt (upper); seismic estimates far lower. Physics Today 51(7), 1998: claimed yields and seismic estimates.
+  text 13 TEXT pad=0/3 indent=8 links | • India thermonuclear test, 1998: claimed 43-45 kt (upper); seismic estimates far lower. Physics Today 51(7), 1998: claimed yields and seismic estimates.
+  text 13 TEXT pad=0/3 indent=8 links | • US B61-3/-4 bombs (Europe, replaced by B61-12): 0.3-170 kt (upper). Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • North Korea test, Sep 2017: est. 70-280 kt (upper; often quoted 250). Published seismic estimates (BGR, USTC, NORSAR, US intelligence), as compiled in public lists.
+  text 13 TEXT pad=0/3 indent=8 links | • France TN 81 (retired): 300 kt. Public historical records (DOE/DTRA histories, NPS, museum and archive summaries).
+  text 13 TEXT pad=0/3 indent=8 links | • Ivy King test, 1952: 500 kt, largest unboosted fission test. Public historical records (DOE/DTRA histories, NPS, museum and archive summaries).
+  text 13 TEXT pad=0/3 indent=8 links | • China JL-2 SLBM (replaced by JL-3): 700 kt. Kristensen et al., Nuclear Notebook: Chinese nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US W59 (Minuteman I, retired): 1 Mt. Public historical records (DOE/DTRA histories, NPS, museum and archive summaries).
+  text 13 TEXT pad=0/3 indent=8 links | • Soviet R-12 / SS-4 (Cuban Missile Crisis): 1-2.3 Mt (upper). Public historical records (DOE/DTRA histories, NPS, museum and archive summaries).
+  text 13 TEXT pad=0/3 indent=8 links | • US Mk 39 bomb (Goldsboro, 1961): 3.8 Mt. Public historical records (DOE/DTRA histories, NPS, museum and archive summaries).
+  text 13 TEXT pad=0/3 indent=8 links | • US W53 (Titan II, retired): 9 Mt. Public historical records (DOE/DTRA histories, NPS, museum and archive summaries).
+  text 13 TEXT pad=0/3 indent=8 links | • Ivy Mike test, 1952 (first thermonuclear): 10.4 Mt. Public historical records (DOE/DTRA histories, NPS, museum and archive summaries).
+  text 13 TEXT pad=0/3 indent=8 links | • Castle Bravo test, 1954: about 15 Mt (surface). Bulletin of the Atomic Scientists, 2021.
+  text 13 TEXT pad=0/3 indent=8 links | • Tsar Bomba test, 1961 (largest ever): about 50 Mt (air burst). Public historical records (DOE/DTRA histories, NPS, museum and archive summaries).
+  text 13 TEXT pad=0/3 indent=8 links | • US B61-12 bomb, lowest setting: 0.3 kt. Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US W76-2 (Trident II, low yield): 8 kt. Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US B61-12 bomb (aircraft, incl. NATO Europe): 0.3-50 kt (upper). Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US W76-1 (Trident II): 90 kt. Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US W80-1 (air-launched cruise missile): 5-150 kt (upper). Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US W87 (Minuteman III): 300 kt. Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US W78 (Minuteman III): 335 kt. Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US B61-13 bomb (new, replacing B61-7): about 360 kt (close to the B61-7's). Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US B61-11 earth-penetrating bomb: 400 kt. Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US W88 (Trident II): 455 kt. Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • US B83-1 bomb (few left, retiring): up to 1.2 Mt. Kristensen et al., Nuclear Notebook: United States nuclear weapons, 2026 (Bull. At. Sci. 82:2), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • Russia Iskander-M / 9M729 cruise missile: 10-100 kt (upper). Kristensen et al., Nuclear Notebook: Russian nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • Russia Yars ICBM / Bulava, Sineva SLBMs: 100 kt (Yars uncertain). Kristensen et al., Nuclear Notebook: Russian nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • Russia Oreshnik: 250 kt. Kristensen et al., Nuclear Notebook: Russian nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • Russia Sarmat (RS-28, entering service): 500 kt (uncertain). Kristensen et al., Nuclear Notebook: Russian nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • Russia RS-20V Voevoda (SS-18): 500-800 kt (upper). Kristensen et al., Nuclear Notebook: Russian nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • Russia Topol-M (SS-27 Mod 1): 800 kt. Kristensen et al., Nuclear Notebook: Russian nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • China DF-41 / DF-31 / DF-26 / DF-5B / JL-3: 425 kt. Kristensen et al., Nuclear Notebook: Chinese nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • China DF-5A: 4.5 Mt (new DF-5C: "multi-megaton", no figure). Kristensen et al., Nuclear Notebook: Chinese nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • UK Trident II: 100 kt (a low-yield option is not deployed). Kristensen et al., Nuclear Notebook: United Kingdom nuclear weapons, 2024 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • France M51 (TN 75 / TNO): 100 kt. Kristensen et al., Nuclear Notebook: French nuclear weapons, 2025 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • France ASMPA cruise missile (TNA): under 300 kt (upper; may be nearer 100). Kristensen et al., Nuclear Notebook: French nuclear weapons, 2025 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • India Prithvi-II / K-15 / aircraft bombs: 12 kt. Kristensen et al., Nuclear Notebook: Indian nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • India Agni missiles: 10-40 kt (upper). Kristensen et al., Nuclear Notebook: Indian nuclear weapons, 2026 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • Pakistan Nasr / Babur / Ghaznavi / Shaheen-I / Abdali / aircraft: 5-12 kt (upper). Kristensen et al., Nuclear Notebook: Pakistani nuclear weapons, 2025 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • Pakistan Shaheen-II / Ghauri: 10-40 kt (upper). Kristensen et al., Nuclear Notebook: Pakistani nuclear weapons, 2025 (Bull. At. Sci.), Table 1.
+  text 13 TEXT pad=0/3 indent=8 links | • North Korea (most warheads): 10-20 kt (upper); a smaller number may be higher. Kristensen et al., Nuclear Notebook: North Korean nuclear weapons, 2024 (Bull. At. Sci.).
+  text 13 TEXT pad=0/3 indent=8 links | • Israel: no preset. Nuclear Notebook (2021) gives no yield estimates for Israel's weapons.
+  text 12 bold BLUE pad=10/4 slot=ref_NUC_SOURCES | NUCLEAR SOURCES
+  text 13 TEXT pad=0/3 indent=8 links | • FEMA, Planning Guidance for Response to a Nuclear Detonation, 3rd ed., 2022 (record of change 06/12/2023). https://www.fema.gov/sites/default/files/documents/fema_nuc-detonation-planning-guide.pdf
+  text 13 TEXT pad=0/3 indent=8 links | • FEMA, Nuclear Detonation Preparedness: Communicating in the Immediate Aftermath, 2nd ed., 2024.
+  text 13 TEXT pad=0/3 indent=8 links | • Glasstone & Dolan, The Effects of Nuclear Weapons, 3rd ed., US DoD / DOE, 1977. https://www.osti.gov/servlets/purl/6852629
+  text 13 TEXT pad=0/3 indent=8 links | • Buddemeier & Dillon, Key Response Planning Factors for the Aftermath of Nuclear Terrorism, LLNL-TR-410067, 2009.
+  text 13 TEXT pad=0/3 indent=8 links | • FEMA, Planning Guidance, 2nd ed., 2010 (zone overpressures used for the air-burst ratios).
+  text 13 TEXT pad=0/3 indent=8 links | • FM 3-3-1 / FMFM 11-18, Nuclear Contamination Avoidance, 9 Sep 1994 (approved for public release): Table E-1, Table E-4, simplified fallout prediction.
+  text 13 TEXT pad=0/3 indent=8 links | • FM 3-11.3 / MCWP 3-37.2A / NTTP 3-11.25 / AFTTP(I) 3-2.56, CBRN Contamination Avoidance, 2 Feb 2006, Change 1 30 Apr 2009 (distribution unlimited): Zones I/II, NBC 1/3 NUC formats.
+  text 13 TEXT pad=0/3 indent=8 links | • JP 3-11, Operations in CBRN Environments, 26 Aug 2008, Appendix D.
+  text 13 TEXT pad=0/3 indent=8 links | • LLNL NARAC, Nuclear detonation briefing products (caveat wording).
+  text 13 DIM pad=0/3 links | Glasstone & Dolan curves were read from the 1977 figures; Blast is not affiliated with or endorsed by any of these agencies.
+  text 11 DIM pad=12/4 | Built on the public DHS/DOJ Bomb Threat Stand-Off Card (CISA Office for Bombing Prevention and FBI Counter-IED Unit) and the 2024 Emergency Response Guidebook. Not endorsed by any of these agencies.
+
+=== range & bearing form
+  input dist hinted numeric max=0 | Distance to the item = []
+  check feet false | Distance in feet (otherwise metres)
+  input brg hinted numeric max=0 | Bearing to the item, degrees (0-359) = []
+  check mag true | Magnetic bearing (from a compass)
+  text 0 DEFAULT | Measured from your GPS position. Estimate from where you are now; never walk closer to measure.
+rb dist=[] brg=[90] true -> Enter a distance between 1 m and 20 km.
+rb dist=[] brg=[90] true (no declination) -> Enter a distance between 1 m and 20 km.
+rb dist=[0.5] brg=[90] true -> Enter a distance between 1 m and 20 km.
+rb dist=[0.5] brg=[90] true (no declination) -> Enter a distance between 1 m and 20 km.
+rb dist=[20001] brg=[90] true -> Enter a distance between 1 m and 20 km.
+rb dist=[20001] brg=[90] true (no declination) -> Enter a distance between 1 m and 20 km.
+rb dist=[3] brg=[90] ft true -> Enter a distance between 1 m and 20 km.
+rb dist=[3] brg=[90] ft true (no declination) -> Enter a distance between 1 m and 20 km.
+rb dist=[250] brg=[] true -> Enter a bearing from 0 to 359.
+rb dist=[250] brg=[] true (no declination) -> Enter a bearing from 0 to 359.
+rb dist=[250] brg=[361] true -> Enter a bearing from 0 to 359.
+rb dist=[250] brg=[361] true (no declination) -> Enter a bearing from 0 to 359.
+rb dist=[250] brg=[90] true -> 38.0406,-84.5008521
+rb dist=[250] brg=[90] true (no declination) -> 38.0406,-84.5008521
+rb dist=[250] brg=[90] magnetic -> 38.0407767,-84.5008609
+rb dist=[250] brg=[90] magnetic (no declination) -> Magnetic declination unavailable: enter a true bearing.
+rb dist=[1,000] brg=[359.5] ft magnetic -> 38.0433356,-84.5040026
+rb dist=[1,000] brg=[359.5] ft magnetic (no declination) -> Magnetic declination unavailable: enter a true bearing.
+rb dist=[250] brg=[360] true -> 38.0428523,-84.5037
+rb dist=[250] brg=[360] true (no declination) -> 38.0428523,-84.5037

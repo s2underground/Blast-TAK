@@ -83,6 +83,11 @@ public class GoldenSnapshotTest {
     }
 
     @Test
+    public void pane() {
+        Golden.check("pane.txt", paneSnapshot());
+    }
+
+    @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
     }
@@ -105,6 +110,7 @@ public class GoldenSnapshotTest {
             Golden.check("forms.txt", formsSnapshot());
             Golden.check("wind.txt", windSnapshot());
             Golden.check("new-incident.txt", newIncidentSnapshot());
+            Golden.check("pane.txt", paneSnapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);
@@ -904,5 +910,117 @@ public class GoldenSnapshotTest {
             for (Item i : ((com.atakmap.android.blast.plugin.core.screen
                     .Section) it).items)
                 dumpEntries(sb, i);
+    }
+
+    /**
+     * Refactor step 4g: pane header and tabs, the incident list, the
+     * Reference tab and the range & bearing form.
+     */
+    static String paneSnapshot() {
+        StringBuilder sb = new StringBuilder();
+        StandoffTable table = StandoffTable.current();
+        for (boolean ref : new boolean[] { false, true })
+            sb.append("=== header, reference=").append(ref).append("\n")
+                    .append(ScreenDump.dump(com.atakmap.android.blast.plugin
+                            .core.screen.MainPane.header(table, ref)));
+        sb.append(ScreenDump.item(com.atakmap.android.blast.plugin.core.screen
+                .MainPane.footer())).append("\n");
+
+        sb.append("\n=== list placeholder\n").append(ScreenDump.dump(
+                com.atakmap.android.blast.plugin.core.screen.IncidentList
+                        .placeholder()));
+        List<com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry>
+                none = new ArrayList<>();
+        sb.append("\n=== list empty\n").append(ScreenDump.dump(
+                com.atakmap.android.blast.plugin.core.screen.IncidentList
+                        .screen(none, null)));
+
+        BlastRecord car = BlastRecord.create(ZoneCalculator.forRow(table,
+                "CAR"), BY, T);
+        UxoRecord shell = UxoRecord.create("PROJ_MORTAR", false, false,
+                UxoRecord.Where.PATH, UxoRecord.Placement.MAP, BY, T);
+        NucRecord nuc = NucRecord.create(10, NucModel.Burst.SURFACE,
+                "FEMA_10", 270, 15, BY, T);
+        List<com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry>
+                es = new ArrayList<>();
+        es.add(com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry
+                .of("u1", "IED 1", car, 2000));
+        es.add(com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry
+                .of("u2", "IED 2 (cleared)", car.cleared("BRAVO-2", T), 5));
+        es.add(com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry
+                .of("u3", "UXO 1", shell, 120));
+        es.add(com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry
+                .of("u4", "UXO 2", shell, 900));
+        es.add(com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry
+                .of("u5", "NUC 1", nuc, 1500));
+        es.add(com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry
+                .of("u6", "NUC 2", nuc, 60000));
+        es.add(com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry
+                .of("u7", "IED 3 (no position)", car, Double.NaN));
+        es.add(com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry
+                .of("u8", "IED 4", car, 50));
+        es.add(com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry
+                .of("u9", "NUC 3 (cleared)", nuc.cleared("BRAVO-2", T), 10));
+        List<com.atakmap.android.blast.plugin.core.screen.IncidentList.Entry>
+                sorted = com.atakmap.android.blast.plugin.core.screen
+                        .IncidentList.sorted(es);
+        sb.append("\n=== list, u3 selected\n").append(ScreenDump.dump(
+                com.atakmap.android.blast.plugin.core.screen.IncidentList
+                        .screen(sorted, "u3")));
+        sb.append("signature: ").append(com.atakmap.android.blast.plugin.core
+                .screen.IncidentList.signature(sorted, "u3")).append("\n");
+        sb.append("uid of go:u5 = ").append(com.atakmap.android.blast.plugin
+                .core.screen.IncidentList.uid("go:u5", "go:")).append(", of "
+                        + "sel:u5 as go = ").append(com.atakmap.android.blast
+                                .plugin.core.screen.IncidentList.uid("sel:u5",
+                                        "go:")).append("\n");
+
+        sb.append("\n=== reference tab\n").append(ScreenDump.dump(
+                com.atakmap.android.blast.plugin.core.screen.ReferenceTab
+                        .screen("112")));
+
+        sb.append("\n=== range & bearing form\n").append(ScreenDump.dump(
+                com.atakmap.android.blast.plugin.core.screen.RangeBearingForm
+                        .form()));
+        com.atakmap.android.blast.plugin.core.port.Magnetic mag =
+                new com.atakmap.android.blast.plugin.core.port.Magnetic() {
+                    @Override
+                    public double toTrue(double m) {
+                        return m - 4.5;
+                    }
+                };
+        com.atakmap.android.blast.plugin.core.port.Magnetic broken =
+                new com.atakmap.android.blast.plugin.core.port.Magnetic() {
+                    @Override
+                    public double toTrue(double m) {
+                        return Double.NaN;
+                    }
+                };
+        String[][] cases = { { "", "90", "", "" }, { "0.5", "90", "", "" },
+                { "20001", "90", "", "" }, { "3", "90", "feet", "" },
+                { "250", "", "", "" }, { "250", "361", "", "" },
+                { "250", "90", "", "" }, { "250", "90", "", "mag" },
+                { "1,000", "359.5", "feet", "mag" }, { "250", "360", "", "" } };
+        for (String[] c : cases)
+            for (com.atakmap.android.blast.plugin.core.port.Magnetic m
+                    : new com.atakmap.android.blast.plugin.core.port.Magnetic[] {
+                            mag, broken }) {
+                com.atakmap.android.blast.plugin.core.screen.FormValues v =
+                        new com.atakmap.android.blast.plugin.core.screen
+                                .FormValues().put("dist", c[0]).put("brg",
+                                        c[1]).put("feet", !c[2].isEmpty())
+                                .put("mag", !c[3].isEmpty());
+                com.atakmap.android.blast.plugin.core.screen.RangeBearingForm
+                        .Result r = com.atakmap.android.blast.plugin.core
+                                .screen.RangeBearingForm.place(v, LAT, LON, m);
+                sb.append("rb dist=[").append(c[0]).append("] brg=[")
+                        .append(c[1]).append("]").append(c[2].isEmpty() ? ""
+                                : " ft").append(c[3].isEmpty() ? " true"
+                                        : " magnetic").append(m == broken
+                                                ? " (no declination)" : "")
+                        .append(" -> ").append(r.error != null ? r.error
+                                : Golden.ll(r.lat, r.lon)).append("\n");
+            }
+        return sb.toString();
     }
 }

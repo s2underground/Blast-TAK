@@ -49,6 +49,12 @@ import com.atakmap.android.blast.plugin.core.screen.WindPicker;
 import com.atakmap.android.blast.plugin.core.screen.NewIncident;
 import com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode;
 import com.atakmap.android.blast.plugin.core.screen.Section;
+import com.atakmap.android.blast.plugin.core.screen.IncidentList;
+import com.atakmap.android.blast.plugin.core.screen.ListRow;
+import com.atakmap.android.blast.plugin.core.screen.MainPane;
+import com.atakmap.android.blast.plugin.core.screen.RangeBearingForm;
+import com.atakmap.android.blast.plugin.core.screen.ReferenceTab;
+import com.atakmap.android.blast.plugin.core.screen.TitleRow;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
 import com.atakmap.android.blast.plugin.core.screen.StandoffCard;
@@ -57,15 +63,10 @@ import com.atakmap.android.blast.plugin.core.screen.Tone;
 import com.atakmap.android.blast.plugin.core.Names;
 import com.atakmap.android.blast.plugin.atak.Sharing;
 import com.atakmap.android.blast.plugin.core.BlastRecord;
-import com.atakmap.android.blast.plugin.core.Formats;
-import com.atakmap.android.blast.plugin.core.Guidance;
-import com.atakmap.android.blast.plugin.core.PositionCheck;
 import com.atakmap.android.blast.plugin.core.StandoffTable;
 import com.atakmap.android.blast.plugin.core.UxoRecord;
 import com.atakmap.android.blast.plugin.core.UxoReference;
-import com.atakmap.android.blast.plugin.core.UxoTable;
 import com.atakmap.android.blast.plugin.core.UxoText;
-import com.atakmap.android.blast.plugin.core.ZoneCalculator;
 import com.atakmap.android.contact.Contact;
 import com.atakmap.android.contact.Contacts;
 import com.atakmap.android.contact.IndividualContact;
@@ -140,9 +141,8 @@ public final class BlastPane {
 
     private final ScrollView root;
     private LinearLayout incidentsView, referenceView;
-    private Button tabIncidents, tabReference;
-    private final java.util.Map<String, View> refAnchors = new java.util.HashMap<>();
-    private TextView emergencyText;
+    /** Rendered core screens: pane header, Reference tab, incident list. */
+    private Rendered headerView, refView, listView;
 
     /** The new-incident choices (core) and their rendered views. */
     private final NewIncident newIncident = new NewIncident(table);
@@ -150,9 +150,6 @@ public final class BlastPane {
     /** What the map tap places. */
     private Mode pickKind = Mode.NONE;
     private LinearLayout zoneCard;
-    private LinearLayout zoneList;
-    private TextView zoneListHeader;
-    private Button deleteClearedBtn;
     /** Debug builds only: what the incident lookup found. */
     private TextView debugLine;
 
@@ -275,32 +272,16 @@ public final class BlastPane {
         LinearLayout outer = vertical();
         int pad = dp(8);
         outer.setPadding(pad, pad, pad, pad);
-        outer.addView(text("BLAST STANDOFF", 18, TEXT, true));
-        outer.addView(text("Bomb threats: " + table.title + " ("
-                + table.editionLabel() + "). Military ordnance (UXO): "
-                + UxoTable.SHORT_NAME + " (" + UxoTable.EDITION_LABEL + "). "
-                + "Nuclear reference: FEMA 2022, Glasstone & Dolan 1977.",
-                12, DIM, false));
-        LinearLayout tabs = horizontal();
-        tabIncidents = button("INCIDENTS", SEL);
-        tabReference = button("REFERENCE", BTN);
-        tabIncidents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTab(false, null);
-            }
-        });
-        tabReference.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTab(true, null);
-            }
-        });
-        tabs.addView(tabIncidents, weight());
-        tabs.addView(tabReference, weight());
-        LinearLayout.LayoutParams tl = full();
-        tl.setMargins(0, dp(6), 0, dp(2));
-        outer.addView(tabs, tl);
+        headerView = render(MainPane.header(table, false), outer,
+                new ScreenAction() {
+                    @Override
+                    public void run(String action) {
+                        if (MainPane.TAB_INCIDENTS.equals(action))
+                            showTab(false, null);
+                        else if (MainPane.TAB_REFERENCE.equals(action))
+                            showTab(true, null);
+                    }
+                });
         incidentsView = (LinearLayout) build();
         referenceView = buildReference();
         referenceView.setVisibility(View.GONE);
@@ -314,12 +295,12 @@ public final class BlastPane {
         stopPick();
         incidentsView.setVisibility(reference ? View.GONE : View.VISIBLE);
         referenceView.setVisibility(reference ? View.VISIBLE : View.GONE);
-        tint(tabIncidents, reference ? BTN : SEL);
-        tint(tabReference, reference ? SEL : BTN);
+        headerView.update(MainPane.header(table, reference));
         main.post(new Runnable() {
             @Override
             public void run() {
-                View a = sectionId == null ? null : refAnchors.get(sectionId);
+                View a = sectionId == null ? null
+                        : refView.slots.get(ReferenceTab.anchor(sectionId));
                 root.smoothScrollTo(0, a == null ? 0
                         : referenceView.getTop() + a.getTop());
             }
@@ -329,25 +310,13 @@ public final class BlastPane {
     private View build() {
         LinearLayout col = vertical();
 
-        LinearLayout listHead = horizontal();
-        zoneListHeader = header("INCIDENTS ON THE MAP");
-        listHead.addView(zoneListHeader, weight());
-        deleteClearedBtn = button("Delete all cleared", BTN);
-        deleteClearedBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmDeleteCleared();
-            }
-        });
-        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        dlp.gravity = Gravity.BOTTOM;
-        deleteClearedBtn.setVisibility(View.GONE);
-        listHead.addView(deleteClearedBtn, dlp);
-        col.addView(listHead);
-        zoneList = vertical();
-        col.addView(zoneList);
+        listView = render(IncidentList.placeholder(), col,
+                new ScreenAction() {
+                    @Override
+                    public void run(String action) {
+                        listAction(action);
+                    }
+                });
 
         zoneCard = vertical();
         col.addView(zoneCard);
@@ -365,9 +334,7 @@ public final class BlastPane {
             debugLine = text("", 10, DIM, false);
             col.addView(debugLine);
         }
-        TextView foot = text(Guidance.DISCLAIMER, 11, DIM, false);
-        foot.setPadding(0, dp(12), 0, dp(4));
-        col.addView(foot);
+        render(new Screen().add(MainPane.footer()), col, null);
         return col;
     }
 
@@ -507,7 +474,7 @@ public final class BlastPane {
     private void promptRangeBearing() {
         final GeoPoint self = selfPoint();
         if (self == null) {
-            toast("No GPS position yet: tap the map instead.");
+            toast(RangeBearingForm.NO_GPS);
             return;
         }
         Context ctx = mapView.getContext();
@@ -515,71 +482,29 @@ public final class BlastPane {
         box.setOrientation(LinearLayout.VERTICAL);
         int p = dp(16);
         box.setPadding(p, dp(8), p, 0);
-        final EditText dist = new EditText(ctx);
-        doneKey(dist);
-        dist.setHint("Distance to the item");
-        dist.setInputType(InputType.TYPE_CLASS_NUMBER
-                | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        dist.setSingleLine(true);
-        box.addView(dist);
-        final CheckBox feet = new CheckBox(ctx);
-        feet.setText("Distance in feet (otherwise metres)");
-        box.addView(feet);
-        final EditText brg = new EditText(ctx);
-        doneKey(brg);
-        brg.setHint("Bearing to the item, degrees (0-359)");
-        brg.setInputType(InputType.TYPE_CLASS_NUMBER
-                | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        brg.setSingleLine(true);
-        box.addView(brg);
-        final CheckBox magnetic = new CheckBox(ctx);
-        magnetic.setText("Magnetic bearing (from a compass)");
-        magnetic.setChecked(true);
-        box.addView(magnetic);
-        TextView note = new TextView(ctx);
-        note.setText("Measured from your GPS position. Estimate from where "
-                + "you are now; never walk closer to measure.");
-        box.addView(note);
+        final FormView fv = renderForm(RangeBearingForm.form(), ctx, box,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // nothing live in this form
+                    }
+                });
         showTyping(new AlertDialog.Builder(ctx)
-                .setTitle("Place by range & bearing")
+                .setTitle(RangeBearingForm.TITLE)
                 .setView(box)
                 .setPositiveButton("Place",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface d, int w) {
-                                double r = ZoneCalculator.parseQuantity(
-                                        dist.getText().toString());
-                                double b = ZoneCalculator.parseQuantity(
-                                        brg.getText().toString());
-                                if (feet.isChecked())
-                                    r = Formats.ftToM(r);
-                                if (!(r >= 1 && r <= 20000)) {
-                                    toast("Enter a distance between 1 m and "
-                                            + "20 km.");
+                                RangeBearingForm.Result res = RangeBearingForm
+                                        .place(fv.values(), self.getLatitude(),
+                                                self.getLongitude(),
+                                                magneticAt(self));
+                                if (res.error != null) {
+                                    toast(res.error);
                                     return;
                                 }
-                                if (!(b >= 0 && b <= 360)) {
-                                    toast("Enter a bearing from 0 to 359.");
-                                    return;
-                                }
-                                double trueB = b;
-                                if (magnetic.isChecked()) {
-                                    try {
-                                        trueB = ATAKUtilities
-                                                .convertFromMagneticToTrue(
-                                                        self, b);
-                                    } catch (RuntimeException e) {
-                                        Log.w(TAG, "declination unavailable", e);
-                                        toast("Magnetic declination "
-                                                + "unavailable: enter a true "
-                                                + "bearing.");
-                                        return;
-                                    }
-                                }
-                                double[] ll = Geo.destination(
-                                        self.getLatitude(), self.getLongitude(),
-                                        ((trueB % 360) + 360) % 360, r);
-                                GeoPoint at = new GeoPoint(ll[0], ll[1]);
+                                GeoPoint at = new GeoPoint(res.lat, res.lon);
                                 if (!at.isValid()) {
                                     toast("Could not compute the position.");
                                     return;
@@ -1412,12 +1337,12 @@ public final class BlastPane {
         input.setText(emergencyNumber());
         input.setInputType(InputType.TYPE_CLASS_PHONE);
         input.setFilters(new android.text.InputFilter[] {
-                new android.text.InputFilter.LengthFilter(24)
+                new android.text.InputFilter.LengthFilter(
+                        ReferenceTab.EMERGENCY_MAX)
         });
         showTyping(new AlertDialog.Builder(mapView.getContext())
-                .setTitle("Emergency number")
-                .setMessage("Shown on UXO cards and reports, e.g. 911, 112, "
-                        + "101 / 102 or a mine action centre.")
+                .setTitle(ReferenceTab.EMERGENCY_TITLE)
+                .setMessage(ReferenceTab.EMERGENCY_HELP)
                 .setView(input)
                 .setPositiveButton("Save",
                         new DialogInterface.OnClickListener() {
@@ -1428,9 +1353,10 @@ public final class BlastPane {
                                 prefs.edit().putString(PREF_EMERGENCY,
                                         v == null ? DEFAULT_EMERGENCY : v)
                                         .apply();
-                                if (emergencyText != null)
-                                    emergencyText.setText("Emergency number: "
-                                            + emergencyNumber());
+                                if (refView != null)
+                                    refView.update(new Screen().add(
+                                            ReferenceTab.emergency(
+                                                    emergencyNumber())));
                                 cardSignature = null;
                                 refresh();
                             }
@@ -1444,42 +1370,15 @@ public final class BlastPane {
 
     private LinearLayout buildReference() {
         LinearLayout col = vertical();
-        LinearLayout num = horizontal();
-        num.setGravity(Gravity.CENTER_VERTICAL);
-        emergencyText = text("Emergency number: " + emergencyNumber(), 14,
-                TEXT, true);
-        num.addView(emergencyText, weight());
-        Button change = button("Change…", BTN);
-        change.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                promptEmergencyNumber();
-            }
-        });
-        num.addView(change);
-        col.addView(num);
-        for (UxoReference.Section sec : NucReference.allSections()) {
-            TextView h = header(sec.title.toUpperCase(java.util.Locale.US));
-            refAnchors.put(sec.id, h);
-            col.addView(h);
-            for (String para : sec.body) {
-                boolean bullet = para.startsWith("• ");
-                TextView t = text(para, 13, bullet ? TEXT : DIM, false);
-                t.setPadding(bullet ? dp(8) : 0, 0, 0, dp(3));
-                t.setAutoLinkMask(android.text.util.Linkify.WEB_URLS);
-                col.addView(t);
-            }
-        }
-        TextView foot = text(Guidance.DISCLAIMER, 11, DIM, false);
-        foot.setPadding(0, dp(12), 0, dp(4));
-        col.addView(foot);
+        refView = render(ReferenceTab.screen(emergencyNumber()), col,
+                new ScreenAction() {
+                    @Override
+                    public void run(String action) {
+                        if (ReferenceTab.CHANGE_EMERGENCY.equals(action))
+                            promptEmergencyNumber();
+                    }
+                });
         return col;
-    }
-
-    private TextView sub(String s) {
-        TextView t = text(s, 12, BLUE, true);
-        t.setPadding(0, dp(8), 0, dp(2));
-        return t;
     }
 
     // ------------------------------------------------------------------
@@ -1846,6 +1745,11 @@ public final class BlastPane {
                     } else {
                         update(sec.items);
                     }
+                } else if (it instanceof TitleRow) {
+                    TitleRow tr = (TitleRow) it;
+                    restyle(tr.button);
+                    if (tr.text.slot != null)
+                        apply(slots.get(tr.text.slot), tr.text);
                 } else if (it instanceof Text && it.slot != null) {
                     apply(slots.get(it.slot), (Text) it);
                 }
@@ -1882,6 +1786,8 @@ public final class BlastPane {
             v.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
         if (b.icon != null)
             setIcon(v, threatIcon(b.icon));
+        if (b.danger)
+            v.setTextColor(RED);
         enable(v, b);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1891,6 +1797,63 @@ public final class BlastPane {
         });
         rd.buttons.put(b.action, v);
         return v;
+    }
+
+    /** A TextView for a core text (kept in {@code rd} if it has a slot). */
+    private TextView textView(Text t, Rendered rd) {
+        TextView v = text(t.text, t.size, color(t.tone), t.bold);
+        if (t.mono)
+            v.setTypeface(Typeface.MONOSPACE);
+        if (t.icon != null) {
+            setIcon(v, threatIcon(t.icon));
+            v.setCompoundDrawablePadding(dp(6));
+        }
+        if (t.padTopDp != 0 || t.padBottomDp != 0 || t.indentDp != 0)
+            v.setPadding(dp(t.indentDp), dp(t.padTopDp), 0,
+                    dp(t.padBottomDp));
+        if (t.links)
+            // As 1.1: set after the text, so it takes effect on the next
+            // setText only.
+            v.setAutoLinkMask(android.text.util.Linkify.WEB_URLS);
+        if (t.slot != null)
+            rd.slots.put(t.slot, v);
+        return v;
+    }
+
+    /** An incident-list style row: colour bar, text, small buttons. */
+    private void listRow(final ListRow lr, LinearLayout into,
+            final Rendered rd) {
+        LinearLayout row = horizontal();
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setBackgroundColor(lr.selected ? SEL : CARD);
+        int p = dp(6);
+        row.setPadding(p, p, p, p);
+        View sw = new View(plugin);
+        sw.setBackgroundColor(color(lr.bar));
+        LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(dp(6),
+                dp(36));
+        sl.setMargins(0, 0, dp(6), 0);
+        row.addView(sw, sl);
+        TextView t = textView(lr.text, rd);
+        row.addView(t, new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        for (com.atakmap.android.blast.plugin.core.screen.Button b
+                : lr.buttons) {
+            Button v = screenButton(b, rd);
+            v.setMinWidth(dp(52));
+            row.addView(v);
+        }
+        View.OnClickListener select = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rd.actions.run(lr.action);
+            }
+        };
+        t.setOnClickListener(select);
+        row.setOnClickListener(select);
+        LinearLayout.LayoutParams rl = full();
+        rl.setMargins(0, 0, 0, dp(3));
+        into.addView(row, rl);
     }
 
     /** Add a core screen's items to {@code into}. */
@@ -1903,22 +1866,24 @@ public final class BlastPane {
 
     private void renderItems(List<Item> items, LinearLayout into,
             final Rendered rd) {
-        java.util.Map<String, TextView> slots = rd.slots;
         for (Item it : items) {
             if (it instanceof Text) {
-                Text t = (Text) it;
-                TextView v = text(t.text, t.size, color(t.tone), t.bold);
-                if (t.mono)
-                    v.setTypeface(Typeface.MONOSPACE);
-                if (t.icon != null) {
-                    setIcon(v, threatIcon(t.icon));
-                    v.setCompoundDrawablePadding(dp(6));
-                }
-                if (t.padTopDp != 0 || t.padBottomDp != 0)
-                    v.setPadding(0, dp(t.padTopDp), 0, dp(t.padBottomDp));
-                into.addView(v);
-                if (t.slot != null)
-                    slots.put(t.slot, v);
+                into.addView(textView((Text) it, rd));
+            } else if (it instanceof TitleRow) {
+                TitleRow tr = (TitleRow) it;
+                LinearLayout row = horizontal();
+                if (!tr.buttonAtBottom)
+                    row.setGravity(Gravity.CENTER_VERTICAL);
+                row.addView(textView(tr.text, rd), weight());
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                if (tr.buttonAtBottom)
+                    lp.gravity = Gravity.BOTTOM;
+                row.addView(screenButton(tr.button, rd), lp);
+                into.addView(row);
+            } else if (it instanceof ListRow) {
+                listRow((ListRow) it, into, rd);
             } else if (it instanceof Legend) {
                 Legend l = (Legend) it;
                 LinearLayout line = horizontal();
@@ -2154,6 +2119,17 @@ public final class BlastPane {
                 box.addView(v);
                 if (t.slot != null)
                     f.slots.put(t.slot, v);
+            } else if (it instanceof Input && ((Input) it).hinted) {
+                Input in = (Input) it;
+                EditText e = new EditText(ctx);
+                doneKey(e);
+                e.setHint(in.label);
+                e.setInputType(InputType.TYPE_CLASS_NUMBER
+                        | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                e.setSingleLine(true);
+                box.addView(e);
+                e.addTextChangedListener(tw);
+                f.inputs.put(in.id, e);
             } else if (it instanceof Input) {
                 Input in = (Input) it;
                 EditText e = field(ctx, box, in.label, in.value, in.numeric,
@@ -2254,173 +2230,76 @@ public final class BlastPane {
 
     private void refreshList() {
         final GeoPoint ref = referencePoint();
-        List<Marker> zones = store.all();
         if (debugLine != null)
             debugLine.setText("Debug: incidents " + store.lastScan());
-        // Read each record once (parsing is not free) and sort on copies.
-        final java.util.Map<String, BlastRecord> recs = new java.util.HashMap<>();
-        final java.util.Map<String, UxoRecord> uxos = new java.util.HashMap<>();
-        final java.util.Map<String, NucRecord> nucs = new java.util.HashMap<>();
-        final java.util.Map<String, Boolean> clr = new java.util.HashMap<>();
-        final java.util.Map<String, Double> dist = new java.util.HashMap<>();
-        List<Marker> usable = new ArrayList<>();
-        for (Marker m : zones) {
+        // Read each record once (parsing is not free).
+        List<IncidentList.Entry> entries = new ArrayList<>();
+        for (Marker m : store.all()) {
+            String uid = m.getUID(), name = ATAKUtilities.getDisplayName(m);
+            double d = distance(ref, m);
             NucRecord nr = BlastStore.readNuc(m);
-            UxoRecord u = nr == null ? BlastStore.readUxo(m) : null;
-            BlastRecord r = u == null && nr == null ? BlastStore.read(m) : null;
-            if (u == null && r == null && nr == null)
+            if (nr != null) {
+                entries.add(IncidentList.Entry.of(uid, name, nr, d));
                 continue;
-            if (nr != null)
-                nucs.put(m.getUID(), nr);
-            else if (u != null)
-                uxos.put(m.getUID(), u);
-            else
-                recs.put(m.getUID(), r);
-            clr.put(m.getUID(), nr != null ? nr.isCleared() : u != null
-                    ? u.isCleared() : r.isCleared());
-            dist.put(m.getUID(), distance(ref, m));
-            usable.add(m);
-        }
-        zones = usable;
-        Collections.sort(zones, new Comparator<Marker>() {
-            @Override
-            public int compare(Marker a, Marker b) {
-                // Active incidents first, then by distance.
-                boolean ca = clr.get(a.getUID());
-                boolean cb = clr.get(b.getUID());
-                if (ca != cb)
-                    return ca ? 1 : -1;
-                return Double.compare(dist.get(a.getUID()),
-                        dist.get(b.getUID()));
             }
-        });
-        int cleared = 0;
-        StringBuilder sig = new StringBuilder();
-        for (Marker m : zones) {
-            boolean c = clr.get(m.getUID());
-            if (c)
-                cleared++;
-            sig.append(m.getUID()).append(c)
-                    .append(ATAKUtilities.getDisplayName(m))
-                    .append(Math.round(dist.get(m.getUID()) / 10)).append(';');
-        }
-        sig.append(selectedZoneUid);
-        deleteClearedBtn.setVisibility(cleared > 0 ? View.VISIBLE : View.GONE);
-        deleteClearedBtn.setText("Delete all cleared (" + cleared + ")");
-        if (sig.toString().equals(listSignature))
-            return;
-        listSignature = sig.toString();
-        zoneList.removeAllViews();
-        int active = zones.size() - cleared;
-        zoneListHeader.setText("INCIDENTS ON THE MAP: " + active + " active"
-                + (cleared > 0 ? ", " + cleared + " cleared" : ""));
-        if (zones.isEmpty()) {
-            zoneList.addView(text("None. Choose the kind of threat below and "
-                    + "place it.", 13, DIM, false));
-            return;
-        }
-        for (final Marker m : zones) {
-            final UxoRecord u = uxos.get(m.getUID());
-            final NucRecord nr = nucs.get(m.getUID());
-            BlastRecord r = recs.get(m.getUID());
-            boolean isClr = clr.get(m.getUID());
-            boolean sel = m.getUID().equals(selectedZoneUid);
-            double d = dist.get(m.getUID());
-            String where = "";
-            if (!Double.isNaN(d)) {
-                where = "\n" + Formats.measured(d);
-                if (!isClr) {
-                    if (nr != null) {
-                        NucText.Ring z = d < nr.radii.sdzM ? NucText.Ring.SDZ
-                                : d < nr.radii.mdzM ? NucText.Ring.MDZ
-                                        : d < nr.radii.ldzM ? NucText.Ring.LDZ
-                                                : null;
-                        where += " · you: " + (z == null
-                                ? "outside the damage zones" : z.label);
-                    } else if (u != null)
-                        where += " · you: " + (d < u.cordonM ? "INSIDE"
-                                : "outside") + " cordon "
-                                + Formats.thousands(u.cordonM) + " m";
-                    else
-                        where += " · you: "
-                                + PositionCheck.zoneOf(r.row(), d).title;
-                }
-            }
-            LinearLayout row = horizontal();
-            row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setBackgroundColor(sel ? SEL : CARD);
-            int p = dp(6);
-            row.setPadding(p, p, p, p);
-            View sw = new View(plugin);
-            sw.setBackgroundColor(isClr ? DIM : nr != null ? NUC_COLOR
-                    : u != null ? ORANGE : RED);
-            LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(dp(6),
-                    dp(36));
-            sl.setMargins(0, 0, dp(6), 0);
-            row.addView(sw, sl);
-            TextView t = text((sel ? "▾ " : "▸ ")
-                    + ATAKUtilities.getDisplayName(m) + where, 14,
-                    isClr ? DIM : TEXT, sel);
-            if (r != null) {
-                setIcon(t, threatIcon(r.rowId));
-                t.setCompoundDrawablePadding(dp(6));
-            }
-            row.addView(t, new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-            Button go = button("Go to", BTN);
-            go.setMinWidth(dp(52));
-            go.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    goTo(m);
-                }
-            });
-            row.addView(go);
+            UxoRecord u = BlastStore.readUxo(m);
             if (u != null) {
-                Button nl = button("9-line", BTN);
-                nl.setMinWidth(dp(52));
-                nl.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        selectedZoneUid = m.getUID();
-                        listSignature = null;
-                        cardSignature = null;
-                        refresh();
-                        promptReport(m);
-                    }
-                });
-                row.addView(nl);
+                entries.add(IncidentList.Entry.of(uid, name, u, d));
+                continue;
             }
-            Button del = button("Delete", BTN);
-            del.setMinWidth(dp(52));
-            del.setTextColor(RED);
-            del.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    confirmDelete(m);
+            BlastRecord r = BlastStore.read(m);
+            if (r != null)
+                entries.add(IncidentList.Entry.of(uid, name, r, d));
+        }
+        List<IncidentList.Entry> sorted = IncidentList.sorted(entries);
+        String sig = IncidentList.signature(sorted, selectedZoneUid);
+        if (sig.equals(listSignature))
+            return;
+        listSignature = sig;
+        listView.update(IncidentList.screen(sorted, selectedZoneUid));
+    }
+
+    /** What the incident list's rows and buttons do. */
+    private void listAction(String action) {
+        if (IncidentList.DELETE_CLEARED.equals(action)) {
+            confirmDeleteCleared();
+            return;
+        }
+        String uid;
+        if ((uid = IncidentList.uid(action, IncidentList.SELECT)) != null) {
+            // Tap the selected incident again to collapse its card.
+            if (uid.equals(selectedZoneUid)) {
+                collapseSelected();
+                return;
+            }
+            selectedZoneUid = uid;
+            listSignature = null;
+            cardSignature = null;
+            refresh();
+            return;
+        }
+        for (String p : new String[] { IncidentList.GO,
+                IncidentList.NINE_LINE, IncidentList.DELETE })
+            if ((uid = IncidentList.uid(action, p)) != null) {
+                Marker m = store.liveMarker(uid);
+                if (m == null) {
+                    toast("This incident is no longer on the map.");
+                    afterDelete();
+                    return;
                 }
-            });
-            row.addView(del);
-            View.OnClickListener select = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Tap the selected incident again to collapse its card.
-                    if (m.getUID().equals(selectedZoneUid)) {
-                        collapseSelected();
-                        return;
-                    }
+                if (p.equals(IncidentList.GO)) {
+                    goTo(m);
+                } else if (p.equals(IncidentList.NINE_LINE)) {
                     selectedZoneUid = m.getUID();
                     listSignature = null;
                     cardSignature = null;
                     refresh();
+                    promptReport(m);
+                } else {
+                    confirmDelete(m);
                 }
-            };
-            t.setOnClickListener(select);
-            row.setOnClickListener(select);
-            LinearLayout.LayoutParams rl = full();
-            rl.setMargins(0, 0, 0, dp(3));
-            zoneList.addView(row, rl);
-        }
+                return;
+            }
     }
 
     private static boolean isCleared(Marker m) {

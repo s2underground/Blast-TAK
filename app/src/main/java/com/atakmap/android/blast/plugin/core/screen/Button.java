@@ -29,15 +29,18 @@ public final class Button {
     public final String icon;
     /** Label at the start (left) instead of centred. */
     public final boolean alignStart;
+    /** Destructive (ATAK: red label). */
+    public final boolean danger;
 
     public Button(String action, String label, Kind kind, float weight,
             boolean bold) {
-        this(action, label, kind, weight, bold, true, true, null, false);
+        this(action, label, kind, weight, bold, true, true, null, false,
+                false);
     }
 
     private Button(String action, String label, Kind kind, float weight,
             boolean bold, boolean enabled, boolean visible, String icon,
-            boolean alignStart) {
+            boolean alignStart, boolean danger) {
         this.action = action;
         this.label = label;
         this.kind = kind == null ? Kind.NORMAL : kind;
@@ -47,6 +50,7 @@ public final class Button {
         this.visible = visible;
         this.icon = icon;
         this.alignStart = alignStart;
+        this.danger = danger;
     }
 
     public static Button of(String action, String label) {
@@ -62,21 +66,26 @@ public final class Button {
 
     public Button enabled(boolean on) {
         return new Button(action, label, kind, weight, bold, on, visible,
-                icon, alignStart);
+                icon, alignStart, danger);
     }
 
     public Button shown(boolean on) {
         return new Button(action, label, kind, weight, bold, enabled, on,
-                icon, alignStart);
+                icon, alignStart, danger);
     }
 
     public Button withIcon(String iconId) {
         return new Button(action, label, kind, weight, bold, enabled,
-                visible, iconId, alignStart);
+                visible, iconId, alignStart, danger);
+    }
+
+    public Button asDanger() {
+        return new Button(action, label, kind, weight, bold, enabled,
+                visible, icon, alignStart, true);
     }
 
     public Button alignedStart() {
         return new Button(action, label, kind, weight, bold, enabled,
-                visible, icon, true);
+                visible, icon, true, danger);
     }
 }

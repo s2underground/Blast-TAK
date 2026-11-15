@@ -11,6 +11,8 @@ import com.atakmap.android.blast.plugin.core.screen.KeyRow;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
 import com.atakmap.android.blast.plugin.core.screen.Section;
+import com.atakmap.android.blast.plugin.core.screen.ListRow;
+import com.atakmap.android.blast.plugin.core.screen.TitleRow;
 import com.atakmap.android.blast.plugin.core.screen.Text;
 
 /** Writes a core screen model as text for golden files. */
@@ -50,6 +52,10 @@ final class ScreenDump {
                 sb.append(" mono");
             if (t.selectable)
                 sb.append(" selectable");
+            if (t.indentDp != 0)
+                sb.append(" indent=").append(t.indentDp);
+            if (t.links)
+                sb.append(" links");
             if (t.slot != null)
                 sb.append(" slot=").append(t.slot);
             sb.append(" | ").append(t.text.replace("\n", "\\n"));
@@ -93,6 +99,23 @@ final class ScreenDump {
                 button(sb, b);
             return sb.toString();
         }
+        if (it instanceof TitleRow) {
+            TitleRow r = (TitleRow) it;
+            StringBuilder sb = new StringBuilder("  titlerow"
+                    + (r.buttonAtBottom ? " button-bottom" : "") + "\n  "
+                    + item(r.text) + "\n   ");
+            button(sb, r.button);
+            return sb.toString();
+        }
+        if (it instanceof ListRow) {
+            ListRow r = (ListRow) it;
+            StringBuilder sb = new StringBuilder("  listrow " + r.action
+                    + (r.selected ? " selected" : "") + " bar=" + r.bar
+                    + "\n  " + item(r.text) + "\n   ");
+            for (Button b : r.buttons)
+                button(sb, b);
+            return sb.toString();
+        }
         if (it instanceof KeyRow) {
             KeyRow k = (KeyRow) it;
             return "  key " + k.kind + " bar=" + k.bar + " " + k.titleInk
@@ -101,7 +124,8 @@ final class ScreenDump {
         }
         if (it instanceof Input) {
             Input in = (Input) it;
-            return "  input " + in.id + (in.numeric ? " numeric" : "")
+            return "  input " + in.id + (in.hinted ? " hinted" : "")
+                    + (in.numeric ? " numeric" : "")
                     + " max=" + in.maxLength + " | " + in.label + " = ["
                     + in.value + "]";
         }
@@ -130,6 +154,7 @@ final class ScreenDump {
                 .append(b.enabled ? "" : " disabled")
                 .append(b.visible ? "" : " hidden")
                 .append(b.icon == null ? "" : " icon=" + b.icon)
-                .append(b.alignStart ? " start" : "");
+                .append(b.alignStart ? " start" : "")
+                .append(b.danger ? " danger" : "");
     }
 }
