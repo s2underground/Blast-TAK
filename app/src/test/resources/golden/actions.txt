@@ -1,0 +1,302 @@
+
+=== s1 send_all
+  port: send to all s1
+  toast: Sent to everyone (3 items).
+
+=== s1 send_to
+  port: send to (picker) s1
+
+=== s1 fly
+  redraw: fly-to=s1
+
+=== s1 rename
+  dialog: Rename incident [about s1]
+    message: The name is the marker's callsign, so every TAK client shows it. CLEARED is added automatically while the incident is cleared.
+    field TEXT max=64 select-all = [BLAST 1 Car]
+    positive: Rename and send to all -> rename_send
+    neutral: This device only -> rename_local
+    negative: Cancel
+
+=== s1 export
+  dialog: Export BLAST 1 Car [about s1]
+    [x] Data package (ATAK / WinTAK / iTAK)
+    [x] KMZ (Google Earth)
+    [x] GPX (Garmin)
+    positive: Save -> export_save
+    negative: Cancel
+
+=== s1 status
+  dialog: Mark incident cleared? [about s1]
+    message: Records your callsign and the time. The rings turn grey and stay on the map until deleted.
+    positive: Clear and send to all -> clear_send
+    neutral: This device only -> clear_local
+    negative: Cancel
+
+=== s1 delete
+  dialog: Delete BLAST 1 Car (shown)? [about s1]
+    message: Removes the marker and the rings of this incident.\n\nDelete for everyone also sends a remove request to every connected TAK client. Clients that are offline keep their copy.
+    positive: Delete for everyone -> delete_all
+    neutral: This device only -> delete_local
+    negative: Cancel
+
+=== s1 nbc1
+  -> null (not a shared card action)
+
+=== u1 send_all
+  dialog: Send to everyone? [about u1]
+    message: Sends the marker, cordon and report to every connected TAK client.\n\nIn conflict areas, reporting or marking items can put people at risk. Choose who receives this report.\n\nOnly transmit from outside the cordon.
+    positive: Send to all -> send_confirmed
+    negative: Cancel
+
+=== u1 send_to
+  port: send to (picker) u1
+
+=== u1 fly
+  redraw: fly-to=u1
+
+=== u1 rename
+  dialog: Rename incident [about u1]
+    message: The name is the marker's callsign, so every TAK client shows it. CLEARED is added automatically while the incident is cleared.
+    field TEXT max=64 select-all = [UXO 1 Shell]
+    positive: Rename and send to all -> rename_send
+    neutral: This device only -> rename_local
+    negative: Cancel
+
+=== u1 export
+  dialog: Export UXO 1 Shell [about u1]
+    [x] Data package (ATAK / WinTAK / iTAK)
+    [x] KMZ (Google Earth)
+    [x] GPX (Garmin)
+    positive: Save -> export_save
+    negative: Cancel
+
+=== u1 status
+  dialog: Mark incident cleared? [about u1]
+    message: Records your callsign and the time. The rings turn grey and stay on the map until deleted.\n\nOnly mark a UXO incident cleared when authorities say it has been removed.
+    positive: Clear and send to all -> clear_send
+    neutral: This device only -> clear_local
+    negative: Cancel
+
+=== u1 delete
+  dialog: Delete UXO 1 Shell (shown)? [about u1]
+    message: Removes the marker and the rings of this incident.\n\nDelete for everyone also sends a remove request to every connected TAK client. Clients that are offline keep their copy.
+    positive: Delete for everyone -> delete_all
+    neutral: This device only -> delete_local
+    negative: Cancel
+
+=== u1 nbc1
+  -> null (not a shared card action)
+
+=== n1 send_all
+  dialog: Send to everyone? [about n1]
+    message: Sends the marker, rings and any fallout outlines to every connected TAK client. They are labelled planning estimates.\n\nIf this is an exercise, say so in the name first (Rename…).
+    positive: Send to all -> send_confirmed
+    negative: Cancel
+
+=== n1 send_to
+  port: send to (picker) n1
+
+=== n1 fly
+  redraw: fly-to=n1
+
+=== n1 rename
+  dialog: Rename incident [about n1]
+    message: The name is the marker's callsign, so every TAK client shows it. CLEARED is added automatically while the incident is cleared.
+    field TEXT max=64 select-all = [NUC 1 10 kT]
+    positive: Rename and send to all -> rename_send
+    neutral: This device only -> rename_local
+    negative: Cancel
+
+=== n1 export
+  dialog: Export NUC 1 10 kT [about n1]
+    [x] Data package (ATAK / WinTAK / iTAK)
+    [x] KMZ (Google Earth)
+    [x] GPX (Garmin)
+    positive: Save -> export_save
+    negative: Cancel
+
+=== n1 status
+  dialog: Mark incident cleared? [about n1]
+    message: Records your callsign and the time. The rings turn grey and stay on the map until deleted.\n\nFor a nuclear reference this marks it ENDED (exercise over or no longer needed).
+    positive: Clear and send to all -> clear_send
+    neutral: This device only -> clear_local
+    negative: Cancel
+
+=== n1 delete
+  dialog: Delete NUC 1 10 kT (shown)? [about n1]
+    message: Removes the marker and the rings of this incident.\n\nDelete for everyone also sends a remove request to every connected TAK client. Clients that are offline keep their copy.
+    positive: Delete for everyone -> delete_all
+    neutral: This device only -> delete_local
+    negative: Cancel
+
+=== n1 nbc1
+  -> null (not a shared card action)
+
+=== s2 send_all
+  port: send to all s2
+  toast: Sent to everyone (3 items).
+
+=== s2 send_to
+  port: send to (picker) s2
+
+=== s2 fly
+  redraw: fly-to=s2
+
+=== s2 rename
+  dialog: Rename incident [about s2]
+    message: The name is the marker's callsign, so every TAK client shows it. CLEARED is added automatically while the incident is cleared.
+    field TEXT max=64 select-all = [BLAST 2]
+    positive: Rename and send to all -> rename_send
+    neutral: This device only -> rename_local
+    negative: Cancel
+
+=== s2 export
+  dialog: Export BLAST 2 CLEARED [about s2]
+    [x] Data package (ATAK / WinTAK / iTAK)
+    [x] KMZ (Google Earth)
+    [x] GPX (Garmin)
+    positive: Save -> export_save
+    negative: Cancel
+
+=== s2 status
+  dialog: Reopen incident? [about s2]
+    message: Sets the incident back to active with the original distances.
+    positive: Reopen and send to all -> reopen_send
+    neutral: This device only -> reopen_local
+    negative: Cancel
+
+=== s2 delete
+  dialog: Delete BLAST 2 CLEARED (shown)? [about s2]
+    message: Removes the marker and the rings of this incident.\n\nDelete for everyone also sends a remove request to every connected TAK client. Clients that are offline keep their copy.
+    positive: Delete for everyone -> delete_all
+    neutral: This device only -> delete_local
+    negative: Cancel
+
+=== s2 nbc1
+  -> null (not a shared card action)
+
+=== gone send_all
+  toast: This incident is no longer on the map.
+  redraw: gone
+
+=== gone send_to
+  toast: This incident is no longer on the map.
+  redraw: gone
+
+=== gone fly
+  redraw: fly-to=gone
+
+=== gone rename
+  toast: This incident is no longer on the map.
+  redraw: gone
+
+=== gone export
+  toast: This incident is no longer on the map.
+  redraw: gone
+
+=== gone status
+  toast: This incident is no longer on the map.
+  redraw: gone
+
+=== gone delete
+  toast: This incident is no longer on the map.
+  redraw: gone
+
+=== gone nbc1
+  -> null (not a shared card action)
+
+=== send failure
+  port: send to all s1
+  toast: Send failed.
+  port: send to all u1
+  toast: Send failed.
+
+=== confirm UXO send
+  port: send to all u1
+  toast: Sent to everyone (3 items).
+
+=== rename
+  toast: Enter a name.
+  port: rename s1 [Main gate <car>]
+  redraw: card list
+  port: rename s1 [Gate 2]
+  port: send to all s1
+  redraw: card list
+
+=== export
+  port: save NUC_1_10_kT_011452Z.zip (non-empty)
+  port: save NUC_1_10_kT_011452Z.kmz (non-empty)
+  port: save NUC_1_10_kT_011452Z.gpx (non-empty)
+  dialog: Export
+    message: Saved in export/Blast:\n• NUC_1_10_kT_011452Z.zip\n• NUC_1_10_kT_011452Z.kmz\n• NUC_1_10_kT_011452Z.gpx\n\nImport a data package with ATAK's Import Manager or send it as a file; copy the KMZ to Google Earth and the GPX to a Garmin's GPX folder.
+    positive: OK -> null
+  port: save NUC_1_10_kT_011452Z.kmz (non-empty)
+  port: save NUC_1_10_kT_011452Z.gpx (non-empty)
+  dialog: Export
+    message: Saved in export/Blast:\n• NUC_1_10_kT_011452Z.gpx\n\nImport a data package with ATAK's Import Manager or send it as a file; copy the KMZ to Google Earth and the GPX to a Garmin's GPX folder.\n\nCould not save:\n• KMZ (Google Earth)
+    positive: OK -> null
+  port: save Gate_2_011452Z.zip (non-empty)
+  port: save Gate_2_011452Z.kmz (non-empty)
+  port: save Gate_2_011452Z.gpx (non-empty)
+  dialog: Export
+    message: Saved in export/Blast:\n• Gate_2_011452Z.zip\n• Gate_2_011452Z.kmz\n• Gate_2_011452Z.gpx\n\nImport a data package with ATAK's Import Manager or send it as a file; copy the KMZ to Google Earth and the GPX to a Garmin's GPX folder.
+    positive: OK -> null
+  port: save UXO_1_Shell_011452Z.zip (non-empty)
+  port: save UXO_1_Shell_011452Z.kmz (non-empty)
+  port: save UXO_1_Shell_011452Z.gpx (non-empty)
+  dialog: Export
+    message: Saved in export/Blast:\n• UXO_1_Shell_011452Z.zip\n• UXO_1_Shell_011452Z.kmz\n• UXO_1_Shell_011452Z.gpx\n\nImport a data package with ATAK's Import Manager or send it as a file; copy the KMZ to Google Earth and the GPX to a Garmin's GPX folder.
+    positive: OK -> null
+
+=== status
+  port: write u1 <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="CLEARED" cby="CHARLIE-3" ct="2026-11-01T15:52:05.000Z"/>
+  redraw: card list
+  dialog: Reopen incident? [about u1]
+    message: Sets the incident back to active with the original distances.
+    positive: Reopen and send to all -> reopen_send
+    neutral: This device only -> reopen_local
+    negative: Cancel
+  port: write u1 <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+  port: send to all u1
+  redraw: card list
+  port: write n1 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="270" wmph="15" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="CLEARED" cby="CHARLIE-3" ct="2026-11-01T15:52:05.000Z" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573"/>
+  toast: This incident is no longer on the map.
+  redraw: gone
+
+=== saves and copy
+  port: write n1 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="90" wmph="8" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573"/>
+  toast: Wind updated on this device. Use SEND to share it.
+  redraw: card
+  port: write n1 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573"/>
+  toast: Wind removed on this device. Use SEND to share it.
+  redraw: card
+  port: write n1 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="270" wmph="15" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="7" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573"/>
+  toast: Saved.
+  redraw: card
+  port: write n1 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="270" wmph="15" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573"/>
+  redraw: card
+  port: write u1 <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+  toast: Report saved on the incident. Share it with SEND TO ALL or Send to… when you choose.
+  redraw: card list
+  toast: This incident is no longer on the map.
+  redraw: gone
+  port: copy [Blast report] 13 chars
+  toast: Report copied. Paste it into a text, chat or email.
+
+=== delete
+  port: delete here s2
+  redraw: gone
+  redraw: gone
+  port: delete for everyone n1
+  redraw: gone
+
+=== delete all cleared
+  dialog: Delete 1 cleared incident? [about [s3]]
+    message: Removes each marker and its rings:\n• BLAST 3 CLEARED (shown)\n\nActive incidents are not touched.
+    positive: Delete for everyone -> delete_cleared_all
+    neutral: This device only -> delete_cleared_local
+    negative: Cancel
+  port: delete for everyone s3
+  redraw: gone
+left: [s1, u1]
+formats: [Data package (ATAK / WinTAK / iTAK), KMZ (Google Earth), GPX (Garmin)]

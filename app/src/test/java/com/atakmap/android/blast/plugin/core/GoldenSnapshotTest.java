@@ -94,6 +94,11 @@ public class GoldenSnapshotTest {
     }
 
     @Test
+    public void actions() {
+        Golden.check("actions.txt", ActionsSnapshot.snapshot());
+    }
+
+    @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
     }
@@ -118,6 +123,7 @@ public class GoldenSnapshotTest {
             Golden.check("new-incident.txt", newIncidentSnapshot());
             Golden.check("pane.txt", paneSnapshot());
             Golden.check("live.txt", liveSnapshot());
+            Golden.check("actions.txt", ActionsSnapshot.snapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);
@@ -1044,6 +1050,11 @@ public class GoldenSnapshotTest {
     private static com.atakmap.android.blast.plugin.core.port.Team team(
             final double[]... pts) {
         return new com.atakmap.android.blast.plugin.core.port.Team() {
+            @Override
+            public String callsign() {
+                return BY;
+            }
+
             @Override
             public List<double[]> others() {
                 return new ArrayList<>(Arrays.asList(pts));

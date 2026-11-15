@@ -28,7 +28,6 @@ import android.widget.Toast;
 
 import com.atakmap.android.blast.plugin.R;
 import com.atakmap.android.blast.plugin.atak.BlastStore;
-import com.atakmap.android.blast.plugin.atak.Exporter;
 import com.atakmap.android.blast.plugin.core.port.Magnetic;
 import com.atakmap.android.blast.plugin.core.screen.Buttons;
 import com.atakmap.android.blast.plugin.core.screen.Check;
@@ -59,6 +58,8 @@ import com.atakmap.android.blast.plugin.core.screen.Live;
 import com.atakmap.android.blast.plugin.core.port.PositionSource;
 import com.atakmap.android.blast.plugin.core.port.Team;
 import com.atakmap.android.blast.plugin.atak.AtakPorts;
+import com.atakmap.android.blast.plugin.core.app.IncidentActions;
+import com.atakmap.android.blast.plugin.core.screen.Dialog;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
 import com.atakmap.android.blast.plugin.core.screen.StandoffCard;
@@ -70,7 +71,6 @@ import com.atakmap.android.blast.plugin.core.BlastRecord;
 import com.atakmap.android.blast.plugin.core.StandoffTable;
 import com.atakmap.android.blast.plugin.core.UxoRecord;
 import com.atakmap.android.blast.plugin.core.UxoReference;
-import com.atakmap.android.blast.plugin.core.UxoText;
 import com.atakmap.android.maps.MapEvent;
 import com.atakmap.android.maps.MapEventDispatcher;
 import com.atakmap.android.maps.MapItem;
@@ -133,13 +133,14 @@ public final class BlastPane {
     private final MapView mapView;
     private final BlastStore store;
     private final Sharing sharing;
-    private final Exporter exporter;
     private final SharedPreferences prefs;
     private final StandoffTable table = StandoffTable.current();
     private final Handler main = new Handler(Looper.getMainLooper());
     /** Core ports: own position and the other contacts. */
     private final PositionSource position;
     private final Team team;
+    /** What the incident buttons and dialogs do (core). */
+    private final IncidentActions actions;
 
     private final ScrollView root;
     private LinearLayout incidentsView, referenceView;
@@ -186,9 +187,11 @@ public final class BlastPane {
         this.mapView = mapView;
         this.store = store;
         this.sharing = sharing;
-        this.exporter = new Exporter(store);
         this.position = AtakPorts.position(mapView);
         this.team = AtakPorts.team(mapView);
+        this.actions = new IncidentActions(AtakPorts.incidents(store),
+                AtakPorts.share(store, sharing), team, AtakPorts.clock(),
+                AtakPorts.clipboard(mapView.getContext()), AtakPorts.files());
         this.prefs = AtakPreferences.getInstance(mapView.getContext())
                 .getSharedPrefs();
         this.root = new ScrollView(plugin);
@@ -563,24 +566,7 @@ public final class BlastPane {
     }
 
     private void saveWind(Marker card, double from, double mph) {
-        try {
-            Marker m = live(card);
-            NucRecord r = m == null ? null : BlastStore.readNuc(m);
-            if (r == null)
-                return;
-            if (!store.writeNuc(m, r.withWind(from, mph))) {
-                live(null);
-                return;
-            }
-            cardSignature = null;
-            refresh();
-            toast(NucRecord.validWind(from, mph)
-                    ? "Wind updated on this device. Use SEND to share it."
-                    : "Wind removed on this device. Use SEND to share it.");
-        } catch (RuntimeException e) {
-            Log.e(TAG, "wind update failed", e);
-            toast("Could not update the incident.");
-        }
+        handle(actions.saveWind(card.getUID(), from, mph));
     }
 
     private void placeNuc(GeoPoint at) {
@@ -738,22 +724,7 @@ public final class BlastPane {
 
     /** Store an updated nuclear record on its marker and refresh. */
     private void saveNuc(Marker card, NucRecord changed, String done) {
-        try {
-            Marker m = live(card);
-            if (m == null)
-                return;
-            if (!store.writeNuc(m, changed)) {
-                live(null);
-                return;
-            }
-            cardSignature = null;
-            refresh();
-            if (done != null)
-                toast(done);
-        } catch (RuntimeException e) {
-            Log.e(TAG, "nuclear update failed", e);
-            toast("Could not update the incident.");
-        }
+        handle(actions.saveNuc(card.getUID(), changed, done));
     }
 
     /** NBC 1 NUC report builder (FM 3-11.3 Fig. G-3), saved on the incident. */
@@ -967,44 +938,11 @@ public final class BlastPane {
             case NucCard.WHAT_TO_DO:
                 showTab(true, NucReference.ACTIONS);
                 break;
-            case CardActions.SEND_ALL:
-                // Nuclear sending is deliberate: confirm first.
-                confirmSendNuc(m);
-                break;
             default:
+                // SEND TO ALL (confirmed first), Send to…, Fly to, Rename,
+                // Export, status, Delete: as for every card.
                 standoffAction(action, m);
         }
-    }
-
-    private void confirmSendNuc(Marker card) {
-        final Marker m = live(card);
-        if (m == null)
-            return;
-        new AlertDialog.Builder(mapView.getContext())
-                .setTitle("Send to everyone?")
-                .setMessage("Sends the marker, rings and any fallout outlines "
-                        + "to every connected TAK client. They are labelled "
-                        + "planning estimates.\n\nIf this is an exercise, "
-                        + "say so in the name first (Rename…).")
-                .setPositiveButton("Send to all",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                try {
-                                    Marker l = live(m);
-                                    if (l == null)
-                                        return;
-                                    int n = sharing.sendToAll(l);
-                                    toast("Sent to everyone (" + n
-                                            + " items).");
-                                } catch (RuntimeException e) {
-                                    Log.e(TAG, "send failed", e);
-                                    toast("Send failed.");
-                                }
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                .show();
     }
 
     private void updateYouNuc(Marker m, NucRecord r) {
@@ -1047,49 +985,14 @@ public final class BlastPane {
             case UxoCard.REPORT:
                 promptReport(m);
                 break;
-            case CardActions.SEND_ALL:
-                // UXO sending is deliberate: confirm first.
-                confirmSendUxo(m);
-                break;
             case UxoCard.WHY:
                 showTab(true, UxoReference.RINGS);
                 break;
             default:
-                // Send to…, Fly to, Rename, Export, status, Delete: as for
-                // every card.
+                // SEND TO ALL (confirmed first), Send to…, Fly to, Rename,
+                // Export, status, Delete: as for every card.
                 standoffAction(action, m);
         }
-    }
-
-    /** UXO sending is deliberate: confirm before broadcasting. */
-    private void confirmSendUxo(Marker card) {
-        final Marker m = live(card);
-        if (m == null)
-            return;
-        new AlertDialog.Builder(mapView.getContext())
-                .setTitle("Send to everyone?")
-                .setMessage("Sends the marker, cordon and report to every "
-                        + "connected TAK client.\n\n" + UxoText.REPORT_CAUTION
-                        + "\n\nOnly transmit from outside the cordon.")
-                .setPositiveButton("Send to all",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                try {
-                                    Marker l = live(m);
-                                    if (l == null)
-                                        return;
-                                    int n = sharing.sendToAll(l);
-                                    toast("Sent to everyone (" + n
-                                            + " items).");
-                                } catch (RuntimeException e) {
-                                    Log.e(TAG, "send failed", e);
-                                    toast("Send failed.");
-                                }
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                .show();
     }
 
     private void updateYouUxo(Marker m, UxoRecord r) {
@@ -1234,40 +1137,11 @@ public final class BlastPane {
     }
 
     private void saveReport(Marker card, UxoRecord.Report rep) {
-        try {
-            Marker m = live(card);
-            UxoRecord r = m == null ? null : BlastStore.readUxo(m);
-            if (r == null)
-                return;
-            if (!store.writeUxo(m, r.withReport(rep))) {
-                live(null);
-                return;
-            }
-            toast("Report saved on the incident. Share it with SEND TO ALL or "
-                    + "Send to… when you choose.");
-            cardSignature = null;
-            listSignature = null;
-            refresh();
-        } catch (RuntimeException e) {
-            Log.e(TAG, "report save failed", e);
-            toast("Could not save the report.");
-        }
+        handle(actions.saveReport(card.getUID(), rep));
     }
 
     private void copy(String s) {
-        try {
-            android.content.ClipboardManager cm =
-                    (android.content.ClipboardManager) mapView.getContext()
-                            .getSystemService(Context.CLIPBOARD_SERVICE);
-            if (cm != null) {
-                cm.setPrimaryClip(android.content.ClipData.newPlainText(
-                        "Blast report", s));
-                toast("Report copied. Paste it into a text, chat or email.");
-            }
-        } catch (RuntimeException e) {
-            Log.e(TAG, "copy failed", e);
-            toast("Could not copy the report.");
-        }
+        handle(actions.copy(s));
     }
 
     private String emergencyNumber() {
@@ -1533,45 +1407,107 @@ public final class BlastPane {
         teamText = slots.get(StandoffCard.SLOT_TEAM);
     }
 
-    /** What the standoff card's buttons do (ids from StandoffCard). */
+    /** What the card buttons every incident has do (core IncidentActions). */
     private void standoffAction(String action, Marker m) {
-        switch (action) {
-            case StandoffCard.SEND_ALL:
-                try {
-                    Marker l = live(m);
-                    if (l == null)
-                        return;
-                    int n = sharing.sendToAll(l);
-                    toast("Sent to everyone (" + n + " items).");
-                } catch (RuntimeException e) {
-                    Log.e(TAG, "send failed", e);
-                    toast("Send failed.");
-                }
-                break;
-            case StandoffCard.SEND_TO: {
-                Marker l = live(m);
-                if (l != null)
-                    sharing.sendTo(l);
-                break;
-            }
-            case StandoffCard.FLY:
-                goTo(m);
-                break;
-            case StandoffCard.RENAME:
-                promptRename(m);
-                break;
-            case StandoffCard.EXPORT:
-                promptExport(m);
-                break;
-            case StandoffCard.STATUS:
-                confirmStatus(m);
-                break;
-            case StandoffCard.DELETE:
-                confirmDelete(m);
-                break;
-            default:
-                Log.w(TAG, "unknown card action " + action);
+        IncidentActions.Outcome o = actions.card(m.getUID(), action);
+        if (o == null)
+            Log.w(TAG, "unknown card action " + action);
+        else
+            handle(o);
+    }
+
+    /** Carry out what the core asked for after an action. */
+    private void handle(IncidentActions.Outcome o) {
+        if (o.toast != null)
+            toast(o.toast);
+        if (o.dialog != null)
+            show(o.dialog);
+        if (o.gone) {
+            afterDelete();
+        } else if (o.card || o.list) {
+            if (o.card)
+                cardSignature = null;
+            if (o.list)
+                listSignature = null;
+            refresh();
         }
+        if (o.flyTo != null) {
+            Marker m = store.liveMarker(o.flyTo);
+            if (m == null) {
+                toast(IncidentActions.GONE);
+                afterDelete();
+            } else {
+                goTo(m);
+            }
+        }
+    }
+
+    /** Show a core dialog; its buttons go back to the core. */
+    private void show(final Dialog d) {
+        Context ctx = mapView.getContext();
+        AlertDialog.Builder b = new AlertDialog.Builder(ctx)
+                .setTitle(d.title);
+        if (d.message != null)
+            b.setMessage(d.message);
+        EditText field = null;
+        if (d.hasField()) {
+            field = new EditText(ctx);
+            doneKey(field);
+            field.setSingleLine(true);
+            field.setText(d.fieldValue);
+            if (d.fieldKind == Dialog.FieldKind.PHONE)
+                field.setInputType(InputType.TYPE_CLASS_PHONE);
+            if (d.fieldSelectAll)
+                field.setSelectAllOnFocus(true);
+            field.setFilters(new android.text.InputFilter[] {
+                    new android.text.InputFilter.LengthFilter(
+                            d.fieldMaxLength) });
+            b.setView(field);
+        }
+        final boolean[] ticks = new boolean[d.options == null ? 0
+                : d.options.size()];
+        if (d.options != null) {
+            for (int i = 0; i < ticks.length; i++)
+                ticks[i] = d.checked(i);
+            b.setMultiChoiceItems(d.options.toArray(new String[0]), ticks,
+                    new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface di, int i,
+                                boolean on) {
+                            ticks[i] = on;
+                        }
+                    });
+        }
+        final EditText input = field;
+        if (d.positive != null)
+            b.setPositiveButton(d.positive, choice(d, d.positiveAction, input,
+                    ticks));
+        if (d.neutral != null)
+            b.setNeutralButton(d.neutral, choice(d, d.neutralAction, input,
+                    ticks));
+        if (d.negative != null)
+            b.setNegativeButton(d.negative, null);
+        if (input != null)
+            showTyping(b);
+        else
+            b.show();
+    }
+
+    private DialogInterface.OnClickListener choice(final Dialog d,
+            final String action, final EditText input, final boolean[] ticks) {
+        if (action == null)
+            return null;
+        return new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface di, int w) {
+                FormValues v = new FormValues();
+                if (input != null)
+                    v.put(Dialog.FIELD, input.getText().toString());
+                for (int i = 0; i < ticks.length; i++)
+                    v.put(Dialog.option(i), ticks[i]);
+                handle(actions.choose(d, action, v));
+            }
+        };
     }
 
     // ------------------------------------------------------------------
@@ -2217,7 +2153,7 @@ public final class BlastPane {
     /** What the incident list's rows and buttons do. */
     private void listAction(String action) {
         if (IncidentList.DELETE_CLEARED.equals(action)) {
-            confirmDeleteCleared();
+            handle(actions.deleteCleared());
             return;
         }
         String uid;
@@ -2251,7 +2187,7 @@ public final class BlastPane {
                     refresh();
                     promptReport(m);
                 } else {
-                    confirmDelete(m);
+                    handle(actions.card(uid, CardActions.DELETE));
                 }
                 return;
             }
@@ -2374,294 +2310,6 @@ public final class BlastPane {
         return l;
     }
 
-    private void confirmStatus(Marker card) {
-        final Marker m = live(card);
-        if (m == null)
-            return;
-        if (!BlastStore.isIncident(m))
-            return;
-        final boolean clearing = !isCleared(m);
-        new AlertDialog.Builder(mapView.getContext())
-                .setTitle(clearing ? "Mark incident cleared?"
-                        : "Reopen incident?")
-                .setMessage(clearing
-                        ? "Records your callsign and the time. The rings "
-                                + "turn grey and stay on the map until deleted."
-                                + (BlastStore.isUxo(m) ? "\n\nOnly mark a UXO "
-                                        + "incident cleared when authorities "
-                                        + "say it has been removed." : "")
-                                + (BlastStore.isNuc(m) ? "\n\nFor a nuclear "
-                                        + "reference this marks it ENDED "
-                                        + "(exercise over or no longer "
-                                        + "needed)." : "")
-                        : "Sets the incident back to active with the "
-                                + "original distances.")
-                .setPositiveButton(clearing ? "Clear and send to all"
-                        : "Reopen and send to all",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                setStatus(m, clearing, true);
-                            }
-                        })
-                .setNeutralButton("This device only",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                setStatus(m, clearing, false);
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    private void setStatus(Marker card, boolean clearing, boolean send) {
-        try {
-            // Re-check and re-read now: the dialog may have been open while
-            // the incident was deleted or updated by someone else.
-            Marker m = live(card);
-            if (m == null)
-                return;
-            NucRecord nr = BlastStore.readNuc(m);
-            UxoRecord u = nr == null ? BlastStore.readUxo(m) : null;
-            boolean ok;
-            if (nr != null) {
-                ok = store.writeNuc(m, clearing
-                        ? nr.cleared(callsign(), System.currentTimeMillis())
-                        : nr.reopened());
-            } else if (u != null) {
-                ok = store.writeUxo(m, clearing
-                        ? u.cleared(callsign(), System.currentTimeMillis())
-                        : u.reopened());
-            } else {
-                BlastRecord r = BlastStore.read(m);
-                if (r == null)
-                    return;
-                ok = store.write(m, clearing
-                        ? r.cleared(callsign(), System.currentTimeMillis())
-                        : r.reopened());
-            }
-            if (!ok) {
-                live(null);
-                return;
-            }
-            if (send)
-                sharing.sendToAll(m);
-            cardSignature = null;
-            listSignature = null;
-            refresh();
-        } catch (RuntimeException e) {
-            Log.e(TAG, "status change failed", e);
-            toast("Could not update the incident.");
-        }
-    }
-
-    private void confirmDelete(Marker card) {
-        final Marker m = live(card);
-        if (m == null)
-            return;
-        final String name = ATAKUtilities.getDisplayName(m);
-        new AlertDialog.Builder(mapView.getContext())
-                .setTitle("Delete " + name + "?")
-                .setMessage("Removes the marker and the rings of this "
-                        + "incident.\n\nDelete for everyone also sends a "
-                        + "remove request to every connected TAK client. "
-                        + "Clients that are offline keep their copy.")
-                .setPositiveButton("Delete for everyone",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                try {
-                                    if (store.liveMarker(m.getUID()) != null)
-                                        sharing.deleteForEveryone(m);
-                                } catch (RuntimeException e) {
-                                    Log.e(TAG, "delete failed", e);
-                                }
-                                afterDelete();
-                            }
-                        })
-                .setNeutralButton("This device only",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                store.delete(m);
-                                afterDelete();
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    private void promptRename(Marker card) {
-        final Marker m = live(card);
-        if (m == null)
-            return;
-        final EditText input = new EditText(mapView.getContext());
-        doneKey(input);
-        input.setSingleLine(true);
-        input.setText(Names.base(BlastStore.nameOf(m)));
-        input.setSelectAllOnFocus(true);
-        input.setFilters(new android.text.InputFilter[] {
-                new android.text.InputFilter.LengthFilter(Names.MAX_LENGTH)
-        });
-        showTyping(new AlertDialog.Builder(mapView.getContext())
-                .setTitle("Rename incident")
-                .setMessage("The name is the marker's callsign, so every TAK "
-                        + "client shows it. CLEARED is added automatically "
-                        + "while the incident is cleared.")
-                .setView(input)
-                .setPositiveButton("Rename and send to all",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                doRename(m, input.getText().toString(), true);
-                            }
-                        })
-                .setNeutralButton("This device only",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                doRename(m, input.getText().toString(), false);
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                );
-    }
-
-    private void doRename(Marker card, String typed, boolean send) {
-        try {
-            Marker m = live(card);
-            if (m == null)
-                return;
-            if (Names.sanitize(typed) == null) {
-                toast("Enter a name.");
-                return;
-            }
-            if (!store.rename(m, typed)) {
-                toast("Could not rename the incident.");
-                return;
-            }
-            if (send)
-                sharing.sendToAll(m);
-            cardSignature = null;
-            listSignature = null;
-            refresh();
-        } catch (RuntimeException e) {
-            Log.e(TAG, "rename failed", e);
-            toast("Could not rename the incident.");
-        }
-    }
-
-    private void promptExport(Marker card) {
-        final Marker m = live(card);
-        if (m == null)
-            return;
-        final Exporter.Format[] formats = Exporter.Format.values();
-        final boolean[] checked = new boolean[formats.length];
-        String[] labels = new String[formats.length];
-        for (int i = 0; i < formats.length; i++) {
-            labels[i] = formats[i].label;
-            checked[i] = true;
-        }
-        new AlertDialog.Builder(mapView.getContext())
-                .setTitle("Export " + BlastStore.nameOf(m))
-                .setMultiChoiceItems(labels, checked,
-                        new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int i,
-                                    boolean on) {
-                                checked[i] = on;
-                            }
-                        })
-                .setPositiveButton("Save",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                doExport(m, formats, checked);
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    private void doExport(Marker card, Exporter.Format[] formats,
-            boolean[] checked) {
-        Marker m = live(card);
-        if (m == null)
-            return;
-        StringBuilder done = new StringBuilder();
-        StringBuilder failed = new StringBuilder();
-        for (int i = 0; i < formats.length; i++) {
-            if (!checked[i])
-                continue;
-            try {
-                java.io.File f = exporter.export(m, formats[i]);
-                done.append("\n• ").append(f.getName());
-            } catch (Exception e) {
-                Log.e(TAG, "export failed: " + formats[i], e);
-                failed.append("\n• ").append(formats[i].label);
-            }
-        }
-        if (done.length() == 0 && failed.length() == 0)
-            return;
-        String msg = "";
-        if (done.length() > 0)
-            msg += "Saved in atak/export/Blast:" + done
-                    + "\n\nImport a data package with ATAK's Import "
-                    + "Manager or send it as a file; copy the KMZ to Google "
-                    + "Earth and the GPX to a Garmin's GPX folder.";
-        if (failed.length() > 0)
-            msg += (msg.isEmpty() ? "" : "\n\n") + "Could not save:" + failed;
-        new AlertDialog.Builder(mapView.getContext())
-                .setTitle("Export")
-                .setMessage(msg)
-                .setPositiveButton("OK", null)
-                .show();
-    }
-
-    private void confirmDeleteCleared() {
-        final List<Marker> cleared = new ArrayList<>();
-        for (Marker m : store.all())
-            if (isCleared(m))
-                cleared.add(m);
-        if (cleared.isEmpty())
-            return;
-        StringBuilder names = new StringBuilder();
-        for (Marker m : cleared)
-            names.append("\n• ").append(ATAKUtilities.getDisplayName(m));
-        new AlertDialog.Builder(mapView.getContext())
-                .setTitle("Delete " + cleared.size() + " cleared incident"
-                        + (cleared.size() == 1 ? "" : "s") + "?")
-                .setMessage("Removes each marker and its rings:" + names
-                        + "\n\nActive incidents are not touched.")
-                .setPositiveButton("Delete for everyone",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                for (Marker m : cleared) {
-                                    try {
-                                        if (store.liveMarker(m.getUID()) != null)
-                                            sharing.deleteForEveryone(m);
-                                    } catch (RuntimeException e) {
-                                        Log.e(TAG, "delete failed", e);
-                                    }
-                                }
-                                afterDelete();
-                            }
-                        })
-                .setNeutralButton("This device only",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                for (Marker m : cleared)
-                                    store.delete(m);
-                                afterDelete();
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
     private void afterDelete() {
         // Keep the selection if a different incident was deleted.
         if (selectedZone() == null)
@@ -2675,12 +2323,7 @@ public final class BlastPane {
     // Helpers
 
     private String callsign() {
-        try {
-            String cs = mapView.getDeviceCallsign();
-            return cs == null ? "" : cs;
-        } catch (RuntimeException e) {
-            return "";
-        }
+        return team.callsign();
     }
 
     private void toast(String s) {
