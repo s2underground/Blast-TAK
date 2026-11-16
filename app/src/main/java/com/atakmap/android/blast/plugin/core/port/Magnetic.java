@@ -1,8 +1,9 @@
 package com.atakmap.android.blast.plugin.core.port;
 
 /**
- * Host service: magnetic to true bearing at the user's position (the host
- * knows the declination). First of the core "ports".
+ * Magnetic to true bearing at one position. Not a host port any more:
+ * {@code core/app} builds one from {@link MapControl#magneticToTrue} for
+ * the user's position and hands it to the forms (NBC 1, polar plot).
  */
 public interface Magnetic {
 
