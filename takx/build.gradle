@@ -12,7 +12,7 @@ plugins {
     id 'java'
 }
 
-version = '0.1.0'
+version = '0.1.1'
 
 ext {
     takxInstallDir = findProperty('takxInstallDir') ?: 'C:/Program Files/TAKX-CIV'
@@ -48,7 +48,9 @@ sourceSets {
                        '../desktop/src/main/java']
             include 'com/atakmap/android/blast/plugin/core/**'
             include 'com/atakmap/android/blast/plugin/swing/**'
-            include 'com/atakmap/android/blast/plugin/takx/**'
+            // The plugin class stays out of com.atakmap.* (TAK-X's own
+            // kernel packages), like the Raven example's com.acme.*.
+            include 'com/s2underground/blast/takx/**'
         }
     }
 }

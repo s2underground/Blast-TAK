@@ -1,4 +1,4 @@
-package com.atakmap.android.blast.plugin.takx;
+package com.s2underground.blast.takx;
 
 import com.atakmap.android.blast.plugin.core.overlay.OverlayShape;
 import com.atakmap.android.blast.plugin.core.overlay.Overlays;
