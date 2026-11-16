@@ -65,7 +65,7 @@ remarks:
 [BLAST-NUC] Nuclear detonation 10 kt, surface burst. GET INSIDE, STAY INSIDE, STAY TUNED (FEMA). Severe damage 0.50 mi (0.80 km), moderate 1.0 mi (1.6 km), light 3.0 mi (4.8 km). Burns to bare skin 1.1 mi (1.8 km). Initial radiation 100 rad 0.98 mi (1.6 km). Wind from 270° at 15 mph. PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. Planning estimate, not a forecast.
 drawsFallout=true drawsMilitary=false
 summary:
-Effective downwind 090° at 24 km/h. Zone I 18 km (11.0 mi), Zone II 35 km (22.0 mi) downwind, 40° sector, cloud radius 4.2 km (yield group CHARLIE). Arrival arcs every 24 km (H+1 … H+1).
+Effective downwind 090° at 24 km/h. Zone I 18 km (11.0 mi), Zone II 35 km (22.0 mi) downwind, 40° sector, cloud radius 4.2 km (yield group CHARLIE). One arrival arc, at 24 km (H+1).
 papab: PAPAB/024KPH/018KM/05KM/070DGT/110DGT//
 nbc3:
 NBC3 NUC (Blast simplified prediction; ALFA from CBRN cell)

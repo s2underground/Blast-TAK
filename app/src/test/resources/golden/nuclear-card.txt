@@ -103,7 +103,7 @@ team all:
   key TALL bar=#FFE0E0E0 #FFE0E0E0 | 50-mile Get Inside area: 50 mi (80 km), dotted | FEMA: give the Get Inside message to everyone within 50 miles until fallout areas are identified.
   text 12 bold BLUE pad=8/2 | FALLOUT PICTURE
   buttons | pic_civil "CIVIL\nFEMA / Glasstone" NORMAL w=1 | pic_military "MILITARY\nFM 3-3-1 Zones I / II" SELECTED w=1
-  text 13 TEXT | Effective downwind 180° at 24 km/h. Zone I 18 km (11.0 mi), Zone II 35 km (22.0 mi) downwind, 40° sector, cloud radius 4.2 km (yield group CHARLIE). Arrival arcs every 24 km (H+1 … H+1). From a surface wind estimate (not an EDM): rough.
+  text 13 TEXT | Effective downwind 180° at 24 km/h. Zone I 18 km (11.0 mi), Zone II 35 km (22.0 mi) downwind, 40° sector, cloud radius 4.2 km (yield group CHARLIE). One arrival arc, at 24 km (H+1). From a surface wind estimate (not an EDM): rough.
   key SHORT bar=#FFFF1744 #FFFF8A80 | Zone I: 18 km
   text 12 DIM | Zone I: immediate operational concern. Exposed, unprotected personnel may receive 125 cGy or more in a relatively short time (less than 4 hours after the actual arrival of fallout). Casualties and major disruption may occur in parts of this zone.
   key SHORT bar=#FFFFC400 #FFFFE57F | Zone II: 35 km
@@ -189,7 +189,7 @@ team all:
   key TALL bar=#FFE0E0E0 #FFE0E0E0 | 50-mile Get Inside area: 50 mi (80 km), dotted | FEMA: give the Get Inside message to everyone within 50 miles until fallout areas are identified.
   text 12 bold BLUE pad=8/2 | FALLOUT PICTURE
   buttons | pic_civil "CIVIL\nFEMA / Glasstone" NORMAL w=1 | pic_military "MILITARY\nFM 3-3-1 Zones I / II" SELECTED w=1
-  text 13 TEXT | Effective downwind 270° at 30 km/h. Zone I 19 km (11.8 mi), Zone II 38 km (23.6 mi) downwind, 40° sector, cloud radius 4.2 km (yield group CHARLIE). Arrival arcs every 30 km (H+1 … H+1). From an EDM.
+  text 13 TEXT | Effective downwind 270° at 30 km/h. Zone I 19 km (11.8 mi), Zone II 38 km (23.6 mi) downwind, 40° sector, cloud radius 4.2 km (yield group CHARLIE). One arrival arc, at 30 km (H+1). From an EDM.
   key SHORT bar=#FFFF1744 #FFFF8A80 | Zone I: 19 km
   text 12 DIM | Zone I: immediate operational concern. Exposed, unprotected personnel may receive 125 cGy or more in a relatively short time (less than 4 hours after the actual arrival of fallout). Casualties and major disruption may occur in parts of this zone.
   key SHORT bar=#FFFFC400 #FFFFE57F | Zone II: 38 km

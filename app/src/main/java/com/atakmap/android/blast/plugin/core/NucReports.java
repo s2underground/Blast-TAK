@@ -108,10 +108,13 @@ public final class NucReports {
                     + "Table E-1)" : " (yield group " + g + ")");
             sb.append('.');
             List<Integer> h = p.arrivalHours();
-            if (!h.isEmpty())
+            if (h.size() == 1)
+                sb.append(" One arrival arc, at ").append(Math.round(p.ewsKph))
+                        .append(" km (H+").append(h.get(0)).append(").");
+            else if (!h.isEmpty())
                 sb.append(" Arrival arcs every ").append(Math.round(p.ewsKph))
-                        .append(" km (H+1 … H+").append(h.get(h.size() - 1))
-                        .append(").");
+                        .append(" km (H+").append(h.get(0)).append(" … H+")
+                        .append(h.get(h.size() - 1)).append(").");
             if (p.withinCloud)
                 sb.append(" Zone I lies inside the cloud radius and is drawn "
                         + "as that circle.");
