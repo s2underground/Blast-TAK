@@ -4,7 +4,7 @@
 
 #show: userguide.with(
    plugin-name: "Blast",
-   plugin-version: "1.1",
+   plugin-version: "1.2",
    platform: "ATAK",
    platform-version: "5.6.0",
 )
@@ -40,6 +40,7 @@ Tap an incident in the list to open its card:
 - *Team:* how many contacts on the map are in each zone.
 - *Provenance:* source, edition, row, your estimate (if any), who placed it and when (Zulu), and who cleared it.
 - *Rename…*, *Export…*, *Mark cleared / Reopen*, *Delete…* (this device or everyone), *Fly to*.
+- *Hide ring labels / Show ring labels* hides or shows the distances written on the rings (on nuclear cards also the fallout band titles: *Hide ring & fallout labels*). It is one setting for this device, kept until you change it; clients without Blast get your choice with the rings you send.
 ]
 
 #tak-slide[
@@ -113,7 +114,7 @@ On the nuclear card, *FALLOUT PICTURE* switches between *CIVIL* (the default: FE
 
 #tak-slide[
   = The Reference tab
-Offline: what to do if you find something (Recognize, Retreat, Report), the minefield and vehicle drills, radios and phones (only outside the cordon, never within 50 m), marking, what each type looks like, what the rings mean (with DoD fragment-distance comparisons), how responders work (5-Cs, 9-line priorities), IMAS terms and all sources; for nuclear incidents FEMA's protective actions, what each ring means, shelter protection factors (LLNL), fallout decay (the 7-10 rule), dose effects and the yield sources. Set your *emergency number* (911, 112, 101/102, a mine action centre) at the top.
+Offline: what to do if you find something (Recognize, Retreat, Report), the minefield and vehicle drills, radios and phones (only outside the cordon, never within 50 m), marking, what each type looks like, what the rings mean (with DoD fragment-distance comparisons), how responders work (5-Cs, 9-line priorities), IMAS terms and all sources; for nuclear incidents FEMA's protective actions, what each ring means, shelter protection factors (LLNL), fallout decay (the 7-10 rule), dose effects and the yield sources. Set your *emergency number* (911, 112, 101/102, a mine action centre) at the top. Web addresses in the sources open in your browser.
 
 = UXO caveats
 - The cordon is a *minimum* for people in the open while the item is left alone. ATP 4-32.2 warns that fragments may travel farther; DoD's maximum fragment ranges are larger (about 820 m for a 155 mm shell).

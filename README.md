@@ -27,6 +27,9 @@ Prevention and FBI Counter-IED Unit, edition "As of Aug 2025"):
   callsign and Zulu time), delete locally or for everyone
 - Rename an incident; export it as an ATAK data package, KMZ (Google
   Earth) or GPX (Garmin) to atak/export/Blast/
+- Hide or show ring labels (1.2+): one switch on every card, remembered on
+  the device, for the ring distances and the fallout band titles; clients
+  without Blast receive the sender's choice with the rings
 - Military ordnance (UXO, 1.1+): pick one of the six types of ATP 4-32.2
   (Mar 2024) Fig. 31 (300-800 m cordon, +50 m for more than one item,
   Unknown = 300 m or 675 m), say where you are (known path / possible
@@ -71,6 +74,24 @@ or department procedures.
 _________________________________________________________________
 STATUS
 
+1.2 (Nov 2026): Hide / show ring labels on every card (ring distances
+and, for nuclear incidents, the fallout band titles; remembered on the
+device). Fixes (all also in 1.1): web addresses on the Reference tab
+open in the browser; NBC 1 no longer shifts BRAVO when a report saved
+with Magnetic ticked is saved again; when only the send fails after a
+rename, clear, reopen or an automatic send on placing, Blast now says the
+change was made on this device and sending failed (it said the change
+itself failed, inviting a duplicate incident); KMZ, GPX and data package
+exports stay valid whatever characters a name holds, and data package
+entries are always safe file names; a cleared nuclear incident's KMZ
+leaves the burn, 100 rad and Get Inside rings unfilled, as on the map;
+"One arrival arc" instead of "Arrival arcs every 24 km (H+1 … H+1)";
+the UXO "move out" distance in feet now counts to the cordon's stated
+feet; latitude / longitude shown when MGRS isn't available are never in
+exponent form. Internally, all of Blast's logic now lives in a
+platform-free core (see docs/CORE.md) that ATAK draws; nothing else
+changes for users, and the CoT format is unchanged, so 1.0, 1.1 and 1.2
+clients share incidents as before.
 1.1 (Nov 2026): UXO mode (ATP 4-32.2 cordons, EOD 9-line report),
 nuclear detonation reference mode (FEMA damage zones, burns, initial
 radiation, graded fallout; military Zones I/II with NBC 1 and NBC 3 NUC
@@ -152,13 +173,20 @@ text sent to clients without the plugin.
 _________________________________________________________________
 DEVELOPER NOTES
 
-- core/ is pure Java: StandoffTable (versioned card data), ZoneCalculator
-  (row selection), PositionCheck, BlastRecord, BlastCodec (<__blast/>
-  detail), Labels, Guidance, Formats.
-- atak/: BlastStore (marker + two DrawingCircles with UIDs <marker>.mand
-  and <marker>.pref, anchored to the marker), BlastDetailHandler,
-  BlastMenuHandler (radial button), Sharing.
-- ui/: BlastPane, built in code.
+- core/ is plain Java 8 with no Android or ATAK code (1.2+; see
+  docs/CORE.md): the tables and models, records and their CoT codecs,
+  text, reports and exports (core/), what to draw (core/overlay), every
+  screen as data (core/screen), the services a host provides
+  (core/port) and the app controller (core/app). Tests check its rules,
+  lock its output in golden files and fuzz it with hostile records.
+- atak/: the ATAK host: BlastStore (marker + DrawingCircles / shapes with
+  UIDs <marker>.<part>, anchored to the marker), detail handlers,
+  BlastMenuHandler (radial button), Sharing, AtakPorts (the core's ports).
+- ui/: BlastPane draws the core's screens with Android views and carries
+  out what the core returns.
+- desktop/ and takx/ run the same core as a desktop app and a TAK-X
+  plugin. They are separate Gradle builds, not part of the ATAK plugin
+  or its TAK.gov source archive.
 - CoT detail:
   <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="SUV_VAN" lbl="SUV/Van"
    cap_lb="1000" mand_ft="400" sip_ft="2399" pref_ft="2400" req="800"
