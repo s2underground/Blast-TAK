@@ -287,12 +287,42 @@ public final class SwingPane {
      * has its width, and pack() measures it before that (the rename
      * dialog's message took an extra line and pushed the name box out of
      * sight). So: pack, settle the width, lay out at that width, then take
-     * the height the content needs there (twice, as wrapping can change),
-     * capped to the screen.
+     * the height the whole root pane needs there (it includes a title bar
+     * the look and feel draws itself, as TAK-X's does), capped to the
+     * screen; and once more after the dialog is on screen. Text boxes keep
+     * their own height, and the first one gets the keyboard.
      */
     private void place(JDialog w) {
+        w.getRootPane().putClientProperty(BLAST_DIALOG, Boolean.TRUE);
+        javax.swing.text.JTextComponent first = prepareBoxes(
+                w.getContentPane(), null);
         w.pack();
         int width = Math.max(w.getWidth(), 440);
+        fit(w, width);
+        fit(w, width);
+        w.setLocationRelativeTo(scroll);
+        w.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    if (fit(w, w.getWidth()))
+                        w.setLocationRelativeTo(scroll);
+                    if (first != null && !first.requestFocusInWindow())
+                        first.requestFocus();
+                });
+            }
+        });
+        w.setVisible(true);
+    }
+
+    /** Marks Blast's dialogs (hosts can tell them apart, e.g. in logs). */
+    public static final String BLAST_DIALOG = "blast.dialog";
+
+    /**
+     * Lay the dialog out at {@code width} and give it the height it needs
+     * there (only growing once it is on screen). True if it was resized.
+     */
+    private static boolean fit(JDialog w, int width) {
         int maxH = Integer.MAX_VALUE;
         try {
             java.awt.GraphicsConfiguration gc = w.getGraphicsConfiguration();
@@ -303,20 +333,55 @@ public final class SwingPane {
         } catch (RuntimeException e) {
             // no screen information: no cap
         }
-        for (int i = 0; i < 2; i++) {
-            w.setSize(width, w.getHeight());
-            w.validate();
-            // Layouts cache their children's sizes; wrapped text just got
-            // a width (and so a new height) without telling them.
-            invalidateAll(w.getContentPane());
-            java.awt.Insets in = w.getInsets();
-            int h = w.getContentPane().getPreferredSize().height + in.top
-                    + in.bottom;
-            w.setSize(width, Math.min(h, maxH));
-            w.validate();
+        w.setSize(width, w.getHeight());
+        w.validate();
+        // Layouts cache their children's sizes; wrapped text just got a
+        // width (and so a new height) without telling them.
+        invalidateAll(w.getRootPane());
+        java.awt.Insets in = w.getInsets();
+        int h = Math.min(w.getRootPane().getPreferredSize().height + in.top
+                + in.bottom, maxH);
+        if (w.isShowing() ? h <= w.getHeight() : h == w.getHeight())
+            return false;
+        w.setSize(width, h);
+        w.validate();
+        return true;
+    }
+
+    /**
+     * Text boxes keep their preferred height (a column layout would
+     * otherwise squash or stretch them), and a click in one always takes
+     * the keyboard, even when the dialog's window isn't the active one.
+     * Returns the first editable box.
+     */
+    private static javax.swing.text.JTextComponent prepareBoxes(
+            java.awt.Container c, javax.swing.text.JTextComponent first) {
+        for (java.awt.Component k : c.getComponents()) {
+            if (k instanceof JTextField) {
+                JTextField f = (JTextField) k;
+                int h = f.getPreferredSize().height;
+                f.setMinimumSize(new Dimension(f.getMinimumSize().width, h));
+                f.setMaximumSize(new Dimension(Integer.MAX_VALUE, h));
+            }
+            if (k instanceof javax.swing.text.JTextComponent) {
+                javax.swing.text.JTextComponent t =
+                        (javax.swing.text.JTextComponent) k;
+                if (t.isEditable() && t.isFocusable()) {
+                    t.addMouseListener(new java.awt.event.MouseAdapter() {
+                        @Override
+                        public void mousePressed(java.awt.event.MouseEvent e) {
+                            if (!t.isFocusOwner())
+                                t.requestFocus();
+                        }
+                    });
+                    if (first == null)
+                        first = t;
+                }
+            } else if (k instanceof java.awt.Container) {
+                first = prepareBoxes((java.awt.Container) k, first);
+            }
         }
-        w.setLocationRelativeTo(scroll);
-        w.setVisible(true);
+        return first;
     }
 
     private static void invalidateAll(java.awt.Container c) {
