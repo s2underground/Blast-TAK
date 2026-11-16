@@ -103,6 +103,12 @@ public class GoldenSnapshotTest {
         Golden.check("app.txt", AppSnapshot.snapshot());
     }
 
+    /** Refactor step 6b-2: the CoT events TAK-X sends. */
+    @Test
+    public void cotEvents() throws Exception {
+        Golden.check("cot-events.txt", CotEventsSnapshot.snapshot());
+    }
+
     /** Refactor step 5d: placing, the map tap and the forms. */
     @Test
     public void place() {
@@ -116,7 +122,7 @@ public class GoldenSnapshotTest {
 
     /** The same output under another time zone and locale. */
     @Test
-    public void deterministicAcrossLocales() {
+    public void deterministicAcrossLocales() throws Exception {
         TimeZone tz = TimeZone.getDefault();
         Locale loc = Locale.getDefault();
         try {
@@ -137,6 +143,7 @@ public class GoldenSnapshotTest {
             Golden.check("actions.txt", ActionsSnapshot.snapshot());
             Golden.check("app.txt", AppSnapshot.snapshot());
             Golden.check("place.txt", PlaceSnapshot.snapshot());
+            Golden.check("cot-events.txt", CotEventsSnapshot.snapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);

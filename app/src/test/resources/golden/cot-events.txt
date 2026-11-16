@@ -1,0 +1,1228 @@
+=== bomb threat, labels on: 3 events
+--- s1 (a-h-G)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='s1' type='a-h-G' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-g-i-g-o' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<status readiness='true'/>
+<archive/>
+<color argb='-1'/>
+<link uid='TAKX-test-node' production_time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C' parent_callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' relation='p-p'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='BLAST 1 Car'/>
+<__blast v="1" src="CISA-BTSOC" ed="2025-08" row="CAR" lbl="Car" cap_lb="500" mand_ft="320" sip_ft="1899" pref_ft="1900" n="1" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+<remarks>[BLAST] Car (500 lb): MANDATORY EVAC within 320 ft (98 m); SHELTER-IN-PLACE 321-1,899 ft (inside, away from windows and exterior walls, only if you can&apos;t reach the preferred distance); PREFERRED EVAC 1,900 ft+ (580 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.</remarks>
+</detail>
+</event>
+--- s1.mand (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='s1.mand' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='98.0' minor='98.0' angle='360'/>
+<link uid='s1.mand.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ffd50000</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>55d50000</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='s1' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='MANDATORY EVAC 320 ft (98 m)'/>
+<strokeColor value='-2818048'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='1440022528'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- s1.pref (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='s1.pref' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='580.0' minor='580.0' angle='360'/>
+<link uid='s1.pref.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ff00c853</color>
+<width>4.0</width>
+</LineStyle>
+<PolyStyle>
+<color>33ffab00</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='s1' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='PREFERRED EVAC 1,900 ft+ (580 m) / SHELTER INSIDE'/>
+<strokeColor value='-16725933'/>
+<strokeWeight value='4.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='872393472'/>
+<labels_on value='true'/>
+</detail>
+</event>
+=== bomb threat cleared, labels off: 3 events
+--- s2 (a-h-G)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='s2' type='a-h-G' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-g-i-g-o' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<status readiness='true'/>
+<archive/>
+<color argb='-1'/>
+<link uid='TAKX-test-node' production_time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C' parent_callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' relation='p-p'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='BLAST 2 CLEARED'/>
+<__blast v="1" src="CISA-BTSOC" ed="2025-08" row="CAR" lbl="Car" cap_lb="500" mand_ft="320" sip_ft="1899" pref_ft="1900" n="1" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="CLEARED" cby="BRAVO-2" ct="2026-11-01T14:52:05.000Z"/>
+<remarks>[BLAST] CLEARED. Car (500 lb): MANDATORY EVAC within 320 ft (98 m); SHELTER-IN-PLACE 321-1,899 ft (inside, away from windows and exterior walls, only if you can&apos;t reach the preferred distance); PREFERRED EVAC 1,900 ft+ (580 m). Source: CISA/FBI Bomb Threat Stand-Off Card, Aug 2025, Car row. Placed by ALPHA-1 011452Z NOV 26. CLEARED by BRAVO-2 011452Z NOV 26. Minimum distances, not guarantees.</remarks>
+</detail>
+</event>
+--- s2.mand (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='s2.mand' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='98.0' minor='98.0' angle='360'/>
+<link uid='s2.mand.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ff9e9e9e</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>149e9e9e</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='s2' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='CLEARED MANDATORY EVAC 320 ft (98 m)'/>
+<strokeColor value='-6381922'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='345939614'/>
+<labels_on value='false'/>
+</detail>
+</event>
+--- s2.pref (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='s2.pref' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='580.0' minor='580.0' angle='360'/>
+<link uid='s2.pref.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ff9e9e9e</color>
+<width>4.0</width>
+</LineStyle>
+<PolyStyle>
+<color>149e9e9e</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='s2' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='CLEARED PREFERRED EVAC 1,900 ft+ (580 m) / SHELTER INSIDE'/>
+<strokeColor value='-6381922'/>
+<strokeWeight value='4.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='345939614'/>
+<labels_on value='false'/>
+</detail>
+</event>
+=== UXO: 2 events
+--- u1 (a-h-G)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='u1' type='a-h-G' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-g-i-g-o' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<status readiness='true'/>
+<archive/>
+<color argb='-1'/>
+<link uid='TAKX-test-node' production_time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C' parent_callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' relation='p-p'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='UXO 1 Shell'/>
+<__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="425" multi="1" where="AREA" plc="RB" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1"/>
+<remarks>[BLAST-UXO] Artillery shell or mortar (more than one item). Minimum cordon 425 m / 1,400 ft (Projectiles and Mortars, 375 m, +50 m for more than one item (extend further if they are spread out). ATP 4-32.2 Fig. 31, 01 Mar 2024.) Fragments may travel farther. Don&apos;t approach or touch it; keep people out; use radios and phones only outside the cordon; report to authorities. Placed by ALPHA-1 011452Z NOV 26. Minimum distances, not guarantees.</remarks>
+</detail>
+</event>
+--- u1.cordon (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='u1.cordon' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='425.0' minor='425.0' angle='360'/>
+<link uid='u1.cordon.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ffe65100</color>
+<width>4.0</width>
+</LineStyle>
+<PolyStyle>
+<color>40e65100</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='u1' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='UXO CORDON 425 m (1,400 ft) MIN - fragments may go farther'/>
+<strokeColor value='-1683200'/>
+<strokeWeight value='4.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='1088835840'/>
+<labels_on value='true'/>
+</detail>
+</event>
+=== nuclear with wind: 15 events
+--- n1 (a-h-G)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1' type='a-h-G' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-g-i-g-o' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<status readiness='true'/>
+<archive/>
+<color argb='-1'/>
+<link uid='TAKX-test-node' production_time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C' parent_callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' relation='p-p'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC 1 10 kt'/>
+<__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="270" wmph="15" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573"/>
+<remarks>[BLAST-NUC] Nuclear detonation 10 kt, surface burst. GET INSIDE, STAY INSIDE, STAY TUNED (FEMA). Severe damage 0.50 mi (0.80 km), moderate 1.0 mi (1.6 km), light 3.0 mi (4.8 km). Burns to bare skin 1.1 mi (1.8 km). Initial radiation 100 rad 0.98 mi (1.6 km). Wind from 270° at 15 mph. PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. Planning estimate, not a forecast.</remarks>
+</detail>
+</event>
+--- n1.sdz (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.sdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='804.672' minor='804.672' angle='360'/>
+<link uid='n1.sdz.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ffb71c1c</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>40b71c1c</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n1' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC SEVERE DAMAGE ZONE 0.50 mi (0.80 km) - planning estimate'/>
+<strokeColor value='-4776932'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='1085742108'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n1.mdz (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.mdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='1609.344' minor='1609.344' angle='360'/>
+<link uid='n1.mdz.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ffff6d00</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>30ff6d00</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n1' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC MODERATE DAMAGE ZONE 1.0 mi (1.6 km) - planning estimate'/>
+<strokeColor value='-37632'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='822045952'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n1.ldz (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.ldz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='4828.032' minor='4828.032' angle='360'/>
+<link uid='n1.ldz.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ffffd600</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>1affd600</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n1' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC LIGHT DAMAGE ZONE 3.0 mi (4.8 km) - planning estimate'/>
+<strokeColor value='-10752'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='452974080'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n1.burn (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.burn' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='1838.26556366468' minor='1838.26556366468' angle='360'/>
+<link uid='n1.burn.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ff00b8d4</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>00000000</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n1' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC BURNS (2nd degree) 1.1 mi (1.8 km) - planning estimate'/>
+<strokeColor value='-16729900'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='dashed'/>
+<fillColor value='0'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n1.rad (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.rad' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='1573.3308707949745' minor='1573.3308707949745' angle='360'/>
+<link uid='n1.rad.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ff536dfe</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>00000000</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n1' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC INITIAL RADIATION 100 rad 0.98 mi (1.6 km) - planning estimate'/>
+<strokeColor value='-11309570'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='0'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n1.gi (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.gi' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='80467.2' minor='80467.2' angle='360'/>
+<link uid='n1.gi.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ffe0e0e0</color>
+<width>2.0</width>
+</LineStyle>
+<PolyStyle>
+<color>00000000</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n1' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC: GET INSIDE, STAY INSIDE, STAY TUNED within 50 mi (FEMA)'/>
+<strokeColor value='-2039584'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='dotted'/>
+<fillColor value='0'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n1.fo3000 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.fo3000' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0405942' lon='-84.4741048' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='38.0398834,-84.5037'/>
+<link point='38.0398768,-84.4644316'/>
+<link point='38.0398825,-84.4631502'/>
+<link point='38.0399004,-84.4618908'/>
+<link point='38.0399301,-84.4606748'/>
+<link point='38.0399711,-84.459523'/>
+<link point='38.0400228,-84.4584553'/>
+<link point='38.0400842,-84.4574898'/>
+<link point='38.0401543,-84.456643'/>
+<link point='38.040232,-84.4559296'/>
+<link point='38.0403158,-84.4553615'/>
+<link point='38.0404044,-84.4549487'/>
+<link point='38.0404963,-84.4546981'/>
+<link point='38.0405898,-84.4546141'/>
+<link point='38.0406833,-84.454698'/>
+<link point='38.0407754,-84.4549485'/>
+<link point='38.0408643,-84.4553612'/>
+<link point='38.0409486,-84.4559291'/>
+<link point='38.0410268,-84.4566425'/>
+<link point='38.0410976,-84.4574891'/>
+<link point='38.0411598,-84.4584546'/>
+<link point='38.0412123,-84.4595223'/>
+<link point='38.0412542,-84.460674'/>
+<link point='38.0412848,-84.46189'/>
+<link point='38.0413035,-84.4631495'/>
+<link point='38.04131,-84.4644309'/>
+<link point='38.0413166,-84.5037'/>
+<link point='38.0412922,-84.5039345'/>
+<link point='38.0412206,-84.5041531'/>
+<link point='38.0411067,-84.5043407'/>
+<link point='38.0409583,-84.5044847'/>
+<link point='38.0407855,-84.5045752'/>
+<link point='38.0406,-84.5046061'/>
+<link point='38.0404145,-84.5045752'/>
+<link point='38.0402417,-84.5044847'/>
+<link point='38.0400933,-84.5043407'/>
+<link point='38.0399794,-84.504153'/>
+<link point='38.0399078,-84.5039345'/>
+<link point='38.0398834,-84.5037'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC FALLOUT 3000 R/h at H+1 (idealized, wind from 270° at 15 mph) - not a forecast'/>
+<strokeColor value='-11922292'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='810161292'/>
+<labels_on value='false'/>
+</detail>
+</event>
+--- n1.fo1000 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.fo1000' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0405793' lon='-84.4476902' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='38.0389839,-84.5037'/>
+<link point='38.0389604,-84.4292977'/>
+<link point='38.0389727,-84.4268698'/>
+<link point='38.0390123,-84.4244835'/>
+<link point='38.0390787,-84.4221794'/>
+<link point='38.0391707,-84.4199972'/>
+<link point='38.0392866,-84.417974'/>
+<link point='38.0394247,-84.4161446'/>
+<link point='38.0395824,-84.4145401'/>
+<link point='38.0397571,-84.4131882'/>
+<link point='38.0399459,-84.4121118'/>
+<link point='38.0401454,-84.4113294'/>
+<link point='38.0403524,-84.4108545'/>
+<link point='38.0405632,-84.4106951'/>
+<link point='38.0407743,-84.410854'/>
+<link point='38.040982,-84.4113284'/>
+<link point='38.0411828,-84.4121102'/>
+<link point='38.0413732,-84.4131862'/>
+<link point='38.04155,-84.4145377'/>
+<link point='38.0417101,-84.4161418'/>
+<link point='38.0418509,-84.417971'/>
+<link point='38.0419698,-84.419994'/>
+<link point='38.0420648,-84.4221761'/>
+<link point='38.0421343,-84.4244801'/>
+<link point='38.0421771,-84.4268665'/>
+<link point='38.0421925,-84.4292944'/>
+<link point='38.0422161,-84.5037'/>
+<link point='38.042161,-84.5042289'/>
+<link point='38.0419995,-84.5047217'/>
+<link point='38.0417427,-84.5051449'/>
+<link point='38.041408,-84.5054697'/>
+<link point='38.0410183,-84.5056738'/>
+<link point='38.0406,-84.5057434'/>
+<link point='38.0401817,-84.5056738'/>
+<link point='38.039792,-84.5054696'/>
+<link point='38.0394573,-84.5051449'/>
+<link point='38.0392004,-84.5047217'/>
+<link point='38.039039,-84.5042289'/>
+<link point='38.0389839,-84.5037'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC FALLOUT 1000 R/h at H+1 (idealized, wind from 270° at 15 mph) - not a forecast'/>
+<strokeColor value='-9823334'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='711596954'/>
+<labels_on value='false'/>
+</detail>
+</event>
+--- n1.fo300 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.fo300' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0404707' lon='-84.3637612' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='38.0362214,-84.5037'/>
+<link point='38.0360742,-84.3177015'/>
+<link point='38.0361019,-84.311632'/>
+<link point='38.0362038,-84.3056661'/>
+<link point='38.036378,-84.299906'/>
+<link point='38.0366218,-84.2944501'/>
+<link point='38.0369309,-84.2893917'/>
+<link point='38.0373001,-84.2848176'/>
+<link point='38.0377232,-84.2808058'/>
+<link point='38.0381929,-84.277425'/>
+<link point='38.0387014,-84.2747332'/>
+<link point='38.0392399,-84.2727763'/>
+<link point='38.0397993,-84.2715878'/>
+<link point='38.0403701,-84.2711882'/>
+<link point='38.0409424,-84.2715842'/>
+<link point='38.0415065,-84.2727691'/>
+<link point='38.0420526,-84.2747227'/>
+<link point='38.0425715,-84.2774115'/>
+<link point='38.0430542,-84.2807896'/>
+<link point='38.0434924,-84.2847991'/>
+<link point='38.0438784,-84.2893715'/>
+<link point='38.0442057,-84.2944285'/>
+<link point='38.0444686,-84.2998835'/>
+<link point='38.0446626,-84.3056433'/>
+<link point='38.0447842,-84.3116093'/>
+<link point='38.0448315,-84.3176793'/>
+<link point='38.0449786,-84.5037'/>
+<link point='38.0448294,-84.505133'/>
+<link point='38.044392,-84.5064684'/>
+<link point='38.0436961,-84.507615'/>
+<link point='38.0427892,-84.5084949'/>
+<link point='38.0417331,-84.5090479'/>
+<link point='38.0405999,-84.5092365'/>
+<link point='38.0394666,-84.5090477'/>
+<link point='38.0384106,-84.5084946'/>
+<link point='38.0375038,-84.5076147'/>
+<link point='38.036808,-84.5064681'/>
+<link point='38.0363706,-84.5051329'/>
+<link point='38.0362214,-84.5037'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC FALLOUT 300 R/h at H+1 (idealized, wind from 270° at 15 mph) - not a forecast'/>
+<strokeColor value='-8708190'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='645603234'/>
+<labels_on value='false'/>
+</detail>
+</event>
+--- n1.fo100 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.fo100' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0400944' lon='-84.2266245' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='38.0331634,-84.5037'/>
+<link point='38.0290575,-84.1358706'/>
+<link point='38.0291131,-84.1238674'/>
+<link point='38.0293543,-84.1120686'/>
+<link point='38.0297769,-84.1006759'/>
+<link point='38.0303739,-84.0898843'/>
+<link point='38.0311353,-84.0798782'/>
+<link point='38.0320482,-84.0708289'/>
+<link point='38.0330972,-84.0628912'/>
+<link point='38.0342648,-84.056201'/>
+<link point='38.035531,-84.0508727'/>
+<link point='38.0368744,-84.0469975'/>
+<link point='38.0382723,-84.0446418'/>
+<link point='38.0397006,-84.0438461'/>
+<link point='38.0411352,-84.0446239'/>
+<link point='38.0425513,-84.0469622'/>
+<link point='38.0439247,-84.050821'/>
+<link point='38.0452316,-84.0561342'/>
+<link point='38.0464497,-84.0628112'/>
+<link point='38.0475577,-84.0707376'/>
+<link point='38.0485365,-84.0797779'/>
+<link point='38.0493691,-84.0897774'/>
+<link point='38.0500411,-84.1005648'/>
+<link point='38.0505407,-84.1119557'/>
+<link point='38.0508593,-84.1237551'/>
+<link point='38.0509913,-84.1357609'/>
+<link point='38.0480365,-84.5037'/>
+<link point='38.0477831,-84.5061339'/>
+<link point='38.0470401,-84.5084019'/>
+<link point='38.0458582,-84.5103494'/>
+<link point='38.044318,-84.5118437'/>
+<link point='38.0425244,-84.5127829'/>
+<link point='38.0405996,-84.513103'/>
+<link point='38.0386749,-84.5127824'/>
+<link point='38.0368814,-84.5118429'/>
+<link point='38.0353414,-84.5103485'/>
+<link point='38.0341597,-84.5084011'/>
+<link point='38.0334168,-84.5061334'/>
+<link point='38.0331634,-84.5037'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC FALLOUT 100 R/h at H+1 (idealized, wind from 270° at 15 mph) - not a forecast'/>
+<strokeColor value='-7461718'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='579740842'/>
+<labels_on value='false'/>
+</detail>
+</event>
+--- n1.fo30 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.fo30' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0389659' lon='-84.0047117' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='38.030724,-84.5037'/>
+<link point='38.0187364,-83.8425226'/>
+<link point='38.0187842,-83.8209466'/>
+<link point='38.0191696,-83.7997364'/>
+<link point='38.0198862,-83.7792547'/>
+<link point='38.0209224,-83.7598517'/>
+<link point='38.0222609,-83.7418592'/>
+<link point='38.0238796,-83.725585'/>
+<link point='38.0257516,-83.7113073'/>
+<link point='38.0278456,-83.6992707'/>
+<link point='38.0301264,-83.689681'/>
+<link point='38.0325558,-83.6827026'/>
+<link point='38.0350925,-83.6784551'/>
+<link point='38.0376934,-83.6770113'/>
+<link point='38.0403143,-83.6783964'/>
+<link point='38.0429101,-83.682587'/>
+<link point='38.0454361,-83.6895115'/>
+<link point='38.0478486,-83.6990518'/>
+<link point='38.0501058,-83.7110449'/>
+<link point='38.0521683,-83.7252856'/>
+<link point='38.054,-83.7415303'/>
+<link point='38.0555689,-83.7595011'/>
+<link point='38.0568474,-83.7788905'/>
+<link point='38.0578129,-83.7993663'/>
+<link point='38.0584486,-83.8205782'/>
+<link point='38.0587431,-83.8421628'/>
+<link point='38.050476,-84.5037'/>
+<link point='38.0501395,-84.5069325'/>
+<link point='38.0491527,-84.5099445'/>
+<link point='38.0475831,-84.5125309'/>
+<link point='38.0455375,-84.5145153'/>
+<link point='38.0431555,-84.5157625'/>
+<link point='38.0405993,-84.5161876'/>
+<link point='38.0380433,-84.5157617'/>
+<link point='38.0356615,-84.5145139'/>
+<link point='38.0336163,-84.5125292'/>
+<link point='38.0320469,-84.5099431'/>
+<link point='38.0310604,-84.5069316'/>
+<link point='38.030724,-84.5037'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC FALLOUT 30 R/h at H+1 (idealized, wind from 270° at 15 mph) - not a forecast'/>
+<strokeColor value='-6543440'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='513550256'/>
+<labels_on value='false'/>
+</detail>
+</event>
+--- n1.fo10 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.fo10' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0369235' lon='-83.7546972' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='38.0279288,-84.5037'/>
+<link point='38.0020273,-83.5121486'/>
+<link point='38.0020441,-83.4797913'/>
+<link point='38.0026403,-83.4479791'/>
+<link point='38.0038063,-83.4172557'/>
+<link point='38.0055233,-83.3881461'/>
+<link point='38.0077633,-83.361148'/>
+<link point='38.0104895,-83.3367228'/>
+<link point='38.013657,-83.3152884'/>
+<link point='38.0172133,-83.2972116'/>
+<link point='38.0210992,-83.2828019'/>
+<link point='38.0252497,-83.2723062'/>
+<link point='38.0295946,-83.2659048'/>
+<link point='38.0340605,-83.2637078'/>
+<link point='38.038571,-83.2657537'/>
+<link point='38.0430489,-83.2720081'/>
+<link point='38.0474169,-83.2823649'/>
+<link point='38.0515991,-83.2966473'/>
+<link point='38.0555226,-83.3146117'/>
+<link point='38.0591187,-83.3359509'/>
+<link point='38.0623241,-83.3603'/>
+<link point='38.0650823,-83.3872423'/>
+<link point='38.0673445,-83.4163166'/>
+<link point='38.0690705,-83.447025'/>
+<link point='38.0702297,-83.4788415'/>
+<link point='38.0708017,-83.5112209'/>
+<link point='38.0532711,-84.5037'/>
+<link point='38.0528393,-84.5078474'/>
+<link point='38.0515732,-84.5117121'/>
+<link point='38.0495593,-84.5150305'/>
+<link point='38.0469347,-84.5175765'/>
+<link point='38.0438785,-84.5191766'/>
+<link point='38.0405989,-84.5197218'/>
+<link point='38.0373194,-84.5191752'/>
+<link point='38.0342636,-84.5175741'/>
+<link point='38.0316396,-84.5150278'/>
+<link point='38.0296262,-84.5117097'/>
+<link point='38.0283605,-84.5078461'/>
+<link point='38.0279288,-84.5037'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC FALLOUT 10 R/h at H+1 (idealized, wind from 270° at 15 mph) - not a forecast'/>
+<strokeColor value='-5552196'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='480987068'/>
+<labels_on value='false'/>
+</detail>
+</event>
+--- n1.fo3 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.fo3' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0348556' lon='-83.5676617' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='38.0240157,-84.5037'/>
+<link point='37.9836324,-83.2645572'/>
+<link point='37.9836306,-83.2241196'/>
+<link point='37.984478,-83.1843584'/>
+<link point='37.9861613,-83.1459527'/>
+<link point='37.9886532,-83.1095584'/>
+<link point='37.9919133,-83.0757973'/>
+<link point='37.9958882,-83.0452463'/>
+<link point='38.0005127,-83.0184281'/>
+<link point='38.0057102,-82.9958014'/>
+<link point='38.0113945,-82.9777539'/>
+<link point='38.0174704,-82.9645952'/>
+<link point='38.0238357,-82.9565514'/>
+<link point='38.0303824,-82.9537615'/>
+<link point='38.036999,-82.9562745'/>
+<link point='38.0435719,-82.9640489'/>
+<link point='38.0499876,-82.976953'/>
+<link point='38.0561348,-82.9947672'/>
+<link point='38.061906,-83.0171877'/>
+<link point='38.0672001,-83.0438314'/>
+<link point='38.0719238,-83.0742429'/>
+<link point='38.0759936,-83.1079017'/>
+<link point='38.0793372,-83.1442314'/>
+<link point='38.0818953,-83.1826096'/>
+<link point='38.0836225,-83.2223786'/>
+<link point='38.0844881,-83.2628567'/>
+<link point='38.0571843,-84.5037'/>
+<link point='38.056619,-84.5091286'/>
+<link point='38.0549619,-84.5141869'/>
+<link point='38.0523259,-84.5185302'/>
+<link point='38.0488907,-84.5218624'/>
+<link point='38.0448906,-84.5239564'/>
+<link point='38.0405981,-84.5246698'/>
+<link point='38.0363059,-84.523954'/>
+<link point='38.0323065,-84.5218583'/>
+<link point='38.0288722,-84.5185255'/>
+<link point='38.0262371,-84.5141828'/>
+<link point='38.0245807,-84.5091262'/>
+<link point='38.0240157,-84.5037'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC FALLOUT 3 R/h at H+1 (idealized, wind from 270° at 15 mph) - not a forecast'/>
+<strokeColor value='-4560696'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='448424136'/>
+<labels_on value='false'/>
+</detail>
+</event>
+--- n1.fo1 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n1.fo1' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0303881' lon='-83.2572021' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='38.0126489,-84.5037'/>
+<link point='37.9567447,-82.8520746'/>
+<link point='37.9565928,-82.798177'/>
+<link point='37.9576553,-82.7451725'/>
+<link point='37.9599157,-82.6939652'/>
+<link point='37.9633383,-82.6454292'/>
+<link point='37.9678683,-82.600393'/>
+<link point='37.9734326,-82.5596261'/>
+<link point='37.9799408,-82.5238253'/>
+<link point='37.9872863,-82.4936032'/>
+<link point='37.9953479,-82.4694779'/>
+<link point='38.0039916,-82.4518633'/>
+<link point='38.0130724,-82.441063'/>
+<link point='38.0224369,-82.4372641'/>
+<link point='38.0319255,-82.4405343'/>
+<link point='38.0413754,-82.4508202'/>
+<link point='38.0506231,-82.4679485'/>
+<link point='38.0595075,-82.4916285'/>
+<link point='38.0678727,-82.5214568'/>
+<link point='38.0755712,-82.5569245'/>
+<link point='38.0824664,-82.5974251'/>
+<link point='38.0884356,-82.6422658'/>
+<link point='38.0933722,-82.6906783'/>
+<link point='38.0971877,-82.741833'/>
+<link point='38.0998139,-82.7948525'/>
+<link point='38.1012039,-82.8488272'/>
+<link point='38.068551,-84.5037'/>
+<link point='38.0675982,-84.5128506'/>
+<link point='38.0648049,-84.521377'/>
+<link point='38.0603617,-84.5286975'/>
+<link point='38.0545715,-84.5343131'/>
+<link point='38.0478293,-84.5378414'/>
+<link point='38.0405947,-84.5390423'/>
+<link point='38.0333608,-84.5378347'/>
+<link point='38.0266205,-84.5343015'/>
+<link point='38.0208329,-84.5286841'/>
+<link point='38.0163923,-84.5213653'/>
+<link point='38.013601,-84.5128439'/>
+<link point='38.0126489,-84.5037'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC FALLOUT 1 R/h at H+1 (idealized, wind from 270° at 15 mph) - not a forecast'/>
+<strokeColor value='-3238952'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='416191448'/>
+<labels_on value='false'/>
+</detail>
+</event>
+=== nuclear, military picture: 10 events
+--- n2 (a-h-G)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n2' type='a-h-G' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-g-i-g-o' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<status readiness='true'/>
+<archive/>
+<color argb='-1'/>
+<link uid='TAKX-test-node' production_time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C' parent_callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' relation='p-p'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC 2 10 kt'/>
+<__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="270" wmph="15" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" n="1" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573" fo="MIL"/>
+<remarks>[BLAST-NUC] Nuclear detonation 10 kt, surface burst. GET INSIDE, STAY INSIDE, STAY TUNED (FEMA). Severe damage 0.50 mi (0.80 km), moderate 1.0 mi (1.6 km), light 3.0 mi (4.8 km). Burns to bare skin 1.1 mi (1.8 km). Initial radiation 100 rad 0.98 mi (1.6 km). Wind from 270° at 15 mph. Military prediction (FM 3-3-1 (1994) / FM 3-11.3 (2009)): Zone I 18 km, Zone II 35 km, toward 90°. PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. Planning estimate, not a forecast.</remarks>
+</detail>
+</event>
+--- n2.sdz (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n2.sdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='804.672' minor='804.672' angle='360'/>
+<link uid='n2.sdz.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ffb71c1c</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>40b71c1c</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n2' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC SEVERE DAMAGE ZONE 0.50 mi (0.80 km) - planning estimate'/>
+<strokeColor value='-4776932'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='1085742108'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n2.mdz (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n2.mdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='1609.344' minor='1609.344' angle='360'/>
+<link uid='n2.mdz.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ffff6d00</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>30ff6d00</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n2' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC MODERATE DAMAGE ZONE 1.0 mi (1.6 km) - planning estimate'/>
+<strokeColor value='-37632'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='822045952'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n2.ldz (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n2.ldz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='4828.032' minor='4828.032' angle='360'/>
+<link uid='n2.ldz.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ffffd600</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>1affd600</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n2' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC LIGHT DAMAGE ZONE 3.0 mi (4.8 km) - planning estimate'/>
+<strokeColor value='-10752'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='452974080'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n2.burn (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n2.burn' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='1838.26556366468' minor='1838.26556366468' angle='360'/>
+<link uid='n2.burn.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ff00b8d4</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>00000000</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n2' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC BURNS (2nd degree) 1.1 mi (1.8 km) - planning estimate'/>
+<strokeColor value='-16729900'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='dashed'/>
+<fillColor value='0'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n2.rad (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n2.rad' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='1573.3308707949745' minor='1573.3308707949745' angle='360'/>
+<link uid='n2.rad.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ff536dfe</color>
+<width>3.0</width>
+</LineStyle>
+<PolyStyle>
+<color>00000000</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n2' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC INITIAL RADIATION 100 rad 0.98 mi (1.6 km) - planning estimate'/>
+<strokeColor value='-11309570'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='0'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n2.gi (u-d-c-c)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n2.gi' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<shape>
+<ellipse major='80467.2' minor='80467.2' angle='360'/>
+<link uid='n2.gi.Style' type='b-x-KmlStyle' relation='p-c'>
+<Style>
+<LineStyle>
+<color>ffe0e0e0</color>
+<width>2.0</width>
+</LineStyle>
+<PolyStyle>
+<color>00000000</color>
+</PolyStyle>
+</Style>
+</link>
+<link uid='n2' type='a-h-G' relation='p-p-CenterAnchor'/>
+</shape>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC: GET INSIDE, STAY INSIDE, STAY TUNED within 50 mi (FEMA)'/>
+<strokeColor value='-2039584'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='dotted'/>
+<fillColor value='0'/>
+<labels_on value='true'/>
+</detail>
+</event>
+--- n2.z1 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n2.z1' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0405149' lon='-84.4209549' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='37.9859989,-84.3146843'/>
+<link point='37.9903698,-84.312752'/>
+<link point='37.9947834,-84.3109809'/>
+<link point='37.9992358,-84.3093726'/>
+<link point='38.0037233,-84.3079285'/>
+<link point='38.0082421,-84.3066497'/>
+<link point='38.0127885,-84.3055374'/>
+<link point='38.0173585,-84.3045926'/>
+<link point='38.0219483,-84.3038161'/>
+<link point='38.026554,-84.3032086'/>
+<link point='38.0311717,-84.3027707'/>
+<link point='38.0357976,-84.3025027'/>
+<link point='38.0404277,-84.3024048'/>
+<link point='38.045058,-84.3024773'/>
+<link point='38.0496847,-84.3027201'/>
+<link point='38.0543039,-84.303133'/>
+<link point='38.0589116,-84.3037156'/>
+<link point='38.063504,-84.3044676'/>
+<link point='38.0680771,-84.3053884'/>
+<link point='38.0726271,-84.3064771'/>
+<link point='38.0771502,-84.3077329'/>
+<link point='38.0816424,-84.3091547'/>
+<link point='38.0861,-84.3107415'/>
+<link point='38.0905192,-84.3124918'/>
+<link point='38.0948963,-84.3144042'/>
+<link point='38.0782136,-84.5089115'/>
+<link point='38.077434,-84.5146547'/>
+<link point='38.0761082,-84.5202353'/>
+<link point='38.074256,-84.5255705'/>
+<link point='38.0719049,-84.5305812'/>
+<link point='38.0690897,-84.535193'/>
+<link point='38.0658522,-84.5393376'/>
+<link point='38.0622404,-84.5429535'/>
+<link point='38.058308,-84.5459872'/>
+<link point='38.0541131,-84.5483938'/>
+<link point='38.0497181,-84.5501377'/>
+<link point='38.0451881,-84.5511932'/>
+<link point='38.0405903,-84.5515447'/>
+<link point='38.0359927,-84.5511872'/>
+<link point='38.0314635,-84.5501262'/>
+<link point='38.0270698,-84.5483773'/>
+<link point='38.0228768,-84.5459668'/>
+<link point='38.0189464,-84.5429304'/>
+<link point='38.0153369,-84.5393131'/>
+<link point='38.0121017,-84.5351686'/>
+<link point='38.0092888,-84.5305583'/>
+<link point='38.0069397,-84.5255505'/>
+<link point='38.0050892,-84.5202193'/>
+<link point='38.0037648,-84.5146437'/>
+<link point='38.0029859,-84.5089061'/>
+<link point='37.9859989,-84.3146843'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC ZONE I (125 cGy in &lt;4 h) - FM 3-3-1 (1994) / FM 3-11.3 (2009) simplified prediction, estimate'/>
+<strokeColor value='-59580'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='872355652'/>
+<labels_on value='false'/>
+</detail>
+</event>
+--- n2.z2 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n2.z2' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0401874' lon='-84.208357' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='37.9310939,-84.1259493'/>
+<link point='37.9398296,-84.122065'/>
+<link point='37.948651,-84.1185023'/>
+<link point='37.9575505,-84.1152643'/>
+<link point='37.9665208,-84.1123538'/>
+<link point='37.9755542,-84.1097734'/>
+<link point='37.9846431,-84.1075254'/>
+<link point='37.99378,-84.1056119'/>
+<link point='38.0029569,-84.1040345'/>
+<link point='38.0121662,-84.1027948'/>
+<link point='38.0214002,-84.1018938'/>
+<link point='38.030651,-84.1013325'/>
+<link point='38.0399107,-84.1011115'/>
+<link point='38.0491716,-84.1012312'/>
+<link point='38.0584258,-84.1016914'/>
+<link point='38.0676655,-84.1024921'/>
+<link point='38.0768828,-84.1036325'/>
+<link point='38.08607,-84.105112'/>
+<link point='38.0952193,-84.1069293'/>
+<link point='38.1043229,-84.109083'/>
+<link point='38.113373,-84.1115715'/>
+<link point='38.1223621,-84.1143927'/>
+<link point='38.1312824,-84.1175444'/>
+<link point='38.1401265,-84.1210241'/>
+<link point='38.1488867,-84.1248288'/>
+<link point='38.0948963,-84.3144042'/>
+<link point='38.0905192,-84.3124918'/>
+<link point='38.0861,-84.3107415'/>
+<link point='38.0816424,-84.3091547'/>
+<link point='38.0771502,-84.3077329'/>
+<link point='38.0726271,-84.3064771'/>
+<link point='38.0680771,-84.3053884'/>
+<link point='38.063504,-84.3044676'/>
+<link point='38.0589116,-84.3037156'/>
+<link point='38.0543039,-84.303133'/>
+<link point='38.0496847,-84.3027201'/>
+<link point='38.045058,-84.3024773'/>
+<link point='38.0404277,-84.3024048'/>
+<link point='38.0357976,-84.3025027'/>
+<link point='38.0311717,-84.3027707'/>
+<link point='38.026554,-84.3032086'/>
+<link point='38.0219483,-84.3038161'/>
+<link point='38.0173585,-84.3045926'/>
+<link point='38.0127885,-84.3055374'/>
+<link point='38.0082421,-84.3066497'/>
+<link point='38.0037233,-84.3079285'/>
+<link point='37.9992358,-84.3093726'/>
+<link point='37.9947834,-84.3109809'/>
+<link point='37.9903698,-84.312752'/>
+<link point='37.9859989,-84.3146843'/>
+<link point='37.9310939,-84.1259493'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC ZONE II (75 cGy in 24 h) - FM 3-3-1 (1994) / FM 3-11.3 (2009) simplified prediction, estimate'/>
+<strokeColor value='-15360'/>
+<strokeWeight value='3.0'/>
+<strokeStyle value='solid'/>
+<fillColor value='587187200'/>
+<labels_on value='false'/>
+</detail>
+</event>
+--- n2.toa1 (u-d-f)
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='n2.toa1' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<point lat='38.0402925' lon='-84.2349455' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link point='37.965932,-84.2455509'/>
+<link point='37.9749087,-84.2416663'/>
+<link point='37.9840109,-84.2382791'/>
+<link point='37.9932213,-84.235396'/>
+<link point='38.0025225,-84.2330226'/>
+<link point='38.0118966,-84.2311636'/>
+<link point='38.0213259,-84.2298229'/>
+<link point='38.0307925,-84.229003'/>
+<link point='38.0402784,-84.2287059'/>
+<link point='38.0497655,-84.2289321'/>
+<link point='38.0592357,-84.2296816'/>
+<link point='38.068671,-84.2309531'/>
+<link point='38.0780535,-84.2327444'/>
+<link point='38.0873652,-84.2350523'/>
+<link point='38.0965884,-84.2378724'/>
+<link point='38.1057055,-84.2411998'/>
+<link point='38.1146991,-84.2450281'/>
+<__shapeExtras cpvis='true' editable='false'/>
+<archive/>
+<creator uid='TAKX-test-node' callsign='TAK-X &lt;1&gt; &amp; &apos;co&apos;' time='2026-11-01T14:52:05.000Z' type='a-f-G-U-C'/>
+<contact callsign='NUC fallout H+1 (estimated arrival)'/>
+<strokeColor value='-1'/>
+<strokeWeight value='2.0'/>
+<strokeStyle value='dashed'/>
+<fillColor value='0'/>
+<labels_on value='false'/>
+</detail>
+</event>
+=== delete for everyone
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0' uid='<random>' type='t-x-d-d' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-01T15:13:05.000Z' how='h-g-i-g-o' access='Undefined'>
+<point lat='0' lon='0' hae='9999999.0' ce='9999999.0' le='9999999.0' />
+<detail>
+<link uid='s1.pref' relation='none' type='u-d-c-c'/>
+<__forcedelete/>
+</detail>
+</event>
