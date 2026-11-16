@@ -328,9 +328,20 @@ public final class BlastApp {
         try {
             return map.mgrs(lat, lon);
         } catch (RuntimeException e) {
-            return (Math.round(lat * 1e5) / 1e5) + ", "
-                    + (Math.round(lon * 1e5) / 1e5);
+            return plain(Math.round(lat * 1e5) / 1e5) + ", "
+                    + plain(Math.round(lon * 1e5) / 1e5);
         }
+    }
+
+    /**
+     * A number as 1.1 wrote it ("38.0406"), but never in exponent form
+     * (Java writes 0.0005 as "5.0E-4").
+     */
+    static String plain(double v) {
+        String s = Double.toString(v);
+        return s.indexOf('E') < 0 ? s
+                : java.math.BigDecimal.valueOf(v).stripTrailingZeros()
+                        .toPlainString();
     }
 
     /** MGRS to 10 m (4 + 4 digits), spaces kept; "" if unavailable. */
