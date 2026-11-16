@@ -103,40 +103,91 @@ final class TakxShapes {
         return uid;
     }
 
-    /**
-     * The incident whose marker this was, when a marker is removed by
-     * someone other than this plugin (the user deleted it in TAK-X): one
-     * of this plugin's markers, or TAK-X's copy of a received incident's.
-     * Null for anything else, including markers this plugin is replacing
-     * (they are forgotten before they are deleted).
-     */
-    String markerRemoved(IMapObject o) {
-        String u = o == null ? null : o.getUid();
-        if (u == null)
-            return null;
-        String uid = markerOwner.get(u);
-        if (uid != null)
-            return uid;
-        MemoryPorts.Stored s = ports.stored(u);
-        return s != null && s.remote ? u : null;
-    }
+    /** Incidents whose marker has been seen on the globe. */
+    private final Set<String> seenMarker = new HashSet<>();
 
     /**
-     * Whether TAK-X still has this object: it also reports objects as
-     * removed when it only hides them.
+     * Incidents whose marker was deleted in TAK-X: seen on the globe
+     * before, and now TAK-X has neither its key nor the object (a hidden
+     * marker keeps both). Covers this plugin's markers and TAK-X's copies
+     * of received incidents (whose marker has the incident's uid).
      */
-    boolean stillThere(IMapObject o) {
+    List<String> deletedMarkers() {
+        List<String> out = new ArrayList<>();
         if (objects == null)
-            return false;
+            return out;
+        Set<String> uids = new HashSet<>(), keys = new HashSet<>();
         try {
-            String u = o.getUid();
-            for (IMapObject m : objects.getMapObjects())
-                if (m == o || (u != null && u.equals(m.getUid())))
-                    return true;
+            for (IMapObject o : objects.getMapObjects()) {
+                if (o.getUid() != null)
+                    uids.add(o.getUid());
+                if (o.getKey() != null)
+                    keys.add(o.getKey());
+            }
         } catch (Exception | LinkageError e) {
             LOG.debug("could not list map objects", e);
+            return out;
         }
-        return false;
+        for (Map.Entry<String, IMapObject> e : markers.entrySet()) {
+            IMapObject m = e.getValue();
+            String key = m.getKey();
+            boolean there = uids.contains(m.getUid())
+                    || (key != null && (keys.contains(key)
+                            || keyExists(key)));
+            check(e.getKey(), there, out);
+        }
+        for (String uid : received)
+            check(uid, uids.contains(uid), out);
+        return out;
+    }
+
+    private boolean keyExists(String key) {
+        try {
+            return objects.keyExists(key);
+        } catch (Exception | LinkageError e) {
+            return false;
+        }
+    }
+
+    private void check(String uid, boolean there, List<String> out) {
+        if (there)
+            seenMarker.add(uid);
+        else if (seenMarker.remove(uid))
+            out.add(uid);
+    }
+
+    /** For the log: what TAK-X says about a removed object. */
+    String describeRemoval(IMapObject o) {
+        if (o == null)
+            return "null";
+        String u = o.getUid(), key = o.getKey();
+        String mine = markerOwner.get(u);
+        boolean listed = false;
+        try {
+            for (IMapObject m : objects.getMapObjects())
+                if (m == o || (u != null && u.equals(m.getUid())))
+                    listed = true;
+        } catch (Exception | LinkageError e) {
+            // unknown
+        }
+        return "uid=" + u + " key=" + key + " incident=" + (mine != null
+                ? mine : ports.stored(u) != null ? u + " (received)"
+                        : "none") + " keyExists=" + (key != null
+                                && keyExists(key)) + " listed=" + listed;
+    }
+
+    /** Whether a removed object is one of the incident markers. */
+    boolean isIncidentMarker(IMapObject o) {
+        String u = o == null ? null : o.getUid();
+        if (u == null)
+            return false;
+        if (markerOwner.containsKey(u))
+            return true;
+        for (IMapObject m : markers.values())
+            if (m == o || (o.getKey() != null && o.getKey().equals(
+                    m.getKey())))
+                return true;
+        return ports.stored(u) != null;
     }
 
     /** The user deleted this incident's marker: don't delete it again. */
@@ -144,6 +195,7 @@ final class TakxShapes {
         IMapObject m = markers.remove(uid);
         if (m != null)
             markerOwner.remove(m.getUid());
+        seenMarker.remove(uid);
     }
 
     /** Bring the globe up to date with the incidents. */
@@ -159,8 +211,10 @@ final class TakxShapes {
                 }
                 continue;
             }
-            if (received.remove(s.uid))
+            if (received.remove(s.uid)) {
+                seenMarker.remove(s.uid);
                 dropReceived(s.uid); // changed here: ours to draw now
+            }
             String sig = s.name + "|" + recordXml(s);
             if (sig.equals(drawnSig.get(s.uid)))
                 continue;
@@ -176,6 +230,7 @@ final class TakxShapes {
         for (String uid : new ArrayList<>(received))
             if (!live.contains(uid)) {
                 received.remove(uid);
+                seenMarker.remove(uid);
                 dropReceived(uid); // deleted here
             }
     }
@@ -280,6 +335,7 @@ final class TakxShapes {
     }
 
     private void removeMarker(String uid) {
+        seenMarker.remove(uid);
         IMapObject m = markers.remove(uid);
         if (m == null)
             return;

@@ -85,7 +85,7 @@ import javax.swing.Timer;
 public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     static final String FAMILY = "com.s2underground.blast";
-    static final String VERSION = "0.1.8";
+    static final String VERSION = "0.1.9";
 
     private static final Logger LOG = LoggerFactory.getLogger(
             BlastTakxPlugin.class);
@@ -210,7 +210,10 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
             listenToNetwork();
             listenForDeletes();
             watchKeyboard();
-            timer = new Timer(3000, e -> pane.refresh());
+            timer = new Timer(3000, e -> {
+                checkMarkers();
+                pane.refresh();
+            });
             timer.start();
         } catch (RuntimeException e) {
             LOG.error("Blast could not start", e);
@@ -309,7 +312,19 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
             @Override
             public void clientMapObjectRemoved(IMapObject o) {
-                SwingUtilities.invokeLater(() -> markerGone(o));
+                SwingUtilities.invokeLater(() -> {
+                    if (shapes == null || !shapes.isIncidentMarker(o))
+                        return;
+                    LOG.info("TAK-X removed an incident marker: {}",
+                            shapes.describeRemoval(o));
+                    Timer t = new Timer(500, e -> {
+                        LOG.info("half a second later: {}",
+                                shapes.describeRemoval(o));
+                        checkMarkers();
+                    });
+                    t.setRepeats(false);
+                    t.start();
+                });
             }
 
             @Override
@@ -320,22 +335,26 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         watching = m;
     }
 
-    private void markerGone(IMapObject o) {
+    /**
+     * Delete the incidents whose marker was deleted in TAK-X (checked
+     * every refresh, and right after TAK-X reports a removal).
+     */
+    private void checkMarkers() {
         try {
             if (shapes == null)
                 return;
-            String uid = shapes.markerRemoved(o);
-            if (uid == null || shapes.stillThere(o))
-                return;
-            MemoryPorts.Stored s = ports.stored(uid);
-            LOG.info("marker of {} deleted in TAK-X: deleting the incident",
-                    uid);
-            shapes.forgetMarker(uid);
-            ports.delete(uid);
-            if (s != null)
-                toast("Deleted " + s.name + " (its marker was deleted).");
+            for (String uid : shapes.deletedMarkers()) {
+                MemoryPorts.Stored s = ports.stored(uid);
+                LOG.info("marker of {} deleted in TAK-X: deleting the "
+                        + "incident", uid);
+                shapes.forgetMarker(uid);
+                ports.delete(uid);
+                if (s != null)
+                    toast("Deleted " + s.name + " (its marker was "
+                            + "deleted).");
+            }
         } catch (RuntimeException e) {
-            LOG.warn("could not follow a deleted marker", e);
+            LOG.warn("could not check the incident markers", e);
         }
     }
 
