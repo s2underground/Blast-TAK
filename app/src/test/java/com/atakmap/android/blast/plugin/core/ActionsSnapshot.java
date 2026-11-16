@@ -280,6 +280,8 @@ final class ActionsSnapshot {
                     .append(o.formUid);
         if (o.settings)
             f.append(" settings");
+        if (o.labels)
+            f.append(" relabel");
         if (o.restyle != null)
             f.append(" restyle(").append(o.restyle.items().size())
                     .append(" items)");

@@ -36,16 +36,19 @@ public final class Outcome {
     public final Screen restyle;
     /** A setting shown elsewhere changed (the emergency number). */
     public final boolean settings;
+    /** The ring-labels setting changed: relabel every incident's rings. */
+    public final boolean labels;
 
     Outcome(String toast, Dialog dialog, boolean card, boolean list,
             boolean gone, String flyTo) {
         this(toast, dialog, card, list, gone, flyTo, null, null, Form.NONE,
-                null, null, false);
+                null, null, false, false);
     }
 
     private Outcome(String toast, Dialog dialog, boolean card, boolean list,
             boolean gone, String flyTo, Boolean reference, String section,
-            Form form, String formUid, Screen restyle, boolean settings) {
+            Form form, String formUid, Screen restyle, boolean settings,
+            boolean labels) {
         this.toast = toast;
         this.dialog = dialog;
         this.card = card;
@@ -58,6 +61,7 @@ public final class Outcome {
         this.formUid = formUid;
         this.restyle = restyle;
         this.settings = settings;
+        this.labels = labels;
     }
 
     static final Outcome NOTHING = new Outcome(null, null, false, false,
@@ -77,32 +81,37 @@ public final class Outcome {
 
     static Outcome tab(boolean reference, String section) {
         return new Outcome(null, null, false, false, false, null, reference,
-                section, Form.NONE, null, null, false);
+                section, Form.NONE, null, null, false, false);
     }
 
     static Outcome form(Form f, String uid, boolean redraw) {
         return new Outcome(null, null, redraw, redraw, false, null, null,
-                null, f, uid, null, false);
+                null, f, uid, null, false, false);
     }
 
     /** The same with the card and list redrawn too. */
     Outcome redrawAll() {
         return new Outcome(toast, dialog, true, true, gone, flyTo, reference,
-                section, form, formUid, restyle, settings);
+                section, form, formUid, restyle, settings, labels);
     }
 
     Outcome withRestyle(Screen s) {
         return new Outcome(toast, dialog, card, list, gone, flyTo, reference,
-                section, form, formUid, s, settings);
+                section, form, formUid, s, settings, labels);
     }
 
     Outcome withToast(String s) {
         return new Outcome(s, dialog, card, list, gone, flyTo, reference,
-                section, form, formUid, restyle, settings);
+                section, form, formUid, restyle, settings, labels);
+    }
+
+    Outcome withLabels() {
+        return new Outcome(toast, dialog, card, list, gone, flyTo, reference,
+                section, form, formUid, restyle, settings, true);
     }
 
     Outcome withSettings() {
         return new Outcome(toast, dialog, card, list, gone, flyTo, reference,
-                section, form, formUid, restyle, true);
+                section, form, formUid, restyle, true, labels);
     }
 }

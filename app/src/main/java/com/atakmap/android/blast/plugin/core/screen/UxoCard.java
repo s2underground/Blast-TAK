@@ -35,6 +35,12 @@ public final class UxoCard {
      */
     public static Screen card(UxoRecord r, String name,
             String emergencyNumber, String grid) {
+        return card(r, name, emergencyNumber, grid, true);
+    }
+
+    /** @param labels the ring labels are shown on the map now */
+    public static Screen card(UxoRecord r, String name,
+            String emergencyNumber, String grid, boolean labels) {
         boolean cleared = r.isCleared();
         Screen s = new Screen();
         s.add(Text.of(name, 17, cleared ? Tone.DIM : Tone.TEXT, true));
@@ -86,6 +92,7 @@ public final class UxoCard {
         s.add(CardActions.sendRow(6, false));
         s.add(CardActions.renameRow());
         s.add(CardActions.statusRow(cleared));
+        s.add(CardActions.labelsRow(labels));
         s.add(new Buttons(Button.of(WHY, "Why this distance?")));
         for (String c : UxoText.CAVEATS)
             s.add(Text.of("• " + c, 12, Tone.DIM, false));

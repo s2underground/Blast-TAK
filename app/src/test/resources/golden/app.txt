@@ -43,7 +43,7 @@ settings: emergency 911, auto-send false
     | hide_selected "Hide ▲" NORMAL w=1
   text 17 bold TEXT icon=CAR | BLAST 1 Car (shown)
   text 13 bold AMBER | Car (500 lb)
-  … 19 items
+  … 20 items
   text 14 AMBER pad=6/0 slot=you | YOU: 1,092 ft (333 m) from the device: SHELTER-IN-PLACE zone.\nMove about 811 ft farther, to at least 1,900 ft (580 m). If you can't, shelter inside a building away from windows and exterior walls.
   text 12 DIM slot=team | Team: no other contacts on the map.
   titlerow button-bottom
@@ -93,7 +93,7 @@ settings: emergency 911, auto-send false
     | hide_selected "Hide ▲" NORMAL w=1
   text 17 bold TEXT | UXO 1 Shell (shown)
   text 13 bold ORANGE | Artillery shell or mortar
-  … 28 items
+  … 29 items
   text 14 RED pad=6/0 slot=you | YOU: 1,092 ft (333 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 138 ft (42 m) farther, without going closer to the item.
   text 12 DIM slot=team | Team: no other contacts on the map.
   titlerow button-bottom
@@ -160,7 +160,7 @@ settings: emergency 911, auto-send false
     | hide_selected "Hide ▲" NORMAL w=1
   text 17 bold TEXT | NUC 1 10 kT (shown)
   text 13 bold NUC | Nuclear detonation 10 kt, surface burst
-  … 54 items
+  … 55 items
   text 14 RED pad=6/0 slot=you | YOU: 0.21 mi (0.33 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside the idealized 300 R/h (H+1) fallout contour; fallout could arrive about 1 min after the detonation. Get inside the best shelter close by and stay inside.
   text 12 DIM slot=team | Team: no other contacts on the map.
   titlerow button-bottom
@@ -189,7 +189,7 @@ settings: emergency 911, auto-send false
     | hide_selected "Hide ▲" NORMAL w=1
   text 17 bold TEXT | NUC 1 10 kT (shown)
   text 13 bold NUC | Nuclear detonation 10 kt, surface burst
-  … 54 items
+  … 55 items
   text 14 RED pad=6/0 slot=you | YOU: 0.21 mi (0.33 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside the idealized 300 R/h (H+1) fallout contour. Get inside the best shelter close by and stay inside.
   text 12 DIM slot=team | Team: no other contacts on the map.
 
@@ -245,9 +245,21 @@ settings: emergency 911, auto-send false
     | hide_selected "Hide ▲" NORMAL w=1
   text 17 bold TEXT | NUC 1 10 kT (shown)
   text 13 bold NUC | Nuclear detonation 10 kt, surface burst
-  … 54 items
+  … 55 items
   text 14 RED pad=6/0 slot=you | YOU: 0.21 mi (0.33 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside the idealized 300 R/h (H+1) fallout contour; fallout could arrive about 1 min after the detonation. Get inside the best shelter close by and stay inside.
   text 12 DIM slot=team | Team: no other contacts on the map.
+ring labels: true
+
+=== tap labels
+  port: setting blast.ringLabels = false
+  redraw: card relabel
+ring labels: false
+  buttons | labels "Show ring labels" NORMAL w=1
+
+=== tap labels
+  port: setting blast.ringLabels = true
+  redraw: card relabel
+ring labels: true
 
 === tap tab_reference
   redraw: tab=REFERENCE

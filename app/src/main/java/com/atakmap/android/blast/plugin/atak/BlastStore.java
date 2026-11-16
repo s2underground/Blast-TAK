@@ -5,6 +5,7 @@ import android.os.Looper;
 
 import com.atakmap.android.blast.plugin.core.BlastCodec;
 import com.atakmap.android.blast.plugin.core.BlastRecord;
+import com.atakmap.android.blast.plugin.core.app.BlastApp;
 import com.atakmap.android.blast.plugin.core.Labels;
 import com.atakmap.android.blast.plugin.core.Names;
 import com.atakmap.android.blast.plugin.core.NucCodec;
@@ -631,6 +632,30 @@ public final class BlastStore {
         watch(sh);
     }
 
+    /**
+     * Show or hide a ring's distance label as the user chose (setting
+     * {@link BlastApp#PREF_LABELS}, default shown). ATAK keeps the choice
+     * in the "labels_on" meta value, the same one its own Show Labels box
+     * uses; new circles start with it on, so the default changes nothing.
+     */
+    private void label(DrawingCircle c) {
+        boolean on = prefs.getBoolean(BlastApp.PREF_LABELS, true);
+        if (c.getMetaBoolean("labels_on", false) != on)
+            c.toggleMetaData("labels_on", on);
+    }
+
+    /** Apply the ring-labels setting to every incident's rings now. */
+    public void relabelAll() {
+        for (Marker m : all())
+            for (MapItem mi : items(m))
+                if (mi instanceof DrawingCircle && isLive(mi)) {
+                    DrawingCircle c = (DrawingCircle) mi;
+                    label(c);
+                    c.persist(mapView.getMapEventDispatcher(), null,
+                            BlastStore.class);
+                }
+    }
+
     /** Remove one part on purpose, without deleting the whole incident. */
     private void removePart(MapItem item) {
         watched.remove(item);
@@ -721,6 +746,7 @@ public final class BlastStore {
             c.setRadius(radiusM);
         c.setTitle(s.title);
         style(c, s.style);
+        label(c);
         if (c.getCenterMarker() != m)
             c.setCenterMarker(m);
         if (added) {

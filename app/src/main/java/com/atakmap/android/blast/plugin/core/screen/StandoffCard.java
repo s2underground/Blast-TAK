@@ -34,6 +34,14 @@ public final class StandoffCard {
      * @param name the incident's display name on the map
      */
     public static Screen card(BlastRecord r, String name) {
+        return card(r, name, true);
+    }
+
+    /**
+     * @param labels the ring labels are shown on the map now (sets the
+     *        Hide / Show ring labels button)
+     */
+    public static Screen card(BlastRecord r, String name, boolean labels) {
         boolean cleared = r.isCleared();
         Screen s = new Screen();
         s.add(Text.of(name, 17, cleared ? Tone.DIM : Tone.TEXT, true)
@@ -61,6 +69,7 @@ public final class StandoffCard {
         s.add(CardActions.sendRow(0, true));
         s.add(CardActions.renameRow());
         s.add(CardActions.statusRow(cleared));
+        s.add(CardActions.labelsRow(labels));
         s.add(Text.of(Guidance.CARD_ACTIONS, 13, Tone.TEXT, false).padded(6,
                 2));
         for (String c : Guidance.CAVEATS)

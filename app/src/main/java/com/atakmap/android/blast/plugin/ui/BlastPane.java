@@ -1144,6 +1144,8 @@ public final class BlastPane {
             show(o.dialog);
         if (o.restyle != null && cardView != null)
             cardView.update(o.restyle);
+        if (o.labels)
+            store.relabelAll();
         if (o.settings && refView != null)
             refView.update(new Screen().add(ReferenceTab.emergency(
                     emergencyNumber())));

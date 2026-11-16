@@ -80,6 +80,12 @@ public final class NucCard {
      */
     public static Screen card(NucRecord r, String name, String gzGrid,
             WindPicker wind) {
+        return card(r, name, gzGrid, wind, true);
+    }
+
+    /** @param labels the ring labels are shown on the map now */
+    public static Screen card(NucRecord r, String name, String gzGrid,
+            WindPicker wind, boolean labels) {
         boolean grey = r.isCleared();
         Screen s = new Screen();
         s.add(Text.of(name, 17, grey ? Tone.DIM : Tone.TEXT, true));
@@ -125,6 +131,7 @@ public final class NucCard {
         s.add(CardActions.sendRow(6, false));
         s.add(CardActions.renameRow());
         s.add(CardActions.statusRow(grey));
+        s.add(CardActions.labelsRow(labels));
         s.add(new Buttons(Button.of(WHY, "Why these distances?")));
         s.add(new Buttons(Button.of(WHAT_TO_DO, "What to do (FEMA)")));
         s.add(Text.of(NucText.basis(r), 12, Tone.DIM, false));

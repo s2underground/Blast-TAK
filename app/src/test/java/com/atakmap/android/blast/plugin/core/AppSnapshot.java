@@ -111,6 +111,16 @@ final class AppSnapshot {
         tap(sb, app, "send_all", none);
         frame(sb, app, "after the nuclear buttons");
 
+        sb.append("ring labels: ").append(app.ringLabels()).append("\n");
+        tap(sb, app, "labels", none);
+        sb.append("ring labels: ").append(app.ringLabels()).append("\n");
+        BlastApp.Frame lf = app.frame();
+        for (Item it : lf.card.items())
+            if (ScreenDump.item(it).contains("labels"))
+                sb.append(ScreenDump.item(it)).append("\n");
+        tap(sb, app, "labels", none);
+        sb.append("ring labels: ").append(app.ringLabels()).append("\n");
+
         tap(sb, app, "tab_reference", none);
         tap(sb, app, "tab_incidents", none);
         Outcome o = tap(sb, app, "change_emergency", none);

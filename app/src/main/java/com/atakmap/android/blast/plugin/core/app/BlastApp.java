@@ -49,7 +49,9 @@ public final class BlastApp {
     /** Settings keys and defaults (the same keys as 1.1). */
     public static final String PREF_AUTO_SEND = "blast.autoSend",
             PREF_EMERGENCY = "blast.emergencyNumber",
-            DEFAULT_EMERGENCY = "911";
+            DEFAULT_EMERGENCY = "911",
+            /** Distance labels on incident rings (this device). */
+            PREF_LABELS = "blast.ringLabels";
 
     /** "Hide ▲" beside SELECTED INCIDENT. */
     public static final String HIDE = "hide_selected";
@@ -106,6 +108,11 @@ public final class BlastApp {
 
     public void setAutoSend(boolean on) {
         settings.putBoolean(PREF_AUTO_SEND, on);
+    }
+
+    /** Ring distance labels shown on the map (default: yes, as 1.1). */
+    public boolean ringLabels() {
+        return settings.getBoolean(PREF_LABELS, true);
     }
 
     // ------------------------------------------------------------------
@@ -175,7 +182,8 @@ public final class BlastApp {
                 + (in.standoff == null ? "" : BlastCodec.toXml(in.standoff))
                 + "|" + (in.uxo == null ? "" : UxoCodec.toXml(in.uxo)) + "|"
                 + (in.nuc == null ? "" : NucCodec.toXml(in.nuc)) + "|"
-                + in.displayName + "|" + emergencyNumber();
+                + in.displayName + "|" + emergencyNumber() + "|"
+                + ringLabels();
         boolean changed = !sig.equals(cardSig);
         Screen header = null, card = null;
         if (changed) {
@@ -210,15 +218,16 @@ public final class BlastApp {
             cardKind = Kind.NUC;
             wind = NucCard.wind(in.nuc);
             return NucCard.card(in.nuc, in.displayName, mgrs10(in.lat,
-                    in.lon), wind);
+                    in.lon), wind, ringLabels());
         }
         if (in.uxo != null) {
             cardKind = Kind.UXO;
             return UxoCard.card(in.uxo, in.displayName, emergencyNumber(),
-                    grid(in.lat, in.lon));
+                    grid(in.lat, in.lon), ringLabels());
         }
         cardKind = Kind.STANDOFF;
-        return StandoffCard.card(in.standoff, in.displayName);
+        return StandoffCard.card(in.standoff, in.displayName,
+                ringLabels());
     }
 
     /** The list, or null if it would look the same as last time. */
@@ -364,6 +373,12 @@ public final class BlastApp {
 
     private Outcome card(String action, FormValues v) {
         String uid = cardUid;
+        if (com.atakmap.android.blast.plugin.core.screen.CardActions.LABELS
+                .equals(action)) {
+            settings.putBoolean(PREF_LABELS, !ringLabels());
+            invalidate(true, false);
+            return Outcome.redraw(null, false).withLabels();
+        }
         if (cardKind == Kind.NUC) {
             Outcome o = nuc(uid, action, v);
             if (o != null)
