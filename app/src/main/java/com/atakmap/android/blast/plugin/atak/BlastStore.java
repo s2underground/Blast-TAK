@@ -628,6 +628,7 @@ public final class BlastStore {
                 g = mapView.getRootGroup();
             g.addItem(sh);
         }
+        label(sh);
         sh.persist(mapView.getMapEventDispatcher(), null, BlastStore.class);
         watch(sh);
     }
@@ -644,16 +645,37 @@ public final class BlastStore {
             c.toggleMetaData("labels_on", on);
     }
 
-    /** Apply the ring-labels setting to every incident's rings now. */
+    /**
+     * Show or hide an outline's title (the fallout band or zone name ATAK
+     * writes beside the shape's centre dot) with the same setting. The
+     * title belongs to the shape's centre marker; DEFAULT is what ATAK
+     * starts with, so the default setting changes nothing.
+     */
+    private void label(DrawingShape sh) {
+        Marker centre = sh.getShapeMarker();
+        if (centre == null)
+            return;
+        int flag = prefs.getBoolean(BlastApp.PREF_LABELS, true)
+                ? Marker.TEXT_STATE_DEFAULT : Marker.TEXT_STATE_NEVER_SHOW;
+        if (centre.getTextRenderFlag() != flag)
+            centre.setTextRenderFlag(flag);
+    }
+
+    /** Apply the labels setting to every incident's rings and outlines. */
     public void relabelAll() {
         for (Marker m : all())
-            for (MapItem mi : items(m))
-                if (mi instanceof DrawingCircle && isLive(mi)) {
+            for (MapItem mi : items(m)) {
+                if (!isLive(mi))
+                    continue;
+                if (mi instanceof DrawingCircle) {
                     DrawingCircle c = (DrawingCircle) mi;
                     label(c);
                     c.persist(mapView.getMapEventDispatcher(), null,
                             BlastStore.class);
+                } else if (mi instanceof DrawingShape) {
+                    label((DrawingShape) mi);
                 }
+            }
     }
 
     /** Remove one part on purpose, without deleting the whole incident. */

@@ -254,7 +254,7 @@ ring labels: true
   port: setting blast.ringLabels = false
   redraw: card relabel
 ring labels: false
-  buttons | labels "Show ring labels" NORMAL w=1
+  buttons | labels "Show ring & fallout labels" NORMAL w=1
 
 === tap labels
   port: setting blast.ringLabels = true

@@ -24,12 +24,14 @@ public final class CardActions {
     }
 
     /**
-     * Hide or show the distance labels on every incident's rings on this
-     * device ({@code shown} = they are shown now).
+     * Hide or show the labels on every incident's rings (distances) and
+     * fallout / zone outlines (names) on this device ({@code shown} = they
+     * are shown now).
      */
     public static Buttons labelsRow(boolean shown) {
-        return new Buttons(Button.of(LABELS, shown ? "Hide ring labels"
-                : "Show ring labels"));
+        return new Buttons(Button.of(LABELS, shown
+                ? "Hide ring & fallout labels"
+                : "Show ring & fallout labels"));
     }
 
     /** Mark cleared (or Reopen) / Delete…. */

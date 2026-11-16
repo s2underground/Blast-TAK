@@ -46,7 +46,7 @@
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
   buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
   buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
-  buttons | labels "Hide ring labels" NORMAL w=1
+  buttons | labels "Hide ring & fallout labels" NORMAL w=1
   buttons | why "Why these distances?" NORMAL w=1
   buttons | what_to_do "What to do (FEMA)" NORMAL w=1
   text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled. Burns, radiation, fallout: Glasstone & Dolan 1977.
@@ -132,7 +132,7 @@ team all:
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
   buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
   buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
-  buttons | labels "Hide ring labels" NORMAL w=1
+  buttons | labels "Hide ring & fallout labels" NORMAL w=1
   buttons | why "Why these distances?" NORMAL w=1
   buttons | what_to_do "What to do (FEMA)" NORMAL w=1
   text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled. Burns, radiation, fallout: Glasstone & Dolan 1977.
@@ -218,7 +218,7 @@ team all:
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
   buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
   buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
-  buttons | labels "Hide ring labels" NORMAL w=1
+  buttons | labels "Hide ring & fallout labels" NORMAL w=1
   buttons | why "Why these distances?" NORMAL w=1
   buttons | what_to_do "What to do (FEMA)" NORMAL w=1
   text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled. Burns, radiation, fallout: Glasstone & Dolan 1977.
@@ -289,7 +289,7 @@ team all:
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
   buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
   buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
-  buttons | labels "Hide ring labels" NORMAL w=1
+  buttons | labels "Hide ring & fallout labels" NORMAL w=1
   buttons | why "Why these distances?" NORMAL w=1
   buttons | what_to_do "What to do (FEMA)" NORMAL w=1
   text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled, times Glasstone's air-burst envelope ratio. Burns, radiation, fallout: Glasstone & Dolan 1977.
@@ -369,7 +369,7 @@ team all:
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
   buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
   buttons | status "Reopen" NORMAL w=1 | delete "Delete…" NORMAL w=1
-  buttons | labels "Hide ring labels" NORMAL w=1
+  buttons | labels "Hide ring & fallout labels" NORMAL w=1
   buttons | why "Why these distances?" NORMAL w=1
   buttons | what_to_do "What to do (FEMA)" NORMAL w=1
   text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled. Burns, radiation, fallout: Glasstone & Dolan 1977.
@@ -431,7 +431,7 @@ team all:
   buttons margin=6 | send_all "SEND TO ALL" PRIMARY w=1.4 | send_to "Send to…" NORMAL w=1 | fly "Fly to" NORMAL w=1
   buttons | rename "Rename…" NORMAL w=1 | export "Export…" NORMAL w=1
   buttons | status "Mark cleared" NORMAL w=1 | delete "Delete…" NORMAL w=1
-  buttons | labels "Hide ring labels" NORMAL w=1
+  buttons | labels "Hide ring & fallout labels" NORMAL w=1
   buttons | why "Why these distances?" NORMAL w=1
   buttons | what_to_do "What to do (FEMA)" NORMAL w=1
   text 12 DIM | Damage zones: FEMA Planning Guidance 3rd ed. (0.5 / 1 / 3 mi at 10 kT), cube-root scaled. Burns, radiation, fallout: Glasstone & Dolan 1977.
