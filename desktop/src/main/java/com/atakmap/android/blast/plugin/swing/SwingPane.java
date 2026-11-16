@@ -282,11 +282,50 @@ public final class SwingPane {
         return b;
     }
 
+    /**
+     * Size and show a dialog. Wrapped text only knows its height once it
+     * has its width, and pack() measures it before that (the rename
+     * dialog's message took an extra line and pushed the name box out of
+     * sight). So: pack, settle the width, lay out at that width, then take
+     * the height the content needs there (twice, as wrapping can change),
+     * capped to the screen.
+     */
     private void place(JDialog w) {
         w.pack();
-        w.setSize(Math.max(w.getWidth(), 440), w.getHeight());
+        int width = Math.max(w.getWidth(), 440);
+        int maxH = Integer.MAX_VALUE;
+        try {
+            java.awt.GraphicsConfiguration gc = w.getGraphicsConfiguration();
+            if (gc != null) {
+                java.awt.Insets si = w.getToolkit().getScreenInsets(gc);
+                maxH = gc.getBounds().height - si.top - si.bottom;
+            }
+        } catch (RuntimeException e) {
+            // no screen information: no cap
+        }
+        for (int i = 0; i < 2; i++) {
+            w.setSize(width, w.getHeight());
+            w.validate();
+            // Layouts cache their children's sizes; wrapped text just got
+            // a width (and so a new height) without telling them.
+            invalidateAll(w.getContentPane());
+            java.awt.Insets in = w.getInsets();
+            int h = w.getContentPane().getPreferredSize().height + in.top
+                    + in.bottom;
+            w.setSize(width, Math.min(h, maxH));
+            w.validate();
+        }
         w.setLocationRelativeTo(scroll);
         w.setVisible(true);
+    }
+
+    private static void invalidateAll(java.awt.Container c) {
+        c.invalidate();
+        for (java.awt.Component k : c.getComponents())
+            if (k instanceof java.awt.Container)
+                invalidateAll((java.awt.Container) k);
+            else
+                k.invalidate();
     }
 
     /** A core dialog; its buttons go back to the core. */
