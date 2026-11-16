@@ -6,6 +6,11 @@ import com.atakmap.android.blast.plugin.core.overlay.Style;
 import com.atakmap.android.blast.plugin.swing.MemoryPorts;
 
 import gov.takx.api.coordinatesystem.ILocation;
+import gov.takx.api.mapobject.IMapObject;
+import gov.takx.api.mapobject.IMapObjectManager;
+import gov.takx.api.plugin.app.IAppPluginDelegate;
+import gov.takx.api.pointdropper.IPointDropperService;
+import gov.takx.api.pointdropper.PointDropperConfiguration;
 import gov.takx.api.coordinatesystem.RaptorLocation;
 import gov.takx.api.shapes.IMutableShape;
 import gov.takx.api.shapes.IShapeService;
@@ -25,11 +30,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Draws every incident on the TAK-X globe from the core's overlay model
- * ({@link Overlays}): circles, polygons and polylines through
+ * Draws every incident on the TAK-X globe: its marker (a CoT point of the
+ * same type as ATAK Blast's, named like the incident) and, from the core's
+ * overlay model ({@link Overlays}), circles, polygons and polylines through
  * {@link IShapeService}, with the same colours, fills, widths and dashes
  * the ATAK layer uses. Shapes are unpublished (this plugin's own); an
- * incident's shapes are redrawn when its record or name changes.
+ * incident is redrawn when its record or name changes.
  */
 final class TakxShapes {
 
@@ -39,22 +45,40 @@ final class TakxShapes {
     /** Bit patterns for dashed and dotted lines (TAK-X stipple). */
     private static final short DASHED = (short) 0xFF00, DOTTED = (short) 0xAAAA;
 
+    /** The incident marker's CoT type (as BlastStore.MARKER_TYPE). */
+    static final String MARKER_TYPE = "a-h-G";
+
     private final IShapeService shapes;
     private final MemoryPorts ports;
+    /** For the markers; either may be null (then no marker is drawn). */
+    private final IPointDropperService dropper;
+    private final IMapObjectManager objects;
+    private final IAppPluginDelegate delegate;
+    /** Incident uid to its marker, and marker uid to incident uid. */
+    private final Map<String, IMapObject> markers = new HashMap<>();
+    private final Map<String, String> markerOwner = new HashMap<>();
     /** Per incident: what was drawn, and the shape names. */
     private final Map<String, String> drawnSig = new HashMap<>();
     private final Map<String, List<String>> names = new HashMap<>();
     /** Shape name to incident uid (selection on the globe). */
     private final Map<String, String> owner = new HashMap<>();
 
-    TakxShapes(IShapeService shapes, MemoryPorts ports) {
+    TakxShapes(IShapeService shapes, MemoryPorts ports,
+            IPointDropperService dropper, IMapObjectManager objects,
+            IAppPluginDelegate delegate) {
         this.shapes = shapes;
         this.ports = ports;
+        this.dropper = dropper;
+        this.objects = objects;
+        this.delegate = delegate;
     }
 
-    /** The incident a shape belongs to, or null. */
-    String incidentOf(String shapeName) {
-        return shapeName == null ? null : owner.get(shapeName);
+    /** The incident a clicked map object (marker or shape) is, or null. */
+    String incidentOf(IMapObject o) {
+        if (o == null)
+            return null;
+        String uid = markerOwner.get(o.getUid());
+        return uid != null ? uid : owner.get(o.getName());
     }
 
     /** Bring the globe up to date with the incidents. */
@@ -87,12 +111,15 @@ final class TakxShapes {
 
     /** Remove everything this plugin drew. */
     void clear() {
-        for (String uid : new ArrayList<>(names.keySet()))
+        Set<String> uids = new HashSet<>(names.keySet());
+        uids.addAll(markers.keySet());
+        for (String uid : uids)
             remove(uid);
         drawnSig.clear();
     }
 
     private void remove(String uid) {
+        removeMarker(uid);
         List<String> l = names.remove(uid);
         if (l == null)
             return;
@@ -123,7 +150,44 @@ final class TakxShapes {
         return n;
     }
 
+    /** The incident's marker: a CoT point named like the incident. */
+    private void drawMarker(MemoryPorts.Stored s) {
+        if (dropper == null)
+            return;
+        try {
+            final String name = s.name;
+            PointDropperConfiguration c = PointDropperConfiguration
+                    .builder(MARKER_TYPE).nameGenerator(() -> name).build();
+            IMapObject m = dropper.dropPoint(c, new RaptorLocation(s.lat,
+                    s.lon));
+            if (m != null) {
+                markers.put(s.uid, m);
+                markerOwner.put(m.getUid(), s.uid);
+            }
+        } catch (Exception | LinkageError e) {
+            LOG.warn("could not place the marker for {}", s.name, e);
+        }
+    }
+
+    private void removeMarker(String uid) {
+        IMapObject m = markers.remove(uid);
+        if (m == null)
+            return;
+        markerOwner.remove(m.getUid());
+        try {
+            if (objects != null) {
+                objects.deleteMapObject(m);
+                return;
+            }
+            delegate.getMapObjectController(m).ifPresent(
+                    gov.takx.api.mapobject.IMapObjectController::delete);
+        } catch (Exception e) {
+            LOG.debug("marker for {} already gone", uid);
+        }
+    }
+
     private void draw(MemoryPorts.Stored s) {
+        drawMarker(s);
         List<String> drawn = new ArrayList<>();
         names.put(s.uid, drawn);
         for (OverlayShape sh : overlay(s)) {

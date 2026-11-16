@@ -14,6 +14,7 @@ import gov.tak.api.maps.coords.GeoPoint;
 import gov.tak.api.maps.coords.GeoPointMetaData;
 import gov.takx.api.globe.IGlobeDelegate;
 import gov.takx.api.mapobject.IMapObject;
+import gov.takx.api.mapobject.IMapObjectManager;
 import gov.takx.api.mapobject.IMapObjectSelectListener;
 import gov.takx.api.mapobject.MapObjectSelectEvent;
 import gov.takx.api.plugin.annotations.AppPlugin;
@@ -21,6 +22,7 @@ import gov.takx.api.plugin.annotations.PluginDescriptor;
 import gov.takx.api.plugin.annotations.PluginSpecification;
 import gov.takx.api.plugin.app.AAppPlugin;
 import gov.takx.api.plugin.support.SupportedPlatformVersion;
+import gov.takx.api.pointdropper.IPointDropperService;
 import gov.takx.api.ui.ComponentPosition;
 import gov.takx.platform.ui.ComponentDescriptor;
 import gov.takx.platform.ui.ComponentDescriptorBuilder;
@@ -74,7 +76,7 @@ import javax.swing.Timer;
 public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     static final String FAMILY = "com.s2underground.blast";
-    static final String VERSION = "0.1.2";
+    static final String VERSION = "0.1.3";
 
     private static final Logger LOG = LoggerFactory.getLogger(
             BlastTakxPlugin.class);
@@ -82,6 +84,11 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
     /** TAK-X's position providers (optional: absent = no position). */
     @Inject
     private Instance<ILocationProviderManager> locations;
+    /** For the incident markers (optional too). */
+    @Inject
+    private Instance<IPointDropperService> pointDropper;
+    @Inject
+    private Instance<IMapObjectManager> mapObjects;
 
     private MemoryPorts ports;
     private BlastApp app;
@@ -121,7 +128,8 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
             ports.setPositionSource(this::ownPosition);
             app = new BlastApp(ports, ports, ports, ports, ports, ports,
                     ports, ports, mapControl());
-            shapes = new TakxShapes(delegate.getShapeService(), ports);
+            shapes = new TakxShapes(delegate.getShapeService(), ports,
+                    optional(pointDropper), optional(mapObjects), delegate);
             ports.changed = () -> SwingUtilities.invokeLater(shapes::sync);
             pane = new SwingPane(app, this);
 
@@ -183,7 +191,7 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
                 if (picking != null || !e.isLeftClick() || !e.hasMapObjects())
                     return;
                 for (IMapObject o : e.getMapObjects()) {
-                    String uid = shapes.incidentOf(o.getName());
+                    String uid = shapes.incidentOf(o);
                     if (uid != null) {
                         SwingUtilities.invokeLater(() -> pane.open(uid));
                         return;
@@ -221,6 +229,16 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         Object w = globe == null ? null : globe.getWorldWindow();
         return w instanceof gov.nasa.worldwind.WorldWindow
                 ? (gov.nasa.worldwind.WorldWindow) w : null;
+    }
+
+    /** An injected service, or null if TAK-X doesn't offer it. */
+    private static <T> T optional(Instance<T> i) {
+        try {
+            return i != null && i.isResolvable() ? i.get() : null;
+        } catch (RuntimeException e) {
+            LOG.warn("service not available", e);
+            return null;
+        }
     }
 
     // ------------------------------------------------------------------
