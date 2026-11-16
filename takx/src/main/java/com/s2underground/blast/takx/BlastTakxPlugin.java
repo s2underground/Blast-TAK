@@ -85,7 +85,7 @@ import javax.swing.Timer;
 public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     static final String FAMILY = "com.s2underground.blast";
-    static final String VERSION = "0.1.6";
+    static final String VERSION = "0.1.7";
 
     private static final Logger LOG = LoggerFactory.getLogger(
             BlastTakxPlugin.class);
