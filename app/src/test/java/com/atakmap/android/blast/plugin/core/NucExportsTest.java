@@ -50,4 +50,33 @@ public class NucExportsTest {
                 + NucModel.FALLOUT_RATES.length, count(gpx, "<trk>"));
         assertEquals(1, count(gpx, "<wpt "));
     }
+
+    /**
+     * A cleared incident's KML is grey like the map: rings the map draws
+     * unfilled (burn, 100 rad, Get Inside) stay unfilled; the damage rings
+     * keep a grey fill.
+     */
+    @Test
+    public void clearedKmlMatchesTheMap() throws Exception {
+        NucRecord r = NucRecord.create(10, NucModel.Burst.SURFACE, "", 270, 15,
+                "A", 1793544725000L).cleared("B", 1793544785000L);
+        String kml = Exports.kmlNuc("NUC 1", 38.9, -77.0, r);
+        parses(kml);
+        String grey = Exports.kmlColor(com.atakmap.android.blast.plugin.core
+                .overlay.Overlays.GREY_FILL);
+        java.util.List<com.atakmap.android.blast.plugin.core.overlay
+                .OverlayShape> rings = com.atakmap.android.blast.plugin.core
+                        .overlay.Overlays.nucRings(r);
+        NucText.Ring[] all = NucText.Ring.values();
+        assertEquals(all.length, rings.size());
+        for (int i = 0; i < all.length; i++) {
+            int a = kml.indexOf("<Style id=\"ring" + i + "\">");
+            String style = kml.substring(a, kml.indexOf("</Style>", a));
+            boolean mapFilled = !rings.get(i).style
+                    .noFill();
+            String fill = style.substring(style.indexOf("<PolyStyle>"));
+            assertEquals("ring" + i + " " + style, mapFilled,
+                    fill.contains(grey));
+        }
+    }
 }

@@ -286,9 +286,14 @@ public final class Exports {
         tag(sb, "name", nm);
         tag(sb, "description", NucText.remarks(r));
         NucText.Ring[] rings = NucText.Ring.values();
-        for (int i = 0; i < rings.length; i++)
+        for (int i = 0; i < rings.length; i++) {
+            // Cleared: grey, and rings drawn unfilled stay unfilled (as on
+            // the map, Overlays.nucRings).
+            boolean unfilled = NUC_STYLE[i][1] == Overlays.NO_FILL;
             style(sb, "ring" + i, grey ? K_GREY : kmlColor(NUC_STYLE[i][0]),
-                    grey ? K_GREY_FILL : kmlColor(NUC_STYLE[i][1]), 3, null);
+                    grey && !unfilled ? K_GREY_FILL
+                            : kmlColor(NUC_STYLE[i][1]), 3, null);
+        }
         for (int i = 0; i < NucText.FALLOUT_STROKE.length; i++)
             style(sb, "fo" + i, grey ? K_GREY
                     : kmlColor(NucText.FALLOUT_STROKE[i]), grey ? K_GREY_FILL
