@@ -277,7 +277,7 @@ public final class SwingPane {
     }
 
     private static JButton dialogButton(String label) {
-        JButton b = new JButton(label);
+        JButton b = new JButton(SwingScreen.label(label));
         SwingScreen.style(b, SwingScreen.BTN);
         return b;
     }
@@ -308,14 +308,18 @@ public final class SwingPane {
         List<JCheckBox> ticks = new ArrayList<>();
         if (d.options != null)
             for (int i = 0; i < d.options.size(); i++) {
-                JCheckBox cb = new JCheckBox(d.options.get(i), d.checked(i));
+                JCheckBox cb = new JCheckBox(SwingScreen.plain(
+                        d.options.get(i)), d.checked(i));
                 cb.setOpaque(false);
                 cb.setForeground(SwingScreen.TEXT);
                 ticks.add(cb);
                 body.add(cb);
             }
         if (d.items != null) {
-            JList<String> list = new JList<>(d.items.toArray(new String[0]));
+            String[] names = new String[d.items.size()];
+            for (int i = 0; i < names.length; i++)
+                names[i] = SwingScreen.plain(d.items.get(i));
+            JList<String> list = new JList<>(names);
             list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             list.setBackground(SwingScreen.CARD);
             list.setForeground(SwingScreen.TEXT);

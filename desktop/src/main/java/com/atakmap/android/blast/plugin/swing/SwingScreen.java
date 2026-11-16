@@ -282,7 +282,7 @@ public final class SwingScreen {
         if (v instanceof JTextArea)
             ((JTextArea) v).setText(t.text);
         else if (v instanceof JLabel)
-            ((JLabel) v).setText(t.text);
+            ((JLabel) v).setText(plain(t.text));
         v.setForeground(color(t.tone));
     }
 
@@ -396,10 +396,24 @@ public final class SwingScreen {
         return v;
     }
 
-    /** Multi-line labels as HTML. */
+    /** Multi-line labels as HTML (escaped); one-line labels as plain text. */
     public static String label(String s) {
+        if (s == null)
+            return "";
         return s.contains("\n") ? "<html><center>" + esc(s).replace("\n",
-                "<br>") + "</center></html>" : s;
+                "<br>") + "</center></html>" : plain(s);
+    }
+
+    /**
+     * Text for labels, buttons and lists, shown as written. Swing renders
+     * text that starts with "&lt;html&gt;" as HTML (loading any images it
+     * names), and names can come from other devices, so such text gets an
+     * invisible zero-width space in front.
+     */
+    public static String plain(String s) {
+        if (s == null)
+            return "";
+        return s.regionMatches(true, 0, "<html", 0, 5) ? "\u200B" + s : s;
     }
 
     public static void style(JButton v, Color bg) {
@@ -518,7 +532,7 @@ public final class SwingScreen {
                 add(into, l);
             } else if (it instanceof Check) {
                 Check c = (Check) it;
-                JCheckBox cb = new JCheckBox(c.label, c.checked);
+                JCheckBox cb = new JCheckBox(plain(c.label), c.checked);
                 cb.setOpaque(false);
                 cb.setForeground(TEXT);
                 cb.addItemListener(e -> {
@@ -580,7 +594,7 @@ public final class SwingScreen {
     private static JComponent withHint(JTextField e, String hint) {
         JPanel p = new Fit(new BorderLayout());
         p.setOpaque(false);
-        JLabel l = new JLabel(hint);
+        JLabel l = new JLabel(plain(hint));
         l.setForeground(DIM);
         l.setFont(font(11, false, false));
         p.add(l, BorderLayout.NORTH);
@@ -760,7 +774,7 @@ public final class SwingScreen {
                 }
             } else if (it instanceof Check) {
                 Check c = (Check) it;
-                JCheckBox cb = new JCheckBox(c.label, c.checked);
+                JCheckBox cb = new JCheckBox(plain(c.label), c.checked);
                 cb.setOpaque(false);
                 cb.setForeground(TEXT);
                 cb.addItemListener(e -> onChange.run());
@@ -777,7 +791,7 @@ public final class SwingScreen {
                         r = row();
                         add(box, r);
                     }
-                    JButton b = new JButton(c.label(i));
+                    JButton b = new JButton(label(c.label(i)));
                     style(b, BTN);
                     int k = i;
                     b.addActionListener(e -> {
