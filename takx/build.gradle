@@ -1,0 +1,72 @@
+// Blast for TAK-X: Blast's core (from the ATAK plugin's sources,
+// unchanged) and the shared Swing pane (../desktop), as a TAK-X app plugin.
+//
+// It compiles against jars from a TAK-X install (licensed: never commit
+// them). Point the build at them with ONE of:
+//   -PtakxInstallDir="C:/Program Files/TAKX-CIV"   (an installed TAK-X)
+//   -PtakxLibs=/path/to/folder                     (the four jars copied)
+//
+//   gradle jar       build/libs/blast-takx-<version>.jar
+//   gradle install   copy it into <takxInstallDir>/plugins
+plugins {
+    id 'java'
+}
+
+version = '0.1.0'
+
+ext {
+    takxInstallDir = findProperty('takxInstallDir') ?: 'C:/Program Files/TAKX-CIV'
+    takxLibs = findProperty('takxLibs') ?: "${takxInstallDir}/load"
+    takxVersion = '5.8.0'
+    takKernelVersion = '9.11.5'
+    worldwindVersion = '2.2.1-TAKX-4'
+}
+
+repositories {
+    flatDir {
+        dirs takxLibs, "${takxInstallDir}/load", "${takxInstallDir}/lib",
+                "${takxInstallDir}/modules/gov/tak/kernel/main"
+    }
+    mavenCentral()
+}
+
+dependencies {
+    // Provided by TAK-X at run time: compile against them, don't bundle.
+    compileOnly "gov.takx:platform:$takxVersion"
+    compileOnly "gov.tak.kernel:takkernel-shared:$takKernelVersion"
+    compileOnly "gov.tak.kernel:takkernel-engine:$takKernelVersion"
+    compileOnly "gov.nasa:worldwind:$worldwindVersion"
+    compileOnly 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+    compileOnly 'jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.1'
+    compileOnly 'org.slf4j:slf4j-api:2.0.3'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', '../app/src/main/java',
+                       '../desktop/src/main/java']
+            include 'com/atakmap/android/blast/plugin/core/**'
+            include 'com/atakmap/android/blast/plugin/swing/**'
+            include 'com/atakmap/android/blast/plugin/takx/**'
+        }
+    }
+}
+
+// TAK-X runs Java 17.
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    archiveFileName = "blast-takx-${version}.jar"
+}
+
+tasks.register('install', Copy) {
+    group = 'build'
+    description = 'Copy the plugin jar into <takxInstallDir>/plugins'
+    dependsOn jar
+    from jar.archiveFile
+    into "${takxInstallDir}/plugins"
+}
