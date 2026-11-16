@@ -85,7 +85,7 @@ import javax.swing.Timer;
 public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     static final String FAMILY = "com.s2underground.blast";
-    static final String VERSION = "0.1.7";
+    static final String VERSION = "0.1.8";
 
     private static final Logger LOG = LoggerFactory.getLogger(
             BlastTakxPlugin.class);
@@ -209,6 +209,7 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
             listenToGlobe();
             listenToNetwork();
             listenForDeletes();
+            watchKeyboard();
             timer = new Timer(3000, e -> pane.refresh());
             timer.start();
         } catch (RuntimeException e) {
@@ -220,6 +221,7 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         try {
             if (timer != null)
                 timer.stop();
+            unwatchKeyboard();
             if (listeningTo != null && receiver != null)
                 listeningTo.removeCotEventListener(receiver);
             listeningTo = null;
@@ -479,8 +481,101 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         return true;
     }
 
+    /**
+     * Dialogs belong to TAK-X's main window, as TAK-X's own dialogs do
+     * (AStandardDialog uses the first frame), not to whatever window the
+     * docked panel sits in.
+     */
     @Override
     public Window owner() {
-        return panel == null ? null : SwingUtilities.getWindowAncestor(panel);
+        Window w = panel == null ? null
+                : SwingUtilities.getWindowAncestor(panel);
+        Window main = null;
+        for (java.awt.Frame f : java.awt.Frame.getFrames())
+            if (f.isShowing()) {
+                main = f;
+                break;
+            }
+        Window owner = main != null ? main : w;
+        LOG.info("dialog owner: {} (panel in {})", describe(owner),
+                describe(w));
+        return owner;
+    }
+
+    private static String describe(Window w) {
+        if (w == null)
+            return "none";
+        String t = w instanceof java.awt.Frame ? ((java.awt.Frame) w)
+                .getTitle() : w instanceof java.awt.Dialog
+                        ? ((java.awt.Dialog) w).getTitle() : "";
+        return w.getClass().getName() + " '" + t + "' focusable="
+                + w.isFocusableWindow() + " active=" + w.isActive();
+    }
+
+    // ------------------------------------------------------------------
+    // Keyboard diagnostics (Rename box not taking keys in TAK-X): logs
+    // where focus and keys go while one of Blast's dialogs is open.
+
+    private java.awt.KeyEventDispatcher keyWatch;
+    private java.beans.PropertyChangeListener focusWatch;
+    private int keysLogged;
+
+    private static boolean blastDialog(Object o) {
+        return o instanceof javax.swing.JDialog && Boolean.TRUE.equals(
+                ((javax.swing.JDialog) o).getRootPane().getClientProperty(
+                        SwingPane.BLAST_DIALOG));
+    }
+
+    private static boolean blastDialogOpen() {
+        for (Window w : Window.getWindows())
+            if (w.isShowing() && blastDialog(w))
+                return true;
+        return false;
+    }
+
+    private void watchKeyboard() {
+        java.awt.KeyboardFocusManager m = java.awt.KeyboardFocusManager
+                .getCurrentKeyboardFocusManager();
+        focusWatch = e -> {
+            if (!blastDialogOpen() && !blastDialog(e.getOldValue())
+                    && !blastDialog(e.getNewValue()))
+                return;
+            Object v = e.getNewValue();
+            LOG.info("focus: {} -> {}", e.getPropertyName(), v == null
+                    ? "none" : v.getClass().getName());
+            if ("focusedWindow".equals(e.getPropertyName()))
+                keysLogged = 0;
+        };
+        m.addPropertyChangeListener("focusedWindow", focusWatch);
+        m.addPropertyChangeListener("focusOwner", focusWatch);
+        keyWatch = e -> {
+            if (keysLogged < 6 && e.getID() == java.awt.event.KeyEvent
+                    .KEY_PRESSED && blastDialogOpen()) {
+                keysLogged++;
+                java.awt.Window fw = m.getFocusedWindow();
+                LOG.info("key {} to {} (focused window {}, consumed {})",
+                        java.awt.event.KeyEvent.getKeyText(e.getKeyCode()),
+                        e.getComponent() == null ? "none"
+                                : e.getComponent().getClass().getName(),
+                        fw == null ? "none" : fw.getClass().getName()
+                                + (blastDialog(fw) ? " (Blast)" : ""),
+                        e.isConsumed());
+            }
+            return false; // only watching
+        };
+        m.addKeyEventDispatcher(keyWatch);
+    }
+
+    private void unwatchKeyboard() {
+        java.awt.KeyboardFocusManager m = java.awt.KeyboardFocusManager
+                .getCurrentKeyboardFocusManager();
+        if (keyWatch != null)
+            m.removeKeyEventDispatcher(keyWatch);
+        if (focusWatch != null) {
+            m.removePropertyChangeListener("focusedWindow", focusWatch);
+            m.removePropertyChangeListener("focusOwner", focusWatch);
+        }
+        keyWatch = null;
+        focusWatch = null;
     }
 }
