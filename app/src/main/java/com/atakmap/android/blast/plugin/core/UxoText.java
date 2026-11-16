@@ -276,10 +276,18 @@ public final class UxoText {
         }
 
         public String guidance(int cordonM) {
-            if (inside)
+            if (inside) {
+                // Each unit against the target stated in that unit: the
+                // cordon's feet are rounded up to 10 ft, so the feet to go
+                // count to that, not to the metres converted.
+                long ftToGo = Math.max(0, cordonFt(cordonM)
+                        - Math.round(Formats.mToFt(distanceM)));
+                long mToGo = Math.max(0, cordonM - Math.round(distanceM));
                 return "Move out to at least " + cordon(cordonM)
-                        + ", about " + Formats.measured(toCordonM)
+                        + ", about " + Formats.thousands(ftToGo) + " ft ("
+                        + Formats.thousands(mToGo) + " m)"
                         + " farther, without going closer to the item.";
+            }
             return "Stay outside the cordon and keep others out.";
         }
 

@@ -79,17 +79,17 @@ team of 4:
 
 === uxo PROJ_MORTAR (RB)
 at 0° 0 m, CE NaN:
-  text 14 RED pad=6/0 slot=you | YOU: 0 ft (0 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,230 ft (375 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+  text 14 RED pad=6/0 slot=you | YOU: 0 ft (0 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,240 ft (375 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
 at 0° 50 m, CE NaN:
-  text 14 RED pad=6/0 slot=you | YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,066 ft (325 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+  text 14 RED pad=6/0 slot=you | YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,076 ft (325 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
 at 0° 50 m, CE 5:
-  text 14 RED pad=6/0 slot=you | YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,066 ft (325 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+  text 14 RED pad=6/0 slot=you | YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,076 ft (325 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
 at 0° 50 m, CE 60:
-  text 14 RED pad=6/0 slot=you | YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,066 ft (325 m) farther, without going closer to the item.\nGPS accuracy is poor (about 197 ft (60 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+  text 14 RED pad=6/0 slot=you | YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,076 ft (325 m) farther, without going closer to the item.\nGPS accuracy is poor (about 197 ft (60 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
 at 0° 50 m, CE 400:
-  text 14 RED pad=6/0 slot=you | YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,066 ft (325 m) farther, without going closer to the item.\nGPS accuracy is poor (about 1,312 ft (400 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+  text 14 RED pad=6/0 slot=you | YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,076 ft (325 m) farther, without going closer to the item.\nGPS accuracy is poor (about 1,312 ft (400 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
 at 45° 120 m, CE NaN:
-  text 14 RED pad=6/0 slot=you | YOU: 394 ft (120 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 837 ft (255 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+  text 14 RED pad=6/0 slot=you | YOU: 394 ft (120 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 846 ft (255 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
 at 90° 380 m, CE NaN:
   text 14 GREEN pad=6/0 slot=you | YOU: 1,247 ft (380 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.\nYou are close to the line and GPS error could put you inside it. Move farther.\nThe item's position is an estimate (range and bearing).
 at 90° 380 m, CE 5:
@@ -118,17 +118,17 @@ team of 4:
 
 === uxo PROJ_MORTAR (RB), cleared
 at 0° 0 m, CE NaN:
-  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 0 ft (0 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,230 ft (375 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 0 ft (0 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,240 ft (375 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
 at 0° 50 m, CE NaN:
-  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,066 ft (325 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,076 ft (325 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
 at 0° 50 m, CE 5:
-  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,066 ft (325 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,076 ft (325 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
 at 0° 50 m, CE 60:
-  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,066 ft (325 m) farther, without going closer to the item.\nGPS accuracy is poor (about 197 ft (60 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,076 ft (325 m) farther, without going closer to the item.\nGPS accuracy is poor (about 197 ft (60 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
 at 0° 50 m, CE 400:
-  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,066 ft (325 m) farther, without going closer to the item.\nGPS accuracy is poor (about 1,312 ft (400 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 164 ft (50 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 1,076 ft (325 m) farther, without going closer to the item.\nGPS accuracy is poor (about 1,312 ft (400 m)): treat this check as approximate.\nThe item's position is an estimate (range and bearing).
 at 45° 120 m, CE NaN:
-  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 394 ft (120 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 837 ft (255 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
+  text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 394 ft (120 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 846 ft (255 m) farther, without going closer to the item.\nThe item's position is an estimate (range and bearing).
 at 90° 380 m, CE NaN:
   text 14 DIM pad=6/0 slot=you | Incident marked cleared. YOU: 1,247 ft (380 m) from the item: OUTSIDE the 375 m cordon.\nStay outside the cordon and keep others out.\nYou are close to the line and GPS error could put you inside it. Move farther.\nThe item's position is an estimate (range and bearing).
 at 90° 380 m, CE 5:

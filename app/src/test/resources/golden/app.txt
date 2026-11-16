@@ -94,7 +94,7 @@ settings: emergency 911, auto-send false
   text 17 bold TEXT | UXO 1 Shell (shown)
   text 13 bold ORANGE | Artillery shell or mortar
   … 29 items
-  text 14 RED pad=6/0 slot=you | YOU: 1,092 ft (333 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 138 ft (42 m) farther, without going closer to the item.
+  text 14 RED pad=6/0 slot=you | YOU: 1,092 ft (333 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 148 ft (42 m) farther, without going closer to the item.
   text 12 DIM slot=team | Team: no other contacts on the map.
   titlerow button-bottom
     text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 3 active
