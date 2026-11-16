@@ -69,9 +69,19 @@ public final class Exports {
         return sb.toString();
     }
 
-    /** Zip entry name for a CoT item: "&lt;uid&gt;/&lt;uid&gt;.cot" (uid made path-safe). */
+    /**
+     * Zip entry name for a CoT item: "&lt;uid&gt;/&lt;uid&gt;.cot", the uid made
+     * path-safe: only letters, digits, '.', '_' and '-', no leading dots
+     * (an entry must never climb out of the package with ".."), at most
+     * 100 characters, never empty. Ordinary uids are unchanged.
+     */
     public static String cotEntry(String uid) {
-        String safe = uid.replaceAll("[^A-Za-z0-9._-]", "_");
+        String safe = uid == null ? "" : uid.replaceAll("[^A-Za-z0-9._-]",
+                "_").replaceAll("^\\.+", "_");
+        if (safe.length() > 100)
+            safe = safe.substring(0, 100);
+        if (safe.isEmpty())
+            safe = "item";
         return safe + "/" + safe + ".cot";
     }
 
@@ -79,8 +89,14 @@ public final class Exports {
     public static Map<String, byte[]> dataPackage(String packageUid,
             String name, Map<String, String> uidToCotXml) {
         Map<String, String> entries = new LinkedHashMap<>();
-        for (String uid : uidToCotXml.keySet())
-            entries.put(uid, cotEntry(uid));
+        java.util.Set<String> used = new java.util.HashSet<>();
+        for (String uid : uidToCotXml.keySet()) {
+            // Two odd uids can make the same safe name: number the second.
+            String entry = cotEntry(uid);
+            for (int k = 2; !used.add(entry); k++)
+                entry = cotEntry(uid + "_" + k);
+            entries.put(uid, entry);
+        }
         Map<String, byte[]> files = new LinkedHashMap<>();
         files.put("MANIFEST/manifest.xml",
                 manifest(packageUid, name, entries).getBytes(UTF8));

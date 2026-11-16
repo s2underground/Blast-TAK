@@ -177,6 +177,33 @@ public class ExportsTest {
         assertEquals("a_b_c/a_b_c.cot", Exports.cotEntry("a/b\\c"));
     }
 
+    /** Audit: odd uids from other devices can't escape or collide. */
+    @Test
+    public void entryNamesStaySafe() {
+        assertEquals("_/_.cot", Exports.cotEntry(".."));
+        assertEquals("_/_.cot", Exports.cotEntry("."));
+        assertEquals("__etc/__etc.cot", Exports.cotEntry("../etc"));
+        assertEquals("item/item.cot", Exports.cotEntry(""));
+        assertEquals("item/item.cot", Exports.cotEntry(null));
+        assertEquals("uid-1.mand/uid-1.mand.cot",
+                Exports.cotEntry("uid-1.mand"));
+        StringBuilder longUid = new StringBuilder();
+        for (int i = 0; i < 300; i++)
+            longUid.append('u');
+        assertEquals(100 + 1 + 100 + 4, Exports.cotEntry(longUid.toString())
+                .length());
+        Map<String, String> items = new LinkedHashMap<>();
+        items.put("a/b", "<event uid='a/b'/>");
+        items.put("a?b", "<event uid='a?b'/>");
+        Map<String, byte[]> files = Exports.dataPackage("p", "n", items);
+        assertEquals(3, files.size());
+        assertNotNull(files.get("a_b/a_b.cot"));
+        assertNotNull(files.get("a_b_2/a_b_2.cot"));
+        for (String entry : files.keySet())
+            assertFalse(entry, entry.startsWith(".") || entry.contains("/.")
+                    || entry.startsWith("/"));
+    }
+
     @Test
     public void fileStems() {
         assertEquals("BLAST_2_Car_Main_5th_301845Z",
