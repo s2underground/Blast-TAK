@@ -76,7 +76,7 @@ import javax.swing.Timer;
 public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     static final String FAMILY = "com.s2underground.blast";
-    static final String VERSION = "0.1.3";
+    static final String VERSION = "0.1.4";
 
     private static final Logger LOG = LoggerFactory.getLogger(
             BlastTakxPlugin.class);
@@ -94,6 +94,7 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
     private BlastApp app;
     private SwingPane pane;
     private TakxShapes shapes;
+    private TakxLabels labels;
     private JPanel panel;
     private final JLabel status = new JLabel(" ");
     private Timer timer;
@@ -130,7 +131,7 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
                     ports, ports, mapControl());
             shapes = new TakxShapes(delegate.getShapeService(), ports,
                     optional(pointDropper), optional(mapObjects), delegate);
-            ports.changed = () -> SwingUtilities.invokeLater(shapes::sync);
+            ports.changed = () -> SwingUtilities.invokeLater(this::redraw);
             pane = new SwingPane(app, this);
 
             panel = new JPanel(new BorderLayout());
@@ -152,6 +153,8 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
             delegate.getUISpaceManager().showComponent(panel);
 
             globe = delegate.getGlobeManager().getPrimaryGlobeDelegate();
+            if (globe != null)
+                labels = new TakxLabels(globe, ports, app::ringLabels);
             listenToGlobe();
             timer = new Timer(3000, e -> pane.refresh());
             timer.start();
@@ -174,11 +177,20 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
             }
             if (shapes != null)
                 shapes.clear();
+            if (labels != null)
+                labels.remove();
             if (panel != null)
                 delegate.getUISpaceManager().removeComponent(panel);
         } catch (RuntimeException e) {
             LOG.warn("Blast did not stop cleanly", e);
         }
+    }
+
+    /** Bring the globe's shapes, markers and labels up to date. */
+    private void redraw() {
+        shapes.sync();
+        if (labels != null)
+            labels.refresh();
     }
 
     /** Clicks on the globe: place (when the core asked) or open a card. */
@@ -302,7 +314,8 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     @Override
     public void labelsChanged() {
-        // TAK-X shows shape names in its own way; nothing to redraw yet.
+        if (labels != null)
+            SwingUtilities.invokeLater(labels::refresh);
     }
 
     @Override
