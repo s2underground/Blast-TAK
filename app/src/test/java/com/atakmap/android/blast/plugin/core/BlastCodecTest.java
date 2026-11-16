@@ -295,4 +295,20 @@ public class BlastCodecTest {
             BlastCodec.fromXml(sb.toString());
         }
     }
+
+    /** Audit: escaping keeps XML 1.0 valid whatever the text holds. */
+    @Test
+    public void escapeDropsCharactersXmlForbids() {
+        assertEquals("a&amp;b&lt;c&gt;&quot;&apos;", BlastCodec.escape(
+                "a&b<c>\"'"));
+        assertEquals("tab&#9;nl&#10;cr&#13;", BlastCodec.escape(
+                "tab\tnl\ncr\r"));
+        assertEquals("ab", BlastCodec.escape("a\u0000\u0001\u001fb"));
+        assertEquals("x\uD83D\uDCA3y", BlastCodec.escape("x\uD83D\uDCA3y"));
+        assertEquals("xy", BlastCodec.escape("x\uD83Dy\uFFFE\uFFFF"));
+        assertEquals("xy", BlastCodec.escape("x\uDCA3y"));
+        assertEquals("名前 ☢", BlastCodec.escape("名前 ☢"));
+        assertEquals("tab\tnl\ncr\r", BlastCodec.unescape(BlastCodec
+                .escape("tab\tnl\ncr\r")));
+    }
 }

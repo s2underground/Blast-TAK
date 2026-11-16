@@ -230,6 +230,11 @@ public final class BlastCodec {
         return null;
     }
 
+    /**
+     * Escape for XML attribute values and text: the five entities, tab /
+     * newline / return as character references (kept in attributes), and
+     * characters XML 1.0 forbids dropped.
+     */
     static String escape(String s) {
         if (s == null)
             return "";
@@ -253,13 +258,28 @@ public final class BlastCodec {
                     sb.append("&apos;");
                     break;
                 default:
-                    if (c < 0x20)
+                    if (c == '\t' || c == '\n' || c == '\r')
                         sb.append("&#").append((int) c).append(';');
-                    else
+                    else if (Character.isHighSurrogate(c) && i + 1 < s.length()
+                            && Character.isLowSurrogate(s.charAt(i + 1)))
+                        sb.append(c).append(s.charAt(++i));
+                    else if (xmlChar(c))
                         sb.append(c);
+                    // else: a character XML 1.0 forbids (control codes,
+                    // a lone surrogate, U+FFFE/FFFF): dropped, or the
+                    // whole document would be unreadable.
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * Whether a single char may appear in XML 1.0 text (surrogate pairs
+     * are handled by the caller).
+     */
+    static boolean xmlChar(char c) {
+        return c >= 0x20 && !Character.isSurrogate(c) && c != 0xFFFE
+                && c != 0xFFFF;
     }
 
     static String unescape(String s) {

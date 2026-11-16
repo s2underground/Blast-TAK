@@ -284,8 +284,14 @@ public final class CotEvents {
                     b.append("&quot;");
                     break;
                 default:
-                    if (c >= 0x20 || c == '\t')
+                    if (c == '\t')
                         b.append(c);
+                    else if (Character.isHighSurrogate(c) && i + 1 < s.length()
+                            && Character.isLowSurrogate(s.charAt(i + 1)))
+                        b.append(c).append(s.charAt(++i));
+                    else if (BlastCodec.xmlChar(c))
+                        b.append(c);
+                    // else: forbidden in XML 1.0, dropped
             }
         }
         return b.toString();
