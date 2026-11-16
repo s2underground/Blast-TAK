@@ -86,6 +86,100 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
         } catch (IOException e) {
             // first run: defaults
         }
+        loadIncidents();
+    }
+
+    // ------------------------------------------------------------------
+    // Keeping incidents across restarts (incidents.properties: uid, name,
+    // position and the record as its CoT detail XML, in placing order)
+
+    private File incidentsFile() {
+        return new File(home, "incidents.properties");
+    }
+
+    /** Save, then tell the host (map redraw). */
+    private void touched() {
+        saveIncidents();
+        changed.run();
+    }
+
+    private void saveIncidents() {
+        Properties p = new Properties();
+        int i = 0;
+        for (Stored st : incidents.values()) {
+            String k = Integer.toString(i++) + ".";
+            p.setProperty(k + "uid", st.uid);
+            p.setProperty(k + "name", st.name);
+            p.setProperty(k + "lat", Double.toString(st.lat));
+            p.setProperty(k + "lon", Double.toString(st.lon));
+            p.setProperty(k + "xml", st.nuc != null ? NucCodec.toXml(st.nuc)
+                    : st.uxo != null ? UxoCodec.toXml(st.uxo)
+                            : BlastCodec.toXml(st.standoff));
+        }
+        p.setProperty("count", Integer.toString(i));
+        if (!home.isDirectory() && !home.mkdirs())
+            return;
+        File tmp = new File(home, "incidents.properties.tmp");
+        try (OutputStream os = new FileOutputStream(tmp)) {
+            p.store(os, "Blast incidents (desktop)");
+        } catch (IOException e) {
+            report.accept("Could not save the incidents: " + e.getMessage());
+            return;
+        }
+        File f = incidentsFile();
+        if ((f.exists() && !f.delete()) || !tmp.renameTo(f))
+            report.accept("Could not save the incidents.");
+    }
+
+    private void loadIncidents() {
+        Properties p = new Properties();
+        try (InputStream in = new FileInputStream(incidentsFile())) {
+            p.load(in);
+        } catch (IOException e) {
+            return; // none saved yet
+        }
+        int n;
+        try {
+            n = Integer.parseInt(p.getProperty("count", "0"));
+        } catch (NumberFormatException e) {
+            return;
+        }
+        for (int i = 0; i < n; i++) {
+            String k = i + ".";
+            try {
+                String uid = p.getProperty(k + "uid");
+                String xml = p.getProperty(k + "xml", "");
+                Stored st = new Stored(uid, p.getProperty(k + "name", ""),
+                        Double.parseDouble(p.getProperty(k + "lat")),
+                        Double.parseDouble(p.getProperty(k + "lon")));
+                if (xml.contains("<" + NucCodec.DETAIL + " "))
+                    st.nuc = NucCodec.fromXml(xml);
+                else if (xml.contains("<" + UxoCodec.DETAIL + " "))
+                    st.uxo = UxoCodec.fromXml(xml);
+                else
+                    st.standoff = BlastCodec.fromXml(xml);
+                if (uid != null && (st.nuc != null || st.uxo != null
+                        || st.standoff != null))
+                    incidents.put(uid, st);
+            } catch (RuntimeException e) {
+                report.accept("Skipped a saved incident that could not be "
+                        + "read.");
+            }
+        }
+    }
+
+    /**
+     * Add or replace an incident from outside (one received over the
+     * network): exactly one record set. Saved like the others.
+     */
+    public void put(String uid, String name, double lat, double lon,
+            BlastRecord s, UxoRecord u, NucRecord n) {
+        Stored st = new Stored(uid, name, lat, lon);
+        st.standoff = s;
+        st.uxo = u;
+        st.nuc = n;
+        incidents.put(uid, st);
+        touched();
     }
 
     public List<Stored> stored() {
@@ -163,7 +257,7 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
         int n = next(0);
         r = r.withNumber(n);
         add(at, Names.initial(n, r.rowLabel)).standoff = r;
-        changed.run();
+        touched();
         return last();
     }
 
@@ -172,7 +266,7 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
         int n = next(1);
         r = r.withNumber(n);
         add(at, Names.initialUxo(n, r.plainLabel())).uxo = r;
-        changed.run();
+        touched();
         return last();
     }
 
@@ -181,7 +275,7 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
         int n = next(2);
         r = r.withNumber(n);
         add(at, Names.initialNuc(n, r.plainLabel())).nuc = r;
-        changed.run();
+        touched();
         return last();
     }
 
@@ -201,7 +295,7 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
         st.uxo = u;
         st.nuc = n;
         st.name = Names.withStatus(st.name, cleared);
-        changed.run();
+        touched();
         return true;
     }
 
@@ -227,14 +321,14 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
         if (s == null || clean == null)
             return false;
         s.name = Names.withStatus(clean, s.cleared());
-        changed.run();
+        touched();
         return true;
     }
 
     @Override
     public void delete(String uid) {
         incidents.remove(uid);
-        changed.run();
+        touched();
     }
 
     /** A minimal CoT event per incident (for data-package exports). */
