@@ -61,8 +61,10 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+// Named like TAK-X's own and the Raven example's plugins ("plugin.<name>"):
+// other plugins refer to a plugin by this file name.
 jar {
-    archiveFileName = "blast-takx-${version}.jar"
+    archiveFileName = "plugin.blast-${version}.jar"
 }
 
 tasks.register('install', Copy) {

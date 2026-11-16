@@ -20,6 +20,6 @@ or, with the four jars copied to a folder,
 `gradle jar -PtakxLibs=/path/to/jars` (platform-5.8.0, takkernel-shared and
 takkernel-engine 9.11.5, worldwind 2.2.1-TAKX-4).
 
-Install by copying `build/libs/blast-takx-<version>.jar` into
+Install by copying `build/libs/plugin.blast-<version>.jar` into
 `<TAK-X install>/plugins`, then restart TAK-X and start Blast from the
 app plugins.
