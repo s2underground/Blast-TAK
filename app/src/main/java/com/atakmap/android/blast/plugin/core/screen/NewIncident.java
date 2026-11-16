@@ -71,6 +71,8 @@ public final class NewIncident {
     public static final String NO_GPS = "No GPS position yet.",
             PLACED = "Incident placed. Use SEND TO ALL to share it.",
             PLACED_SENT = "Incident placed and sent to everyone.",
+            PLACED_SEND_FAILED = "Incident placed, but sending failed. Use "
+                    + "SEND TO ALL to try again.",
             UXO_PLACED = "UXO incident placed (not sent). Use REPORT or SEND "
                     + "on its card when you are outside the cordon.",
             NUC_PLACED = "Nuclear reference placed (not sent). Use SEND on "

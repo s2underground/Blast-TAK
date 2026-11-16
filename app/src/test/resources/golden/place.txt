@@ -154,6 +154,19 @@ selected: new1
 === new: mode_ied
   redraw: new-incident
 
+=== new: row_PIPE_BOMB
+  redraw: new-incident
+
+=== new: ied_center
+  port: create at 38.05060, -84.50370 <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="PIPE_BOMB" lbl="Pipe Bomb" cap_lb="5" mand_ft="70" sip_ft="1199" pref_ft="1200" by="CHARLIE-3" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+  port: send to all new3
+  toast: Incident placed, but sending failed. Use SEND TO ALL to try again.
+  redraw: card list new-incident scroll-top
+selected: new3
+
+=== new: mode_ied
+  redraw: new-incident
+
 === new: row_BRIEFCASE
   redraw: new-incident
 
@@ -188,7 +201,7 @@ selected: new1
 
 === new: ied_center
   port: create at 38.05060, -84.50370 <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="BRIEFCASE" lbl="Briefcase/Suitcase" cap_lb="50" mand_ft="150" sip_ft="1849" pref_ft="1850" by="CHARLIE-3" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
-  port: send to all new3
+  port: send to all new4
   toast: Incident placed and sent to everyone.
   redraw: card list new-incident scroll-top
   port: setting blast.autoSend = false
@@ -427,4 +440,4 @@ press positive
   redraw: card list
   form: EOD 9-line: UXO 1 Shell (17 items, scrolls, pad 16/8)
     buttons: Save | Copy text | Cancel
-left: [u1, new1, new2, new3, new4, new5, new6]
+left: [u1, new1, new2, new3, new4, new5, new6, new7]

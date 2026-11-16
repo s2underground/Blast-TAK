@@ -111,7 +111,7 @@ final class Placement {
                 return o.withFocus(r.focus);
             case PLACE_TARGET: {
                 PositionSource.Fix at = target == null ? null : target.fix();
-                return at == null ? o
+                return at == null || !valid(at.lat, at.lon) ? o
                         : place(r.mode, at, UxoRecord.Placement.MARKER, null)
                                 .withNewIncident();
             }
@@ -125,7 +125,8 @@ final class Placement {
             case PLACE_SELF: {
                 PositionSource.Fix f = position == null ? null
                         : position.fix();
-                return f == null ? o.withToast(NewIncident.NO_GPS)
+                return f == null || !valid(f.lat, f.lon)
+                        ? o.withToast(NewIncident.NO_GPS)
                         : place(r.mode, f, UxoRecord.Placement.MAP, null)
                                 .withNewIncident();
             }
@@ -202,16 +203,29 @@ final class Placement {
                 BlastRecord r = model.standoffRecord(by, now);
                 uid = incidents.create(at, r);
                 done = NewIncident.PLACED;
-                if (uid != null && app.autoSend()) {
-                    share.sendToAll(uid);
-                    done = NewIncident.PLACED_SENT;
-                }
+                if (uid != null && app.autoSend())
+                    done = sent(uid) ? NewIncident.PLACED_SENT
+                            : NewIncident.PLACED_SEND_FAILED;
             }
             if (uid == null)
                 return Outcome.toast(PLACE_FAILED);
             return placed(uid, done);
         } catch (RuntimeException e) {
             return Outcome.toast(PLACE_FAILED);
+        }
+    }
+
+    /**
+     * Auto-send after placing. A failed send must not read as a failed
+     * placing: the incident is on the map either way (and placing again
+     * would make a second one).
+     */
+    private boolean sent(String uid) {
+        try {
+            share.sendToAll(uid);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
         }
     }
 

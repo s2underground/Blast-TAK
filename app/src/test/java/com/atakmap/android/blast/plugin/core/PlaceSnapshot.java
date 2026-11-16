@@ -118,6 +118,14 @@ final class PlaceSnapshot {
         ActionsSnapshot.out(sb, app.picked(PositionSource.Fix.at(1, 2), false,
                 NONE));
 
+        // Audit: placed but the auto-send failed: placed, and it says so.
+        tap(sb, app, "mode_ied");
+        tap(sb, app, "row_PIPE_BOMB");
+        w.failSend = true;
+        tap(sb, app, "ied_center");
+        w.failSend = false;
+        sb.append("selected: ").append(app.selected()).append("\n");
+
         tap(sb, app, "mode_ied");
         tap(sb, app, "row_BRIEFCASE");
         tap(sb, app, "ied_pick");
