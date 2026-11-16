@@ -18,6 +18,7 @@ sourceSets {
             srcDirs = ['src/main/java', '../app/src/main/java']
             include 'com/atakmap/android/blast/plugin/core/**'
             include 'com/atakmap/android/blast/plugin/desktop/**'
+            include 'com/atakmap/android/blast/plugin/swing/**'
         }
     }
 }

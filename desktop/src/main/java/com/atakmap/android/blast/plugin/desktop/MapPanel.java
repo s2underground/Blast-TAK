@@ -4,6 +4,9 @@ import com.atakmap.android.blast.plugin.core.overlay.OverlayShape;
 import com.atakmap.android.blast.plugin.core.overlay.Overlays;
 import com.atakmap.android.blast.plugin.core.overlay.Style;
 import com.atakmap.android.blast.plugin.core.port.PositionSource;
+import com.atakmap.android.blast.plugin.swing.MemoryPorts;
+import com.atakmap.android.blast.plugin.swing.SwingPane;
+import com.atakmap.android.blast.plugin.swing.SwingScreen;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -40,23 +43,18 @@ final class MapPanel extends JPanel {
     private static final Color LAND = new Color(0x26302A),
             GRID = new Color(0x3A463E), GRID_TEXT = new Color(0x7F8C84);
 
-    /** Where a click landed, for the core. */
-    interface Picked {
-        void at(PositionSource.Fix where, boolean onMarker);
-    }
-
-    private final DesktopPorts ports;
+    private final MemoryPorts ports;
     private final BooleanSupplier labels;
     private final Consumer<String> open;
     private double cLat, cLon;
     /** Metres per pixel. */
     private double scale = 20;
-    private Picked picking;
+    private SwingPane.Picked picking;
     private String prompt;
     private int dragX, dragY;
     private boolean dragged;
 
-    MapPanel(DesktopPorts ports, double lat, double lon,
+    MapPanel(MemoryPorts ports, double lat, double lon,
             BooleanSupplier labels, Consumer<String> open) {
         this.ports = ports;
         this.cLat = lat;
@@ -149,7 +147,7 @@ final class MapPanel extends JPanel {
     // ------------------------------------------------------------------
     // Map taps
 
-    void startPick(String prompt, Picked p) {
+    void startPick(String prompt, SwingPane.Picked p) {
         this.prompt = prompt;
         this.picking = p;
         setCursor(java.awt.Cursor.getPredefinedCursor(
@@ -173,10 +171,10 @@ final class MapPanel extends JPanel {
     }
 
     /** The incident marker under (x, y), or null. */
-    private DesktopPorts.Stored markerAt(int x, int y) {
-        DesktopPorts.Stored best = null;
+    private MemoryPorts.Stored markerAt(int x, int y) {
+        MemoryPorts.Stored best = null;
         double bestD = 12;
-        for (DesktopPorts.Stored s : ports.stored()) {
+        for (MemoryPorts.Stored s : ports.stored()) {
             double d = Math.hypot(x(s.lon) - x, y(s.lat) - y);
             if (d < bestD) {
                 bestD = d;
@@ -187,9 +185,9 @@ final class MapPanel extends JPanel {
     }
 
     void click(int x, int y) {
-        DesktopPorts.Stored s = markerAt(x, y);
+        MemoryPorts.Stored s = markerAt(x, y);
         if (picking != null) {
-            Picked p = picking;
+            SwingPane.Picked p = picking;
             stopPick();
             if (s != null)
                 p.at(PositionSource.Fix.at(s.lat, s.lon), true);
@@ -234,10 +232,10 @@ final class MapPanel extends JPanel {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         grid(g);
         boolean showLabels = labels.getAsBoolean();
-        for (DesktopPorts.Stored s : ports.stored())
+        for (MemoryPorts.Stored s : ports.stored())
             for (OverlayShape sh : shapes(s))
                 shape(g, s, sh, showLabels);
-        for (DesktopPorts.Stored s : ports.stored())
+        for (MemoryPorts.Stored s : ports.stored())
             marker(g, s);
         PositionSource.Fix me = ports.fix();
         if (me != null) {
@@ -261,7 +259,7 @@ final class MapPanel extends JPanel {
         }
     }
 
-    private static List<OverlayShape> shapes(DesktopPorts.Stored s) {
+    private static List<OverlayShape> shapes(MemoryPorts.Stored s) {
         return s.nuc != null ? Overlays.nuc(s.nuc, s.lat, s.lon)
                 : s.uxo != null ? Overlays.uxo(s.uxo)
                         : Overlays.standoff(s.standoff);
@@ -285,7 +283,7 @@ final class MapPanel extends JPanel {
         }
     }
 
-    private void shape(Graphics2D g, DesktopPorts.Stored s, OverlayShape sh,
+    private void shape(Graphics2D g, MemoryPorts.Stored s, OverlayShape sh,
             boolean showLabels) {
         java.awt.Shape area;
         double lx, ly;
@@ -335,7 +333,7 @@ final class MapPanel extends JPanel {
         }
     }
 
-    private void marker(Graphics2D g, DesktopPorts.Stored s) {
+    private void marker(Graphics2D g, MemoryPorts.Stored s) {
         double px = x(s.lon), py = y(s.lat);
         Color c = s.cleared() ? Color.GRAY : s.nuc != null ? SwingScreen.NUC
                 : s.uxo != null ? SwingScreen.ORANGE : SwingScreen.RED;

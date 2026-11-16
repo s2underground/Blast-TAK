@@ -1,4 +1,4 @@
-package com.atakmap.android.blast.plugin.desktop;
+package com.atakmap.android.blast.plugin.swing;
 
 import com.atakmap.android.blast.plugin.core.screen.Button;
 import com.atakmap.android.blast.plugin.core.screen.Buttons;
@@ -66,13 +66,13 @@ import javax.swing.text.DocumentFilter;
  * renderer. TAK-X panels are Swing, so this is the part a TAK-X Blast
  * reuses.
  */
-final class SwingScreen {
+public final class SwingScreen {
 
     private SwingScreen() {
     }
 
     // Blast's dark pane colours (as the ATAK pane).
-    static final Color BG = new Color(0x1E1E1E), CARD = new Color(0x2A2A2A),
+    public static final Color BG = new Color(0x1E1E1E), CARD = new Color(0x2A2A2A),
             TEXT = new Color(0xEEEEEE), DIM = new Color(0xAAAAAA),
             RED = new Color(0xFF5252), AMBER = new Color(0xFFC107),
             GREEN = new Color(0x69F0AE), BLUE = new Color(0x40C4FF),
@@ -81,7 +81,7 @@ final class SwingScreen {
             UXO_SEL = new Color(0x8D4A00), NUC_SEL = new Color(0x5E2A72),
             NUC = new Color(0xE040FB);
 
-    static Color color(Tone t) {
+    public static Color color(Tone t) {
         switch (t) {
             case DIM:
                 return DIM;
@@ -102,11 +102,11 @@ final class SwingScreen {
         }
     }
 
-    static Color color(Ink k) {
+    public static Color color(Ink k) {
         return k.tone != null ? color(k.tone) : new Color(k.argb, true);
     }
 
-    static Color buttonColor(Button.Kind k) {
+    public static Color buttonColor(Button.Kind k) {
         switch (k) {
             case PRIMARY:
                 return SEND;
@@ -122,8 +122,8 @@ final class SwingScreen {
     }
 
     /** A vertical panel that follows the width of its scroll pane. */
-    static final class Column extends JPanel implements Scrollable {
-        Column() {
+    public static final class Column extends JPanel implements Scrollable {
+        public Column() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setOpaque(false);
             setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -165,11 +165,11 @@ final class SwingScreen {
      * A rendered core screen: its live slots, buttons (by action), entry
      * boxes, checks and sections, so it can be read and updated in place.
      */
-    static final class Rendered {
-        final Consumer<String> actions;
-        final Map<String, JComponent> slots = new HashMap<>();
-        final Map<String, JButton> buttons = new HashMap<>();
-        final Map<String, JTextField> entries = new HashMap<>();
+    public static final class Rendered {
+        public final Consumer<String> actions;
+        public final Map<String, JComponent> slots = new HashMap<>();
+        public final Map<String, JButton> buttons = new HashMap<>();
+        public final Map<String, JTextField> entries = new HashMap<>();
         final Map<String, JCheckBox> checks = new HashMap<>();
         final Map<String, Column> sections = new HashMap<>();
         /** True while the host sets a box or check (no change action). */
@@ -179,7 +179,7 @@ final class SwingScreen {
             this.actions = actions == null ? a -> { } : actions;
         }
 
-        FormValues values() {
+        public FormValues values() {
             FormValues v = new FormValues();
             for (Map.Entry<String, JTextField> e : entries.entrySet())
                 v.put(e.getKey(), e.getValue().getText());
@@ -189,7 +189,7 @@ final class SwingScreen {
         }
 
         /** Restyle in place from a newer model of the same screen. */
-        void update(Screen fresh) {
+        public void update(Screen fresh) {
             update(fresh.items());
         }
 
@@ -254,7 +254,7 @@ final class SwingScreen {
     }
 
     /** Set a slot's text and colour from a core Text. */
-    static void apply(JComponent v, Text t) {
+    public static void apply(JComponent v, Text t) {
         if (v == null || t == null)
             return;
         if (v instanceof JTextArea)
@@ -265,7 +265,7 @@ final class SwingScreen {
     }
 
     /** Render a screen into {@code into}. */
-    static Rendered render(Screen s, JPanel into, Consumer<String> actions) {
+    public static Rendered render(Screen s, JPanel into, Consumer<String> actions) {
         Rendered rd = new Rendered(actions);
         items(s.items(), into, rd);
         return rd;
@@ -281,7 +281,7 @@ final class SwingScreen {
     }
 
     /** A wrapping, read-only text block. */
-    static JTextArea textArea(String s, float size, Color c, boolean bold,
+    public static JTextArea textArea(String s, float size, Color c, boolean bold,
             boolean mono) {
         JTextArea a = new JTextArea(s);
         a.setEditable(false);
@@ -341,7 +341,7 @@ final class SwingScreen {
         return String.format("%06X", c.getRGB() & 0xFFFFFF);
     }
 
-    static String esc(String s) {
+    public static String esc(String s) {
         return s.replace("&", "&amp;").replace("<", "&lt;")
                 .replace(">", "&gt;").replace("'", "&#39;");
     }
@@ -358,12 +358,12 @@ final class SwingScreen {
     }
 
     /** Multi-line labels as HTML. */
-    static String label(String s) {
+    public static String label(String s) {
         return s.contains("\n") ? "<html><center>" + esc(s).replace("\n",
                 "<br>") + "</center></html>" : s;
     }
 
-    static void style(JButton v, Color bg) {
+    public static void style(JButton v, Color bg) {
         v.setBackground(bg);
         v.setForeground(Color.WHITE);
         v.setFocusPainted(false);
@@ -399,7 +399,7 @@ final class SwingScreen {
      * A panel no taller than it needs at its current width (BoxLayout
      * would stretch it; wrapped text needs the width first).
      */
-    static class Fit extends JPanel {
+    public static class Fit extends JPanel {
         Fit(java.awt.LayoutManager l) {
             super(l);
         }
@@ -439,7 +439,7 @@ final class SwingScreen {
         return c;
     }
 
-    static void items(List<Item> items, JPanel into, Rendered rd) {
+    public static void items(List<Item> items, JPanel into, Rendered rd) {
         for (Item it : items) {
             if (it instanceof Text) {
                 add(into, text((Text) it, rd));
@@ -496,7 +496,7 @@ final class SwingScreen {
         }
     }
 
-    static JPanel swatch(Color c, int w, int h) {
+    public static JPanel swatch(Color c, int w, int h) {
         JPanel p = new JPanel();
         p.setBackground(c);
         p.setPreferredSize(new Dimension(w, h));
@@ -549,7 +549,7 @@ final class SwingScreen {
         return p;
     }
 
-    static JTextField field(int maxLength, boolean digitsOnly) {
+    public static JTextField field(int maxLength, boolean digitsOnly) {
         JTextField e = new JTextField();
         e.setBackground(new Color(0x333333));
         e.setForeground(TEXT);
@@ -586,7 +586,7 @@ final class SwingScreen {
         return e;
     }
 
-    static void onChange(JTextField e, Runnable r) {
+    public static void onChange(JTextField e, Runnable r) {
         e.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent ev) {
@@ -661,13 +661,13 @@ final class SwingScreen {
     // Forms (dialog content: labelled inputs, choices, checks, notes)
 
     /** A rendered form: values and live slots. */
-    static final class FormView {
+    public static final class FormView {
         final Map<String, JTextField> inputs = new HashMap<>();
         final Map<String, JCheckBox> checks = new HashMap<>();
         final Map<String, String[]> choices = new HashMap<>();
         final Map<String, JComponent> slots = new HashMap<>();
 
-        FormValues values() {
+        public FormValues values() {
             FormValues v = new FormValues();
             for (Map.Entry<String, JTextField> e : inputs.entrySet())
                 v.put(e.getKey(), e.getValue().getText());
@@ -678,7 +678,7 @@ final class SwingScreen {
             return v;
         }
 
-        void set(String slot, String text) {
+        public void set(String slot, String text) {
             JComponent c = slots.get(slot);
             if (c instanceof JTextArea)
                 ((JTextArea) c).setText(text);
@@ -686,7 +686,7 @@ final class SwingScreen {
     }
 
     /** Render a core form; {@code onChange} runs after every edit. */
-    static FormView form(Screen s, JPanel box, Runnable onChange) {
+    public static FormView form(Screen s, JPanel box, Runnable onChange) {
         FormView f = new FormView();
         for (Item it : s.items()) {
             if (it instanceof Text) {

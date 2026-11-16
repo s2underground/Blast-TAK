@@ -1,4 +1,4 @@
-package com.atakmap.android.blast.plugin.desktop;
+package com.atakmap.android.blast.plugin.swing;
 
 import com.atakmap.android.blast.plugin.core.BlastCodec;
 import com.atakmap.android.blast.plugin.core.BlastRecord;
@@ -35,22 +35,23 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * The desktop host's ports: incidents kept in memory (numbered and named
- * as ATAK's BlastStore does), sending only reported (no network), an
- * optional "GPS" position the user sets on the map, the system clipboard,
- * exports to a folder, and settings in a properties file.
+ * Ports for desktop hosts: incidents kept in memory (numbered and named
+ * as ATAK's BlastStore does), sending only reported (no network yet), an
+ * optional position (set by hand, or from the host's own source), the
+ * system clipboard, exports to a folder, and settings in a properties
+ * file.
  */
-final class DesktopPorts implements Incidents, Share, Team, PositionSource,
+public class MemoryPorts implements Incidents, Share, Team, PositionSource,
         Clock, Clipboard, Files, Settings {
 
     /** One incident: where it is and its record (exactly one is set). */
-    static final class Stored {
-        final String uid;
-        String name;
-        final double lat, lon;
-        BlastRecord standoff;
-        UxoRecord uxo;
-        NucRecord nuc;
+    public static final class Stored {
+        public final String uid;
+        public String name;
+        public final double lat, lon;
+        public BlastRecord standoff;
+        public UxoRecord uxo;
+        public NucRecord nuc;
 
         Stored(String uid, String name, double lat, double lon) {
             this.uid = uid;
@@ -59,7 +60,7 @@ final class DesktopPorts implements Incidents, Share, Team, PositionSource,
             this.lon = lon;
         }
 
-        boolean cleared() {
+        public boolean cleared() {
             return nuc != null ? nuc.isCleared()
                     : uxo != null ? uxo.isCleared() : standoff.isCleared();
         }
@@ -68,14 +69,16 @@ final class DesktopPorts implements Incidents, Share, Team, PositionSource,
     private final Map<String, Stored> incidents = new LinkedHashMap<>();
     private final File home;
     private final Properties props = new Properties();
+    /** Callsign when none is set in the settings. */
+    public String defaultCallsign = "DESKTOP";
     /** Messages for the user (the window's status line). */
     private final Consumer<String> report;
     /** Changes to the incidents (the map redraws). */
-    Runnable changed = () -> { };
+    public Runnable changed = () -> { };
     /** The "GPS" position, or null (most desktops have none). */
     private Fix gps;
 
-    DesktopPorts(File home, Consumer<String> report) {
+    public MemoryPorts(File home, Consumer<String> report) {
         this.home = home;
         this.report = report;
         try (InputStream in = new FileInputStream(settingsFile())) {
@@ -85,20 +88,28 @@ final class DesktopPorts implements Incidents, Share, Team, PositionSource,
         }
     }
 
-    List<Stored> stored() {
+    public List<Stored> stored() {
         return new ArrayList<>(incidents.values());
     }
 
-    Stored stored(String uid) {
+    public Stored stored(String uid) {
         return incidents.get(uid);
     }
 
-    void setGps(Fix f) {
+    /** Where the position comes from instead of a hand-set one. */
+    private PositionSource source;
+
+    public void setGps(Fix f) {
         gps = f;
     }
 
-    boolean hasGps() {
-        return gps != null;
+    public boolean hasGps() {
+        return fix() != null;
+    }
+
+    /** Use the host's own position source (a GPS, a fixed point). */
+    public void setPositionSource(PositionSource p) {
+        source = p;
     }
 
     // ------------------------------------------------------------------
@@ -278,7 +289,7 @@ final class DesktopPorts implements Incidents, Share, Team, PositionSource,
 
     @Override
     public String callsign() {
-        return props.getProperty("callsign", "DESKTOP");
+        return props.getProperty("callsign", defaultCallsign);
     }
 
     @Override
@@ -288,6 +299,15 @@ final class DesktopPorts implements Incidents, Share, Team, PositionSource,
 
     @Override
     public Fix fix() {
+        if (source != null) {
+            try {
+                Fix f = source.fix();
+                if (f != null)
+                    return f;
+            } catch (RuntimeException e) {
+                // no position from the host
+            }
+        }
         return gps;
     }
 
@@ -308,7 +328,7 @@ final class DesktopPorts implements Incidents, Share, Team, PositionSource,
         return true;
     }
 
-    File exportFolder() {
+    public File exportFolder() {
         return new File(home, "export");
     }
 
