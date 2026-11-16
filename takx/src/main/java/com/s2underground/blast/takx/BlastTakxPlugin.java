@@ -1,5 +1,6 @@
 package com.s2underground.blast.takx;
 
+import com.atakmap.android.blast.plugin.core.CotEvents;
 import com.atakmap.android.blast.plugin.core.app.BlastApp;
 import com.atakmap.android.blast.plugin.core.port.MapControl;
 import com.atakmap.android.blast.plugin.core.port.PositionSource;
@@ -9,9 +10,14 @@ import com.atakmap.android.blast.plugin.swing.SwingScreen;
 import com.atakmap.coremap.maps.conversion.GeomagneticField;
 import com.atakmap.coremap.maps.coords.MGRSPoint;
 
+import gov.tak.api.comms.commo.ICommonCommoManager;
+import gov.tak.api.comms.commo.ICotEventSender;
+import gov.tak.api.contact.IIndividualContactManager;
 import gov.tak.api.location.ILocationProviderManager;
 import gov.tak.api.maps.coords.GeoPoint;
 import gov.tak.api.maps.coords.GeoPointMetaData;
+import gov.takx.api.annotation.CallSign;
+import gov.takx.api.annotation.NodeUUID;
 import gov.takx.api.globe.IGlobeDelegate;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IMapObjectManager;
@@ -42,6 +48,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -52,8 +59,9 @@ import javax.swing.Timer;
 /**
  * Blast for TAK-X: the same core and Swing pane as the desktop host,
  * docked on the right of TAK-X, with incidents drawn on the TAK-X globe
- * as TAK-X shapes. This first version keeps incidents on this computer
- * (nothing is sent yet).
+ * as TAK-X shapes. Incidents are sent and received as the same CoT ATAK
+ * Blast uses ({@link TakxShare}, {@link TakxReceiver}), so ATAK and TAK-X
+ * users see each other's incidents.
  */
 @AppPlugin(
         spec = @PluginSpecification(
@@ -76,7 +84,7 @@ import javax.swing.Timer;
 public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     static final String FAMILY = "com.s2underground.blast";
-    static final String VERSION = "0.1.4";
+    static final String VERSION = "0.1.5";
 
     private static final Logger LOG = LoggerFactory.getLogger(
             BlastTakxPlugin.class);
@@ -89,6 +97,20 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
     private Instance<IPointDropperService> pointDropper;
     @Inject
     private Instance<IMapObjectManager> mapObjects;
+    /** Sending and receiving CoT, and the contact list (optional too). */
+    @Inject
+    private Instance<ICotEventSender> cotSender;
+    @Inject
+    private Instance<ICommonCommoManager> commo;
+    @Inject
+    private Instance<IIndividualContactManager> contacts;
+    /** This device's callsign and uid in TAK-X. */
+    @Inject
+    @CallSign
+    private Instance<String> callsign;
+    @Inject
+    @NodeUUID
+    private Instance<String> nodeUid;
 
     private MemoryPorts ports;
     private BlastApp app;
@@ -102,6 +124,8 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
     private IMapObjectSelectListener selectListener;
     private MouseAdapter clickListener;
     private SwingPane.Picked picking;
+    private TakxReceiver receiver;
+    private ICommonCommoManager listeningTo;
 
     @Override
     public void start() {
@@ -125,9 +149,33 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         try {
             ports = new MemoryPorts(new File(System.getProperty("user.home"),
                     ".blast-takx"), this::toast);
-            ports.defaultCallsign = "TAK-X";
+            ports.defaultCallsign = takxCallsign();
             ports.setPositionSource(this::ownPosition);
-            app = new BlastApp(ports, ports, ports, ports, ports, ports,
+            TakxShare share = new TakxShare(ports, optional(cotSender),
+                    optional(contacts), new TakxShare.Hooks() {
+                        @Override
+                        public CotEvents.Sender me() {
+                            ports.defaultCallsign = takxCallsign();
+                            return new CotEvents.Sender(deviceUid(),
+                                    ports.callsign());
+                        }
+
+                        @Override
+                        public boolean labels() {
+                            return app.ringLabels();
+                        }
+
+                        @Override
+                        public void toast(String s) {
+                            BlastTakxPlugin.this.toast(s);
+                        }
+
+                        @Override
+                        public Window owner() {
+                            return BlastTakxPlugin.this.owner();
+                        }
+                    });
+            app = new BlastApp(ports, share, ports, ports, ports, ports,
                     ports, ports, mapControl());
             shapes = new TakxShapes(delegate.getShapeService(), ports,
                     optional(pointDropper), optional(mapObjects), delegate);
@@ -156,6 +204,7 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
             if (globe != null)
                 labels = new TakxLabels(globe, ports, app::ringLabels);
             listenToGlobe();
+            listenToNetwork();
             timer = new Timer(3000, e -> pane.refresh());
             timer.start();
         } catch (RuntimeException e) {
@@ -167,6 +216,9 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         try {
             if (timer != null)
                 timer.stop();
+            if (listeningTo != null && receiver != null)
+                listeningTo.removeCotEventListener(receiver);
+            listeningTo = null;
             stopPick();
             if (globe != null) {
                 if (selectListener != null)
@@ -231,6 +283,40 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         gov.nasa.worldwind.WorldWindow w = window();
         if (w != null)
             w.getInputHandler().addMouseListener(clickListener);
+    }
+
+    /** Incidents other devices send (see TakxReceiver). */
+    private void listenToNetwork() {
+        ICommonCommoManager c = optional(commo);
+        if (c == null) {
+            LOG.warn("no CoT listener: received incidents won't show");
+            return;
+        }
+        receiver = new TakxReceiver(ports);
+        c.addCotEventListener(receiver);
+        listeningTo = c;
+    }
+
+    /** TAK-X's callsign, or "TAK-X". */
+    private String takxCallsign() {
+        String c = optional(callsign);
+        return c == null || c.trim().isEmpty() ? "TAK-X" : c.trim();
+    }
+
+    /**
+     * This device's uid as other TAK clients know it; without one from
+     * TAK-X, one made up once and kept in the settings.
+     */
+    private String deviceUid() {
+        String u = optional(nodeUid);
+        if (u != null && !u.trim().isEmpty())
+            return u.trim();
+        u = ports.getString("device_uid", null);
+        if (u == null) {
+            u = "TAKX-BLAST-" + UUID.randomUUID();
+            ports.putString("device_uid", u);
+        }
+        return u;
     }
 
     /**

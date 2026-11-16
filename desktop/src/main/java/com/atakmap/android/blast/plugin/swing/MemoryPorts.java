@@ -52,6 +52,11 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
         public BlastRecord standoff;
         public UxoRecord uxo;
         public NucRecord nuc;
+        /**
+         * Received from another device and not changed here since: the
+         * host has it drawn already (TAK-X draws the received CoT itself).
+         */
+        public boolean remote;
 
         Stored(String uid, String name, double lat, double lon) {
             this.uid = uid;
@@ -115,6 +120,8 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
             p.setProperty(k + "xml", st.nuc != null ? NucCodec.toXml(st.nuc)
                     : st.uxo != null ? UxoCodec.toXml(st.uxo)
                             : BlastCodec.toXml(st.standoff));
+            if (st.remote)
+                p.setProperty(k + "remote", "true");
         }
         p.setProperty("count", Integer.toString(i));
         if (!home.isDirectory() && !home.mkdirs())
@@ -158,6 +165,7 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
                     st.uxo = UxoCodec.fromXml(xml);
                 else
                     st.standoff = BlastCodec.fromXml(xml);
+                st.remote = Boolean.parseBoolean(p.getProperty(k + "remote"));
                 if (uid != null && (st.nuc != null || st.uxo != null
                         || st.standoff != null))
                     incidents.put(uid, st);
@@ -173,13 +181,21 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
      * network): exactly one record set. Saved like the others.
      */
     public void put(String uid, String name, double lat, double lon,
-            BlastRecord s, UxoRecord u, NucRecord n) {
+            BlastRecord s, UxoRecord u, NucRecord n, boolean remote) {
         Stored st = new Stored(uid, name, lat, lon);
         st.standoff = s;
         st.uxo = u;
         st.nuc = n;
+        st.remote = remote;
         incidents.put(uid, st);
         touched();
+    }
+
+    /** The record of an incident as its CoT detail XML. */
+    public static String recordXml(Stored st) {
+        return st.nuc != null ? NucCodec.toXml(st.nuc)
+                : st.uxo != null ? UxoCodec.toXml(st.uxo)
+                        : BlastCodec.toXml(st.standoff);
     }
 
     public List<Stored> stored() {
@@ -295,6 +311,7 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
         st.uxo = u;
         st.nuc = n;
         st.name = Names.withStatus(st.name, cleared);
+        st.remote = false; // changed here: this device draws it now
         touched();
         return true;
     }
@@ -321,6 +338,7 @@ public class MemoryPorts implements Incidents, Share, Team, PositionSource,
         if (s == null || clean == null)
             return false;
         s.name = Names.withStatus(clean, s.cleared());
+        s.remote = false;
         touched();
         return true;
     }

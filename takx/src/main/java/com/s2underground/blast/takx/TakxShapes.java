@@ -36,6 +36,11 @@ import java.util.Set;
  * {@link IShapeService}, with the same colours, fills, widths and dashes
  * the ATAK layer uses. Shapes are unpublished (this plugin's own); an
  * incident is redrawn when its record or name changes.
+ *
+ * <p>Incidents received from other devices are drawn by TAK-X itself (it
+ * imports the CoT), so they are left alone here. When one is changed here
+ * it becomes this plugin's to draw, and TAK-X's received copy is removed;
+ * likewise when a received incident is deleted here.
  */
 final class TakxShapes {
 
@@ -62,6 +67,8 @@ final class TakxShapes {
     private final Map<String, List<String>> names = new HashMap<>();
     /** Shape name to incident uid (selection on the globe). */
     private final Map<String, String> owner = new HashMap<>();
+    /** Incidents TAK-X draws from received CoT. */
+    private final Set<String> received = new HashSet<>();
 
     TakxShapes(IShapeService shapes, MemoryPorts ports,
             IPointDropperService dropper, IMapObjectManager objects,
@@ -73,12 +80,27 @@ final class TakxShapes {
         this.delegate = delegate;
     }
 
-    /** The incident a clicked map object (marker or shape) is, or null. */
+    /**
+     * The incident a clicked map object is, or null: one this plugin drew,
+     * or one TAK-X drew from received CoT (the marker has the incident's
+     * uid, the rings and outlines the uid plus a suffix such as ".mand").
+     */
     String incidentOf(IMapObject o) {
         if (o == null)
             return null;
-        String uid = markerOwner.get(o.getUid());
-        return uid != null ? uid : owner.get(o.getName());
+        String u = o.getUid();
+        String uid = markerOwner.get(u);
+        if (uid == null)
+            uid = owner.get(o.getName());
+        if (uid == null && u != null) {
+            if (ports.stored(u) != null)
+                return u;
+            for (int i = u.lastIndexOf('.'); i > 0; i = u.lastIndexOf('.',
+                    i - 1))
+                if (ports.stored(u.substring(0, i)) != null)
+                    return u.substring(0, i);
+        }
+        return uid;
     }
 
     /** Bring the globe up to date with the incidents. */
@@ -86,6 +108,16 @@ final class TakxShapes {
         Set<String> live = new HashSet<>();
         for (MemoryPorts.Stored s : ports.stored()) {
             live.add(s.uid);
+            if (s.remote) {
+                // TAK-X draws it; take down a copy of ours, if any.
+                if (received.add(s.uid)) {
+                    remove(s.uid);
+                    drawnSig.remove(s.uid);
+                }
+                continue;
+            }
+            if (received.remove(s.uid))
+                dropReceived(s.uid); // changed here: ours to draw now
             String sig = s.name + "|" + recordXml(s);
             if (sig.equals(drawnSig.get(s.uid)))
                 continue;
@@ -98,6 +130,40 @@ final class TakxShapes {
                 remove(uid);
                 drawnSig.remove(uid);
             }
+        for (String uid : new ArrayList<>(received))
+            if (!live.contains(uid)) {
+                received.remove(uid);
+                dropReceived(uid); // deleted here
+            }
+    }
+
+    /**
+     * Remove what TAK-X drew from an incident's received CoT: its marker
+     * (the incident's uid) and shapes (the uid plus a suffix). Best
+     * effort: anything left over goes stale as ATAK's would.
+     */
+    private void dropReceived(String uid) {
+        if (objects == null)
+            return;
+        int n = 0;
+        try {
+            for (IMapObject o : new ArrayList<IMapObject>(
+                    objects.getMapObjects())) {
+                String u = o.getUid();
+                if (u == null || markerOwner.containsKey(u)
+                        || !(u.equals(uid) || u.startsWith(uid + ".")))
+                    continue;
+                try {
+                    objects.deleteMapObject(o);
+                    n++;
+                } catch (Exception e) {
+                    LOG.debug("could not remove {}", u, e);
+                }
+            }
+        } catch (Exception | LinkageError e) {
+            LOG.warn("could not remove the received copy of {}", uid, e);
+        }
+        LOG.info("removed {} received items of {}", n, uid);
     }
 
     private static String recordXml(MemoryPorts.Stored s) {
@@ -116,6 +182,7 @@ final class TakxShapes {
         for (String uid : uids)
             remove(uid);
         drawnSig.clear();
+        received.clear();
     }
 
     private void remove(String uid) {
