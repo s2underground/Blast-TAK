@@ -18,6 +18,21 @@ import java.util.regex.Pattern;
  * TAK-X (desktop Java) and in standalone apps. This fails on any reference
  * to Android, ATAK, TAK-X, desktop UI, or the plugin's own platform layers
  * (atak/, ui/) from a file in core/.
+ *
+ * <p>It also holds the core to two more rules (audit, Nov 16, 2026, as the
+ * WX and HAZ guards do):
+ * <ul>
+ * <li><b>Same output on every machine:</b> no number or date formatting,
+ * case change or calendar without an explicit Locale / time zone, no
+ * default locale or zone, and no clock reads (time comes in through the
+ * Clock port or as arguments).</li>
+ * <li><b>Runs on Android 5 (API 21, Blast's minSdk):</b> none of the Java 8
+ * library additions Android only has from 7 or 8 (java.util.function,
+ * streams, java.time, java.nio.file, Base64, Optional, the new default
+ * methods on Map / List / Iterable, String.join, ...). Lambdas and method
+ * references are fine (the build desugars them) as long as their types
+ * are the core's own or older Java interfaces.</li>
+ * </ul>
  */
 public class CoreBoundaryTest {
 
@@ -32,6 +47,62 @@ public class CoreBoundaryTest {
             "(?<![\\w.])((?:android|androidx|com\\.atakmap|gov\\.tak|gov\\.takx"
                     + "|transapps|javax\\.swing|java\\.awt|org\\.json)"
                     + "(?:\\.\\w+)+)");
+
+    /** Machine-setting rules: [pattern, what to do instead]. */
+    static final String[][] MACHINE = {
+            { "String\\.format\\((?!\\s*(?:java\\.util\\.)?Locale\\.)",
+                    "String.format needs a Locale first" },
+            { "\\.to(?:Upper|Lower)Case\\(\\s*\\)",
+                    "toUpperCase/toLowerCase need a Locale" },
+            { "new\\s+(?:java\\.text\\.)?SimpleDateFormat\\((?![^;]*Locale\\.)",
+                    "SimpleDateFormat needs a Locale (and a UTC zone)" },
+            { "Calendar\\.getInstance\\(\\s*\\)",
+                    "Calendar.getInstance needs a zone and Locale" },
+            { "(?:Locale|TimeZone)\\.getDefault\\(",
+                    "no default locale or zone" },
+            { "System\\.currentTimeMillis\\(|System\\.nanoTime\\("
+                    + "|new\\s+(?:java\\.util\\.)?Date\\(\\s*\\)",
+                    "no clock reads: use the Clock port or an argument" } };
+
+    /** Java 8 library additions missing before Android 7/8. */
+    static final String[][] ANDROID5 = {
+            { "java\\.util\\.function\\.|java\\.util\\.stream\\."
+                    + "|java\\.time\\.|java\\.nio\\.file\\."
+                    + "|java\\.util\\.Base64|java\\.util\\.Optional"
+                    + "|java\\.util\\.StringJoiner"
+                    + "|java\\.util\\.concurrent\\.CompletableFuture",
+                    "package or class newer than Android 5" },
+            { "\\.(?:stream|parallelStream|chars)\\(\\s*\\)",
+                    "streams need Android 7" },
+            { "\\.(?:forEach|getOrDefault|computeIfAbsent|computeIfPresent"
+                    + "|putIfAbsent|removeIf|forEachRemaining)\\(",
+                    "Map/Collection default methods need Android 7" },
+            { "(?<!Collections|Arrays)\\.sort\\(",
+                    "List.sort needs Android 7: use Collections.sort" },
+            { "String\\.join\\(|Comparator\\.(?:comparing|naturalOrder"
+                    + "|reverseOrder|nullsFirst|nullsLast)",
+                    "needs Android 7/8" },
+            { "Math\\.(?:floorMod|floorDiv|\\w+Exact)\\("
+                    + "|(?:Double|Long|Integer|Boolean|Float)\\.hashCode\\("
+                    + "|Double\\.isFinite\\(|(?:List|Set|Map)\\.of\\(",
+                    "needs Android 7 (or Java 9)" } };
+
+    /** Rule violations in code (comments and strings already removed). */
+    static List<String> ruleViolations(String name, String code,
+            String[][] rules) {
+        List<String> out = new ArrayList<>();
+        for (String[] r : rules) {
+            Matcher m = Pattern.compile(r[0]).matcher(code);
+            while (m.find()) {
+                int line = 1;
+                for (int i = 0; i < m.start(); i++)
+                    if (code.charAt(i) == '\n')
+                        line++;
+                out.add(name + ":" + line + " " + r[1]);
+            }
+        }
+        return out;
+    }
 
     static File coreDir() {
         String rel = "src/main/java/" + CORE_PKG.replace('.', '/');
@@ -115,6 +186,62 @@ public class CoreBoundaryTest {
         if (!bad.isEmpty())
             fail("core must stay platform-free:\n  " + String.join("\n  ",
                     bad));
+    }
+
+    @Test
+    public void coreGivesTheSameOutputEverywhereAndRunsOnAndroid5()
+            throws Exception {
+        File dir = coreDir();
+        List<File> files = new ArrayList<>();
+        collect(dir, files);
+        List<String> bad = new ArrayList<>();
+        for (File f : files) {
+            String name = dir.toPath().relativize(f.toPath()).toString();
+            String code = codeOnly(new String(Files.readAllBytes(
+                    f.toPath()), StandardCharsets.UTF_8));
+            bad.addAll(ruleViolations(name, code, MACHINE));
+            bad.addAll(ruleViolations(name, code, ANDROID5));
+        }
+        if (!bad.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (String b : bad)
+                sb.append("\n  ").append(b);
+            fail("core rules broken:" + sb);
+        }
+    }
+
+    /** The rule checks catch what they should and nothing else. */
+    @Test
+    public void ruleCheckerWorks() {
+        String ok = codeOnly("class Ok { void f() {\n"
+                + "String.format(Locale.US, \"%d\", 1);\n"
+                + "s.toUpperCase(Locale.ROOT);\n"
+                + "new SimpleDateFormat(\"yyyy\",\n Locale.US);\n"
+                + "Calendar.getInstance(TimeZone.getTimeZone(\"UTC\"), "
+                + "Locale.US);\n"
+                + "Collections.sort(l, c); Arrays.sort(a);\n"
+                + "// String.format(\"%d\", 1); list.stream()\n"
+                + "String t = \"System.currentTimeMillis() x.forEach(y)\";\n"
+                + "}}");
+        assertTrue(ruleViolations("Ok", ok, MACHINE).toString(),
+                ruleViolations("Ok", ok, MACHINE).isEmpty());
+        assertTrue(ruleViolations("Ok", ok, ANDROID5).toString(),
+                ruleViolations("Ok", ok, ANDROID5).isEmpty());
+        String bad = codeOnly("import java.util.function.Consumer;\n"
+                + "class Bad { void f() {\n"
+                + "String.format(\"%d\", 1);\n"
+                + "s.toLowerCase();\n"
+                + "new SimpleDateFormat(\"yyyy\");\n"
+                + "Locale.getDefault(); System.currentTimeMillis();\n"
+                + "new Date();\n"
+                + "list.stream(); m.getOrDefault(k, v); list.sort(c);\n"
+                + "String.join(\",\", l); Math.floorMod(a, b);\n"
+                + "}}");
+        List<String> m = ruleViolations("Bad", bad, MACHINE);
+        List<String> a = ruleViolations("Bad", bad, ANDROID5);
+        assertTrue(m.toString(), m.size() == 6);
+        assertTrue(a.toString(), a.size() == 6);
+        assertTrue(m.get(0).startsWith("Bad:3 "));
     }
 
     /** All .java files under dir, subpackages included. */
