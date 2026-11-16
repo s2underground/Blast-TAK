@@ -249,6 +249,14 @@ android {
         abortOnError true
         checkReleaseBuilds true
     }
+    // Regenerate the golden files on purpose:
+    // ./gradlew testCivDebugUnitTest -Pblast.golden.update=true
+    testOptions {
+        unitTests.all {
+            systemProperty 'blast.golden.update',
+                    project.findProperty('blast.golden.update') ?: 'false'
+        }
+    }
 }
 
 afterEvaluate {

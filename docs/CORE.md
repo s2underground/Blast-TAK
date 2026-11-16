@@ -98,8 +98,9 @@ Run them with the plugin's Gradle build (`testCivDebugUnitTest`).
   and dialog, reports, exports, overlay geometry, the CoT events, whole
   app sessions against fake ports that log every port call (`app.txt`,
   `actions.txt`, `place.txt`). A change to any output shows as a diff.
-  Regenerate on purpose with `-Dblast.golden.dir=app/src/test/resources/golden`
-  and read the diff before committing.
+  Regenerate on purpose with
+  `./gradlew testCivDebugUnitTest -Pblast.golden.update=true` and read the
+  diff before committing.
 - **Boundary and rules** (`CoreBoundaryTest`): the rules above.
 - **Received data** (`ReceivedDataFuzzTest`): thousands of mutated
   records through the whole core.

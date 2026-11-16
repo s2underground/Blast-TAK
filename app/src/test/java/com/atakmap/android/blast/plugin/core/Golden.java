@@ -14,8 +14,10 @@ import java.nio.charset.StandardCharsets;
 /**
  * Golden-file helper. Files live in src/test/resources/golden/. To
  * regenerate after an intended change, run the tests with
- * {@code -Dblast.golden.dir=<path to src/test/resources/golden>} and review
- * the diff before committing.
+ * {@code -Pblast.golden.update=true} (Gradle) or
+ * {@code -Dblast.golden.update=true} (plain JUnit, from the project or
+ * app folder) and review the diff before committing. The folder is fixed:
+ * no path comes from outside the code.
  */
 final class Golden {
 
@@ -38,15 +40,14 @@ final class Golden {
     }
 
     static void check(String name, String actual) {
-        String dir = System.getProperty("blast.golden.dir");
-        if (dir != null && !dir.isEmpty()) {
-            write(new File(dir, name), actual);
+        if (Boolean.getBoolean("blast.golden.update")) {
+            write(new File(goldenDir(), name), actual);
             return;
         }
         String expected = read("/golden/" + name);
         if (expected == null)
             fail("missing golden file " + name
-                    + " (run with -Dblast.golden.dir=... to create it)");
+                    + " (run with -Pblast.golden.update=true to create it)");
         if (expected.equals(actual))
             return;
         String[] e = expected.split("\n", -1), a = actual.split("\n", -1);
@@ -74,6 +75,16 @@ final class Golden {
         } catch (Exception ex) {
             throw new AssertionError(ex);
         }
+    }
+
+    /** src/test/resources/golden, from the project or the app folder. */
+    private static File goldenDir() {
+        for (String base : new String[] { ".", "app" }) {
+            File f = new File(base, "src/test/resources/golden");
+            if (f.isDirectory())
+                return f;
+        }
+        throw new AssertionError("golden folder not found");
     }
 
     private static void write(File f, String s) {
