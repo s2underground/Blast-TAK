@@ -4,8 +4,12 @@ Blast as a TAK-X app plugin: the same app core as the ATAK plugin and the
 shared Swing pane (`../desktop/.../swing`), docked on the right of TAK-X,
 with incidents drawn on the TAK-X globe as TAK-X shapes.
 
-Version 0.1 (refactor step 6b-1): incidents stay on this computer and are
-not kept when the plugin stops; nothing is sent or received yet.
+Version 0.1.5 (refactor step 6b-2): incidents are kept across restarts
+(in `~/.blast-takx`) and are sent and received as the same CoT ATAK Blast
+uses, so ATAK and TAK-X users see each other's incidents. Incidents
+received from other devices are drawn by TAK-X itself (it imports the
+CoT); Blast adds their cards, and draws one itself once it is changed
+here.
 
 ## Build
 
