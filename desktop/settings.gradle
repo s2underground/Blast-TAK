@@ -1,0 +1,3 @@
+// A separate build: the ATAK plugin build (../settings.gradle) doesn't
+// include this folder, and git archive leaves it out (.gitattributes).
+rootProject.name = 'blast-desktop'

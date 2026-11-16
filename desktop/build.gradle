@@ -1,0 +1,34 @@
+// Blast desktop test host: Blast's core (from the ATAK plugin's sources,
+// unchanged) with a Swing pane and a plain map. Plain Java, no ATAK.
+//   gradle run      start it
+//   gradle jar      build/libs/blast-desktop.jar (java -jar to run)
+plugins {
+    id 'application'
+}
+
+// Java 17 bytecode (TAK-X's runtime); builds with any JDK 17 or later.
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+    options.encoding = 'UTF-8'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', '../app/src/main/java']
+            include 'com/atakmap/android/blast/plugin/core/**'
+            include 'com/atakmap/android/blast/plugin/desktop/**'
+        }
+    }
+}
+
+application {
+    mainClass = 'com.atakmap.android.blast.plugin.desktop.BlastDesktop'
+}
+
+jar {
+    archiveFileName = 'blast-desktop.jar'
+    manifest {
+        attributes 'Main-Class': application.mainClass
+    }
+}
