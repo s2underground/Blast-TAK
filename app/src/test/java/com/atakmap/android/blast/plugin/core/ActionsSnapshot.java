@@ -40,7 +40,8 @@ final class ActionsSnapshot {
 
         @Override
         public Fix fix() {
-            return self == null ? null : new Fix(self[0], self[1], 8);
+            return self == null ? null
+                    : new Fix(self[0], self[1], 8, 176, 8, 12);
         }
 
         @Override
@@ -70,8 +71,19 @@ final class ActionsSnapshot {
         }
 
         @Override
-        public double[] center() {
-            return centre;
+        public Fix center() {
+            return centre == null ? null : Fix.at(centre[0], centre[1]);
+        }
+
+        /** A fake declination: 3° east. */
+        boolean noDeclination;
+
+        @Override
+        public double magneticToTrue(double lat, double lon,
+                double magneticDeg) {
+            if (noDeclination)
+                throw new IllegalStateException("no model");
+            return magneticDeg + 3;
         }
 
         @Override
@@ -119,6 +131,41 @@ final class ActionsSnapshot {
             map.put(uid, new Incident(uid, in.displayName, in.name, in.lat,
                     in.lon, s, u, n));
             return true;
+        }
+
+        int created;
+        boolean failCreate;
+
+        private String create(Fix at, BlastRecord s, UxoRecord u,
+                NucRecord n, String what) {
+            log.append("  port: create at ").append(String.format(
+                    java.util.Locale.US, "%.5f, %.5f", at.lat, at.lon));
+            if (!Double.isNaN(at.haeM))
+                log.append(" hae ").append(at.haeM);
+            if (!Double.isNaN(at.ceM))
+                log.append(" ce ").append(at.ceM);
+            log.append(" ").append(what).append("\n");
+            if (failCreate)
+                return null;
+            String uid = "new" + (++created);
+            map.put(uid, new Incident(uid, "NEW " + created + " (shown)",
+                    "NEW " + created, at.lat, at.lon, s, u, n));
+            return uid;
+        }
+
+        @Override
+        public String create(Fix at, BlastRecord r) {
+            return create(at, r, null, null, BlastCodec.toXml(r));
+        }
+
+        @Override
+        public String create(Fix at, UxoRecord r) {
+            return create(at, null, r, null, UxoCodec.toXml(r));
+        }
+
+        @Override
+        public String create(Fix at, NucRecord r) {
+            return create(at, null, null, r, NucCodec.toXml(r));
         }
 
         @Override
@@ -238,6 +285,11 @@ final class ActionsSnapshot {
                     .append(d.fieldMaxLength).append(d.fieldSelectAll
                             ? " select-all" : "").append(" = [")
                     .append(d.fieldValue).append("]\n");
+        if (d.items != null)
+            for (int i = 0; i < d.items.size(); i++)
+                sb.append("    ").append(i).append(") ")
+                        .append(d.items.get(i)).append(" -> ")
+                        .append(d.itemAction).append("\n");
         if (d.options != null)
             for (int i = 0; i < d.options.size(); i++)
                 sb.append("    [").append(d.checked(i) ? "x" : " ")
@@ -275,9 +327,6 @@ final class ActionsSnapshot {
             f.append(o.reference ? " tab=REFERENCE" : " tab=INCIDENTS");
         if (o.section != null)
             f.append(" section=").append(o.section);
-        if (o.form != com.atakmap.android.blast.plugin.core.app.Outcome.Form.NONE)
-            f.append(" form=").append(o.form).append(" for ")
-                    .append(o.formUid);
         if (o.settings)
             f.append(" settings");
         if (o.labels)
@@ -285,8 +334,35 @@ final class ActionsSnapshot {
         if (o.restyle != null)
             f.append(" restyle(").append(o.restyle.items().size())
                     .append(" items)");
+        if (o.stopPick)
+            f.append(" stop-map-tap");
+        if (o.newIncident)
+            f.append(" new-incident");
+        if (o.focus != null)
+            f.append(" focus=").append(o.focus);
+        if (o.top)
+            f.append(" scroll-top");
         if (f.length() > 0)
             sb.append("  redraw:").append(f).append("\n");
+        if (o.pick != null)
+            sb.append("  map tap: ").append(o.pick).append("\n");
+        if (o.form != null)
+            sb.append(form(o.form));
+        if (o.next != null) {
+            sb.append("  then:\n");
+            out(sb, o.next);
+        }
+    }
+
+    static String form(com.atakmap.android.blast.plugin.core.app.FormDialog d) {
+        StringBuilder sb = new StringBuilder("  form: ").append(d.title)
+                .append(" (").append(d.form.items().size()).append(" items")
+                .append(d.scrolls ? ", scrolls" : "").append(", pad ")
+                .append(d.padDp).append("/").append(d.padTopDp).append(")\n");
+        sb.append("    buttons: ").append(d.positive).append(" | ")
+                .append(d.neutral).append(" | ").append(d.negative)
+                .append("\n");
+        return sb.toString();
     }
 
     static String snapshot() {

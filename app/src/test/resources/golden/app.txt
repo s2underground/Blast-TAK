@@ -112,7 +112,8 @@ settings: emergency 911, auto-send false
   }
 
 === tap report
-  redraw: form=REPORT for u1
+  form: EOD 9-line: UXO 1 Shell (17 items, scrolls, pad 16/8)
+    buttons: Save | Copy text | Cancel
 
 === tap why
   redraw: tab=REFERENCE section=RINGS
@@ -127,7 +128,9 @@ settings: emergency 911, auto-send false
   redraw: card list fly-to=u1
 
 === tap nine:u1
-  redraw: card list form=REPORT for u1
+  redraw: card list
+  form: EOD 9-line: UXO 1 Shell (17 items, scrolls, pad 16/8)
+    buttons: Save | Copy text | Cancel
 
 === tap hide_selected
   redraw: card list
@@ -231,7 +234,8 @@ settings: emergency 911, auto-send false
   redraw: tab=REFERENCE section=NUC_ACTIONS
 
 === tap nbc1
-  redraw: form=NBC1 for n1
+  form: NBC 1 NUC report (17 items, scrolls, pad 14/6)
+    buttons: Save | Copy text | Cancel
 
 === tap send_all
   dialog: Send to everyone? [about n1]

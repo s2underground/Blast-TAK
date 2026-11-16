@@ -28,33 +28,26 @@ import android.widget.Toast;
 
 import com.atakmap.android.blast.plugin.R;
 import com.atakmap.android.blast.plugin.atak.BlastStore;
-import com.atakmap.android.blast.plugin.core.port.Magnetic;
 import com.atakmap.android.blast.plugin.core.screen.Buttons;
 import com.atakmap.android.blast.plugin.core.screen.Check;
 import com.atakmap.android.blast.plugin.core.screen.Choice;
 import com.atakmap.android.blast.plugin.core.screen.FormValues;
 import com.atakmap.android.blast.plugin.core.screen.Input;
-import com.atakmap.android.blast.plugin.core.screen.Nbc1Form;
-import com.atakmap.android.blast.plugin.core.screen.PolarForm;
-import com.atakmap.android.blast.plugin.core.screen.UxoReportForm;
 import com.atakmap.android.blast.plugin.core.screen.Ink;
 import com.atakmap.android.blast.plugin.core.screen.Item;
 import com.atakmap.android.blast.plugin.core.screen.KeyRow;
 import com.atakmap.android.blast.plugin.core.screen.EntryRow;
-import com.atakmap.android.blast.plugin.core.screen.NewIncident;
-import com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode;
 import com.atakmap.android.blast.plugin.core.screen.Section;
 import com.atakmap.android.blast.plugin.core.screen.IncidentList;
 import com.atakmap.android.blast.plugin.core.screen.ListRow;
 import com.atakmap.android.blast.plugin.core.screen.MainPane;
-import com.atakmap.android.blast.plugin.core.screen.RangeBearingForm;
 import com.atakmap.android.blast.plugin.core.screen.ReferenceTab;
 import com.atakmap.android.blast.plugin.core.screen.TitleRow;
 import com.atakmap.android.blast.plugin.core.port.PositionSource;
 import com.atakmap.android.blast.plugin.core.port.Team;
 import com.atakmap.android.blast.plugin.atak.AtakPorts;
 import com.atakmap.android.blast.plugin.core.app.BlastApp;
-import com.atakmap.android.blast.plugin.core.app.IncidentActions;
+import com.atakmap.android.blast.plugin.core.app.FormDialog;
 import com.atakmap.android.blast.plugin.core.app.Outcome;
 import com.atakmap.android.blast.plugin.core.screen.Dialog;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
@@ -63,9 +56,7 @@ import com.atakmap.android.blast.plugin.core.screen.StandoffCard;
 import com.atakmap.android.blast.plugin.core.screen.Text;
 import com.atakmap.android.blast.plugin.core.screen.Tone;
 import com.atakmap.android.blast.plugin.atak.Sharing;
-import com.atakmap.android.blast.plugin.core.BlastRecord;
 import com.atakmap.android.blast.plugin.core.StandoffTable;
-import com.atakmap.android.blast.plugin.core.UxoRecord;
 import com.atakmap.android.maps.MapEvent;
 import com.atakmap.android.maps.MapEventDispatcher;
 import com.atakmap.android.maps.MapItem;
@@ -77,8 +68,6 @@ import com.atakmap.android.preference.AtakPreferences;
 import com.atakmap.android.util.ATAKUtilities;
 import com.atakmap.android.toolbar.widgets.TextContainer;
 import com.atakmap.coremap.log.Log;
-import com.atakmap.android.blast.plugin.core.NucPresets;
-import com.atakmap.android.blast.plugin.core.NucRecord;
 import com.atakmap.android.blast.plugin.core.NucText;
 import com.atakmap.coremap.maps.coords.GeoPoint;
 import com.atakmap.coremap.maps.coords.GeoPointMetaData;
@@ -121,37 +110,27 @@ public final class BlastPane {
     private final Context plugin;
     private final MapView mapView;
     private final BlastStore store;
-    private final Sharing sharing;
     private final SharedPreferences prefs;
     private final StandoffTable table = StandoffTable.current();
     private final Handler main = new Handler(Looper.getMainLooper());
-    /** Core ports: own position and the other contacts. */
-    private final PositionSource position;
-    private final Team team;
-    /** The app core: selection, card, list, buttons, settings. */
+    /** The app core: selection, card, list, new incident, forms. */
     private final BlastApp app;
-    /** What the incident buttons and dialogs do (core, inside app). */
-    private final IncidentActions actions;
 
     private final ScrollView root;
     private LinearLayout incidentsView, referenceView;
     /** Rendered core screens: pane header, Reference tab, incident list. */
     private Rendered headerView, refView, listView;
 
-    /** The new-incident choices (core) and their rendered views. */
-    private final NewIncident newIncident = new NewIncident(table);
+    /** The rendered new-incident section (the core holds its choices). */
     private Rendered newView;
-    /** What the map tap places. */
-    private Mode pickKind = Mode.NONE;
     private LinearLayout zoneCard;
     /** Debug builds only: what the incident lookup found. */
     private TextView debugLine;
 
-    private Marker placeTarget;
     /** The open card's rendered views (live slots, boxes) or null. */
     private Rendered cardView;
 
-    private boolean picking;
+    /** Listening for a map tap (the core asked), or null. */
     private MapEventDispatcher.MapEventDispatchListener pickListener;
     private boolean ticking;
 
@@ -170,9 +149,8 @@ public final class BlastPane {
         this.plugin = pluginContext;
         this.mapView = mapView;
         this.store = store;
-        this.sharing = sharing;
-        this.position = AtakPorts.position(mapView);
-        this.team = AtakPorts.team(mapView);
+        PositionSource position = AtakPorts.position(mapView);
+        Team team = AtakPorts.team(mapView);
         this.prefs = AtakPreferences.getInstance(mapView.getContext())
                 .getSharedPrefs();
         this.app = new BlastApp(AtakPorts.incidents(store),
@@ -180,7 +158,6 @@ public final class BlastPane {
                 AtakPorts.clock(), AtakPorts.clipboard(mapView.getContext()),
                 AtakPorts.files(), AtakPorts.settings(prefs),
                 AtakPorts.map(mapView));
-        this.actions = app.actions();
         this.root = new ScrollView(plugin);
         root.setBackgroundColor(BG);
         root.addView(buildRoot());
@@ -217,7 +194,7 @@ public final class BlastPane {
 
     /** Opened from the radial menu on a zone. */
     public void openZone(Marker zone) {
-        placeTarget = null;
+        app.target(null, null);
         app.select(zone.getUID());
         showTab(false, null);
         updateNew();
@@ -233,7 +210,8 @@ public final class BlastPane {
 
     /** Opened from the radial menu on another marker. */
     public void placeAt(Marker target) {
-        placeTarget = target;
+        app.target(ATAKUtilities.getDisplayName(target),
+                AtakPorts.pointOf(target));
         showTab(false, null);
         updateNew();
         onShow();
@@ -312,8 +290,7 @@ public final class BlastPane {
         col.addView(zoneCard);
 
         // The core decides what the new-incident steps say and offer.
-        newView = render(newIncident.screen(picking(), targetName(),
-                autoSend()), col, new ScreenAction() {
+        newView = render(app.newIncident(null), col, new ScreenAction() {
                     @Override
                     public void run(String action) {
                         newAction(action);
@@ -329,256 +306,27 @@ public final class BlastPane {
     }
 
     // ------------------------------------------------------------------
-    // New incident: the core NewIncident model, rendered and acted on here
-
-    /** The section whose map tap is running, or NONE. */
-    private Mode picking() {
-        return picking ? pickKind : Mode.NONE;
-    }
-
-    private String targetName() {
-        return placeTarget == null ? null
-                : ATAKUtilities.getDisplayName(placeTarget);
-    }
-
-    private boolean autoSend() {
-        return app.autoSend();
-    }
+    // New incident: the core's section, rendered here
 
     /** Redraw the new-incident steps from the core (no capture). */
     private void renderNew() {
         if (newView != null)
-            newView.update(newIncident.screen(picking(), targetName(),
-                    autoSend()));
+            newView.update(app.newIncident(null));
     }
 
     /** Redraw after an outside change, keeping what is typed. */
     private void updateNew() {
-        if (newView == null)
-            return;
-        newIncident.capture(newView.values());
-        renderNew();
+        if (newView != null)
+            newView.update(app.newIncident(newView.values()));
     }
 
-    /** What the new-incident buttons, boxes and checks do. */
+    /** A new-incident button, box or check: the core decides. */
     private void newAction(String action) {
-        NewIncident.Result r = newIncident.tap(action, newView.values());
-        if (r == null)
-            return;
-        if (r.toast != null)
-            toast(r.toast);
-        if (r.request == NewIncident.Request.AUTO_SEND)
-            app.setAutoSend(newView.values().checked(NewIncident.AUTO_SEND));
-        renderNew();
-        switch (r.request) {
-            case MODE_CHANGED:
-                stopPick();
-                break;
-            case PRESETS:
-                choosePreset(r.group);
-                break;
-            case FOCUS: {
-                EditText e = newView.entries.get(r.focus);
-                if (e != null)
-                    e.requestFocus();
-                break;
-            }
-            case PLACE_TARGET:
-                if (placeTarget != null && placeTarget.getPoint() != null)
-                    placeAs(r.mode, placeTarget.getPoint(),
-                            UxoRecord.Placement.MARKER);
-                break;
-            case PICK:
-                if (picking)
-                    stopPick();
-                else
-                    startPick(r.mode);
-                break;
-            case PLACE_SELF: {
-                GeoPoint gp = selfPoint();
-                if (gp == null)
-                    toast(NewIncident.NO_GPS);
-                else
-                    placeAs(r.mode, gp, UxoRecord.Placement.MAP);
-                break;
-            }
-            case PLACE_CENTER: {
-                GeoPointMetaData c = mapView.getCenterPoint();
-                if (c != null && c.get() != null && c.get().isValid())
-                    placeAs(r.mode, c.get(), UxoRecord.Placement.CENTER);
-                break;
-            }
-            case RANGE_BEARING:
-                promptRangeBearing();
-                break;
-            case POLAR:
-                promptPolarPlot();
-                break;
-            default:
-                break;
-        }
-    }
-
-    /** Place the chosen threat of {@code mode} at {@code at}. */
-    private void placeAs(Mode mode, GeoPoint at, UxoRecord.Placement how) {
-        if (mode == Mode.UXO)
-            placeUxo(at, how);
-        else if (mode == Mode.NUC)
-            placeNuc(at);
+        Outcome o = app.tapNew(action, newView.values());
+        if (o == null)
+            Log.w(TAG, "unknown action " + action);
         else
-            place(at);
-    }
-
-    private void placeUxo(GeoPoint at, UxoRecord.Placement how) {
-        try {
-            if (!newIncident.ready(Mode.UXO)) {
-                toast(NewIncident.notReady(Mode.UXO));
-                return;
-            }
-            UxoRecord r = newIncident.uxoRecord(how, callsign(),
-                    System.currentTimeMillis());
-            Marker m = store.createUxo(at, r);
-            if (m == null) {
-                toast("Could not place the incident.");
-                return;
-            }
-            placeTarget = null;
-            app.select(m.getUID());
-            resetThreat();
-            toast(NewIncident.UXO_PLACED);
-            onShow();
-            main.post(new Runnable() {
-                @Override
-                public void run() {
-                    root.smoothScrollTo(0, 0);
-                }
-            });
-        } catch (RuntimeException e) {
-            Log.e(TAG, "UXO place failed", e);
-            toast("Could not place the incident.");
-        }
-    }
-
-    /** Place by distance and bearing from the user's own position. */
-    private void promptRangeBearing() {
-        final GeoPoint self = selfPoint();
-        if (self == null) {
-            toast(RangeBearingForm.NO_GPS);
-            return;
-        }
-        Context ctx = mapView.getContext();
-        LinearLayout box = new LinearLayout(ctx);
-        box.setOrientation(LinearLayout.VERTICAL);
-        int p = dp(16);
-        box.setPadding(p, dp(8), p, 0);
-        final FormView fv = renderForm(RangeBearingForm.form(), ctx, box,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // nothing live in this form
-                    }
-                });
-        showTyping(new AlertDialog.Builder(ctx)
-                .setTitle(RangeBearingForm.TITLE)
-                .setView(box)
-                .setPositiveButton("Place",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                RangeBearingForm.Result res = RangeBearingForm
-                                        .place(fv.values(), self.getLatitude(),
-                                                self.getLongitude(),
-                                                magneticAt(self));
-                                if (res.error != null) {
-                                    toast(res.error);
-                                    return;
-                                }
-                                GeoPoint at = new GeoPoint(res.lat, res.lon);
-                                if (!at.isValid()) {
-                                    toast("Could not compute the position.");
-                                    return;
-                                }
-                                placeUxo(at, UxoRecord.Placement.RB);
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                );
-    }
-
-    // ------------------------------------------------------------------
-    // Nuclear detonation reference: yield, burst, optional wind, place
-
-    private void choosePreset(final NucPresets.Group g) {
-        if (g == NucPresets.Group.FIELDED) {
-            // Country first, so no list gets long.
-            final String[] regions = NucPresets.REGIONS;
-            new AlertDialog.Builder(mapView.getContext())
-                    .setTitle(NewIncident.FIELDED_TITLE)
-                    .setItems(NewIncident.regionItems(),
-                            new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface d, int w) {
-                            showPresets(NewIncident.regionTitle(regions[w]),
-                                    NucPresets.fielded(regions[w]), false);
-                        }
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-            return;
-        }
-        showPresets(NewIncident.groupTitle(g), NucPresets.group(g),
-                g == NucPresets.Group.YIELD);
-    }
-
-    private void showPresets(String title,
-            final List<NucPresets.Preset> ps, boolean labelOnly) {
-        String[] items = NewIncident.presetItems(ps, labelOnly);
-        // A message would hide the list, so the note goes in the title.
-        AlertDialog.Builder b = new AlertDialog.Builder(mapView.getContext())
-                .setTitle(title)
-                .setItems(items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface d, int w) {
-                        newIncident.choosePreset(ps.get(w));
-                        renderNew();
-                    }
-                })
-                .setNegativeButton("Cancel", null);
-        b.show();
-    }
-
-    private void placeNuc(GeoPoint at) {
-        placeNuc(at, null);
-    }
-
-    private void placeNuc(GeoPoint at, NucRecord.Obs obs) {
-        try {
-            if (!newIncident.ready(Mode.NUC)) {
-                toast(NewIncident.notReady(Mode.NUC));
-                return;
-            }
-            NucRecord r = newIncident.nucRecord(obs, callsign(),
-                    System.currentTimeMillis());
-            Marker m = store.createNuc(at, r);
-            if (m == null) {
-                toast("Could not place the incident.");
-                return;
-            }
-            placeTarget = null;
-            app.select(m.getUID());
-            resetThreat();
-            toast(NewIncident.NUC_PLACED);
-            onShow();
-            main.post(new Runnable() {
-                @Override
-                public void run() {
-                    root.smoothScrollTo(0, 0);
-                }
-            });
-        } catch (RuntimeException e) {
-            Log.e(TAG, "nuclear place failed", e);
-            toast("Could not place the incident.");
-        }
+            handle(o);
     }
 
     // ------------------------------------------------------------------
@@ -656,230 +404,7 @@ public final class BlastPane {
     }
 
     // ------------------------------------------------------------------
-    // Military picture (FM 3-3-1 / FM 3-11.3) and NBC reports
-
-    /** MGRS to 10 m (4 + 4 digits), spaces kept; "" if unavailable. */
-    private String mgrs10(GeoPoint gp) {
-        return gp == null || !gp.isValid() ? ""
-                : app.mgrs10(gp.getLatitude(), gp.getLongitude());
-    }
-
-    /** Store an updated nuclear record on its marker and refresh. */
-    private void saveNuc(Marker card, NucRecord changed, String done) {
-        handle(actions.saveNuc(card.getUID(), changed, done));
-    }
-
-    /** NBC 1 NUC report builder (FM 3-11.3 Fig. G-3), saved on the incident. */
-    private void promptNbc1(String uid) {
-        final Marker m = live(uid);
-        final NucRecord r0 = m == null ? null : BlastStore.readNuc(m);
-        if (r0 == null)
-            return;
-        final GeoPoint self = selfPoint();
-        final GeoPoint gz = m.getPoint();
-        Context ctx = mapView.getContext();
-        ScrollView sv = new ScrollView(ctx);
-        LinearLayout box = new LinearLayout(ctx);
-        box.setOrientation(LinearLayout.VERTICAL);
-        int pd = dp(14);
-        box.setPadding(pd, dp(6), pd, 0);
-        sv.addView(box);
-        final String obsGrid = mgrs10(self);
-        final String gzGrid = mgrs10(gz);
-        final NucRecord[] built = { r0 };
-        final FormView[] fv = new FormView[1];
-        final Runnable update = new Runnable() {
-            @Override
-            public void run() {
-                if (fv[0] == null)
-                    return;
-                built[0] = r0.withObs(Nbc1Form.obs(fv[0].values(),
-                        self == null ? Double.NaN : self.getLatitude(),
-                        self == null ? Double.NaN : self.getLongitude(),
-                        magneticAt(self)));
-                fv[0].set(Nbc1Form.SLOT_PREVIEW,
-                        Nbc1Form.preview(built[0], obsGrid, gzGrid));
-            }
-        };
-        fv[0] = renderForm(Nbc1Form.form(r0, self != null && gz != null
-                ? self.bearingTo(gz) : Double.NaN, nbc1Entries.get(m.getUID())),
-                ctx, box, update);
-        update.run();
-        showTyping(new AlertDialog.Builder(ctx)
-                .setTitle(Nbc1Form.TITLE)
-                .setView(sv)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface d, int w) {
-                        update.run();
-                        NucRecord cur = BlastStore.readNuc(m);
-                        if (cur != null) {
-                            nbc1Entries.put(m.getUID(), Nbc1Form.entry(
-                                    fv[0].values(), built[0].obs));
-                            saveNuc(m, cur.withObs(built[0].obs),
-                                    "Observations saved on the incident.");
-                        }
-                    }
-                })
-                .setNeutralButton("Copy text",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                update.run();
-                                copy(Nbc1Form.report(built[0], obsGrid,
-                                        gzGrid));
-                            }
-                        })
-                .setNegativeButton("Cancel", null));
-    }
-
-    /** BRAVO as typed at the last NBC 1 save, per incident (this run). */
-    private final java.util.Map<String, Nbc1Form.Entry> nbc1Entries =
-            new java.util.HashMap<>();
-
-    /**
-     * The Magnetic port for a position: ATAK's declination there (NaN if it
-     * fails); null without a position.
-     */
-    private static Magnetic magneticAt(final GeoPoint where) {
-        if (where == null)
-            return null;
-        return new Magnetic() {
-            @Override
-            public double toTrue(double magneticDeg) {
-                try {
-                    return ATAKUtilities.convertFromMagneticToTrue(where,
-                            magneticDeg);
-                } catch (RuntimeException e) {
-                    return Double.NaN;
-                }
-            }
-        };
-    }
-
-    /** Place ground zero by polar plot: azimuth and flash-to-bang. */
-    private void promptPolarPlot() {
-        final GeoPoint self = selfPoint();
-        if (self == null) {
-            toast("No GPS position yet: tap the map instead.");
-            return;
-        }
-        if (!newIncident.ready(Mode.NUC)) {
-            toast(NewIncident.notReady(Mode.NUC));
-            return;
-        }
-        Context ctx = mapView.getContext();
-        LinearLayout box = new LinearLayout(ctx);
-        box.setOrientation(LinearLayout.VERTICAL);
-        int pd = dp(16);
-        box.setPadding(pd, dp(8), pd, 0);
-        final FormView fv = renderForm(PolarForm.form(), ctx, box,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // nothing live in this form
-                    }
-                });
-        showTyping(new AlertDialog.Builder(ctx)
-                .setTitle(PolarForm.TITLE)
-                .setView(box)
-                .setPositiveButton("Place", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface d, int w) {
-                        PolarForm.Result res = PolarForm.place(fv.values(),
-                                self.getLatitude(), self.getLongitude(),
-                                magneticAt(self));
-                        if (res.error != null) {
-                            toast(res.error);
-                            return;
-                        }
-                        GeoPoint at = new GeoPoint(res.lat, res.lon);
-                        if (!at.isValid()) {
-                            toast("Could not compute the position.");
-                            return;
-                        }
-                        placeNuc(at, res.obs);
-                    }
-                })
-                .setNegativeButton("Cancel", null));
-    }
-
-    /** The item's position in MGRS (as ATAK formats it). */
-    private String grid(Marker m) {
-        GeoPoint gp = m == null ? null : m.getPoint();
-        return gp == null || !gp.isValid() ? ""
-                : app.grid(gp.getLatitude(), gp.getLongitude());
-    }
-
-    // ------------------------------------------------------------------
-    // Report (simple or EOD 9-line), saved on the incident
-
-    private void promptReport(String uid) {
-        final Marker m = live(uid);
-        if (m == null)
-            return;
-        final UxoRecord r0 = BlastStore.readUxo(m);
-        if (r0 == null)
-            return;
-        final Context ctx = mapView.getContext();
-        ScrollView sv = new ScrollView(ctx);
-        final LinearLayout box = new LinearLayout(ctx);
-        box.setOrientation(LinearLayout.VERTICAL);
-        int pd = dp(16);
-        box.setPadding(pd, dp(8), pd, 0);
-        sv.addView(box);
-        // The core describes the form and computes the note and preview.
-        final FormView[] fv = new FormView[1];
-        final Runnable update = new Runnable() {
-            @Override
-            public void run() {
-                if (fv[0] == null)
-                    return;
-                FormValues v = fv[0].values();
-                fv[0].set(UxoReportForm.SLOT_PRI_NOTE,
-                        UxoReportForm.priorityNote(v));
-                fv[0].set(UxoReportForm.SLOT_PREVIEW, UxoReportForm.preview(
-                        r0, v, callsign(), grid(m)));
-            }
-        };
-        fv[0] = renderForm(UxoReportForm.form(r0, emergencyNumber()), ctx, box,
-                update);
-        update.run();
-        final Runnable save = new Runnable() {
-            @Override
-            public void run() {
-                saveReport(m, UxoReportForm.report(fv[0].values()));
-            }
-        };
-
-        showTyping(new AlertDialog.Builder(ctx)
-                .setTitle(UxoReportForm.title(BlastStore.nameOf(m)))
-                .setView(sv)
-                .setPositiveButton("Save",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                save.run();
-                            }
-                        })
-                .setNeutralButton("Copy text",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                save.run();
-                                copy(UxoReportForm.preview(r0,
-                                        fv[0].values(), callsign(), grid(m)));
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                );
-    }
-
-    private EditText field(Context ctx, LinearLayout box, String hint,
-            String value, boolean number) {
-        return field(ctx, box, hint, value, number, number ? 4
-                : com.atakmap.android.blast.plugin.core.UxoCodec.MAX_REPORT_TEXT);
-    }
+    // Form fields
 
     private EditText field(Context ctx, LinearLayout box, String hint,
             String value, boolean number, int maxLen) {
@@ -927,14 +452,6 @@ public final class BlastPane {
         return out;
     }
 
-    private void saveReport(Marker card, UxoRecord.Report rep) {
-        handle(actions.saveReport(card.getUID(), rep));
-    }
-
-    private void copy(String s) {
-        handle(actions.copy(s));
-    }
-
     private String emergencyNumber() {
         return app.emergencyNumber();
     }
@@ -962,53 +479,16 @@ public final class BlastPane {
      * each incident is placed, so every incident needs a fresh choice.
      */
     public void resetThreat() {
-        stopPick();
-        newIncident.reset();
+        stopListening();
+        app.resetNew();
         renderNew();
     }
 
     // ------------------------------------------------------------------
-    // Placement
+    // Map tap: the core asks for one; this listens and hands the point back
 
-    private void place(GeoPoint at) {
-        try {
-            if (!newIncident.ready(Mode.IED)) {
-                toast(NewIncident.notReady(Mode.IED));
-                return;
-            }
-            BlastRecord r = newIncident.standoffRecord(callsign(),
-                    System.currentTimeMillis());
-            Marker m = store.create(at, r);
-            if (m == null) {
-                toast("Could not place the incident.");
-                return;
-            }
-            placeTarget = null;
-            app.select(m.getUID());
-            resetThreat();
-            if (autoSend()) {
-                sharing.sendToAll(m);
-                toast(NewIncident.PLACED_SENT);
-            } else {
-                toast(NewIncident.PLACED);
-            }
-            onShow();
-            main.post(new Runnable() {
-                @Override
-                public void run() {
-                    root.smoothScrollTo(0, 0);
-                }
-            });
-        } catch (RuntimeException e) {
-            Log.e(TAG, "place failed", e);
-            toast("Could not place the incident.");
-        }
-    }
-
-    private void startPick(Mode kind) {
-        if (!newIncident.ready(kind))
-            return;
-        pickKind = kind;
+    private void startListening(String prompt) {
+        stopListening();
         final MapEventDispatcher d = mapView.getMapEventDispatcher();
         d.pushListeners();
         d.clearListeners(MapEvent.MAP_CLICK);
@@ -1023,10 +503,7 @@ public final class BlastPane {
         d.addMapEventListener(MapEvent.MAP_CLICK, pickListener);
         d.addMapEventListener(MapEvent.ITEM_CLICK, pickListener);
         d.addMapEventListener(MapEvent.MAP_LONG_PRESS, pickListener);
-        picking = true;
-        updateNew();
-        TextContainer.getInstance().displayPrompt(
-                NewIncident.pickPrompt(kind));
+        TextContainer.getInstance().displayPrompt(prompt);
     }
 
     /**
@@ -1038,8 +515,8 @@ public final class BlastPane {
     private void onPicked(MapEvent event) {
         GeoPoint gp = null;
         MapItem item = event.getItem();
-        if (MapEvent.ITEM_CLICK.equals(event.getType())
-                && item instanceof PointMapItem) {
+        boolean onMarker = MapEvent.ITEM_CLICK.equals(event.getType());
+        if (onMarker && item instanceof PointMapItem) {
             gp = ((PointMapItem) item).getPoint();
         } else {
             PointF p = event.getPointF();
@@ -1049,33 +526,31 @@ public final class BlastPane {
                     gp = m.get();
             }
         }
-        Mode kind = pickKind;
-        stopPick();
-        if (gp == null || !gp.isValid())
-            return;
-        if (kind == Mode.UXO)
-            placeUxo(gp, MapEvent.ITEM_CLICK.equals(event.getType())
-                    ? UxoRecord.Placement.MARKER : UxoRecord.Placement.MAP);
-        else if (kind == Mode.NUC)
-            placeNuc(gp);
-        else
-            place(gp);
+        stopListening();
+        handle(app.picked(gp == null || !gp.isValid() ? null
+                : AtakPorts.fixOf(gp, Double.NaN), onMarker,
+                newView.values()));
     }
 
-    private void stopPick() {
-        if (!picking)
-            return;
-        picking = false;
+    /** Stop listening for a map tap; false if not listening. */
+    private boolean stopListening() {
+        if (pickListener == null)
+            return false;
         MapEventDispatcher d = mapView.getMapEventDispatcher();
-        if (pickListener != null) {
-            d.removeMapEventListener(MapEvent.MAP_CLICK, pickListener);
-            d.removeMapEventListener(MapEvent.ITEM_CLICK, pickListener);
-            d.removeMapEventListener(MapEvent.MAP_LONG_PRESS, pickListener);
-            pickListener = null;
-        }
+        d.removeMapEventListener(MapEvent.MAP_CLICK, pickListener);
+        d.removeMapEventListener(MapEvent.ITEM_CLICK, pickListener);
+        d.removeMapEventListener(MapEvent.MAP_LONG_PRESS, pickListener);
+        pickListener = null;
         d.popListeners();
         TextContainer.getInstance().closePrompt();
-        pickKind = Mode.NONE;
+        return true;
+    }
+
+    /** Cancel a map tap from here (tab change, pane closed). */
+    private void stopPick() {
+        if (!stopListening())
+            return;
+        app.pickCancelled();
         updateNew();
     }
 
@@ -1159,10 +634,28 @@ public final class BlastPane {
         }
         if (o.reference != null)
             showTab(o.reference, o.section);
-        if (o.form == Outcome.Form.REPORT)
-            promptReport(o.formUid);
-        else if (o.form == Outcome.Form.NBC1)
-            promptNbc1(o.formUid);
+        if (o.stopPick)
+            stopListening();
+        if (o.pick != null)
+            startListening(o.pick);
+        if (o.newIncident)
+            renderNew();
+        if (o.focus != null) {
+            EditText e = newView.entries.get(o.focus);
+            if (e != null)
+                e.requestFocus();
+        }
+        if (o.top)
+            main.post(new Runnable() {
+                @Override
+                public void run() {
+                    root.smoothScrollTo(0, 0);
+                }
+            });
+        if (o.form != null)
+            show(o.form);
+        if (o.next != null)
+            handle(o.next);
     }
 
     /** Show a core dialog; its buttons go back to the core. */
@@ -1201,6 +694,16 @@ public final class BlastPane {
                         }
                     });
         }
+        if (d.items != null)
+            b.setItems(d.items.toArray(new String[0]),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface di, int w) {
+                            handle(app.choose(d, d.itemAction,
+                                    new FormValues().put(Dialog.ITEM,
+                                            Integer.toString(w))));
+                        }
+                    });
         final EditText input = field;
         if (d.positive != null)
             b.setPositiveButton(d.positive, choice(d, d.positiveAction, input,
@@ -1229,6 +732,54 @@ public final class BlastPane {
                 for (int i = 0; i < ticks.length; i++)
                     v.put(Dialog.option(i), ticks[i]);
                 handle(app.choose(d, action, v));
+            }
+        };
+    }
+
+    /** Show a core form; its live lines and buttons go back to the core. */
+    private void show(final FormDialog f) {
+        Context ctx = mapView.getContext();
+        LinearLayout box = new LinearLayout(ctx);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setPadding(dp(f.padDp), dp(f.padTopDp), dp(f.padDp), 0);
+        View content = box;
+        if (f.scrolls) {
+            ScrollView sv = new ScrollView(ctx);
+            sv.addView(box);
+            content = sv;
+        }
+        final FormView[] fv = new FormView[1];
+        final Runnable live = new Runnable() {
+            @Override
+            public void run() {
+                if (fv[0] == null)
+                    return;
+                for (java.util.Map.Entry<String, String> e : f.live(
+                        fv[0].values()).entrySet())
+                    fv[0].set(e.getKey(), e.getValue());
+            }
+        };
+        fv[0] = renderForm(f.form, ctx, box, live);
+        live.run();
+        AlertDialog.Builder b = new AlertDialog.Builder(ctx)
+                .setTitle(f.title)
+                .setView(content);
+        if (f.positive != null)
+            b.setPositiveButton(f.positive, press(f, FormDialog.POSITIVE,
+                    fv));
+        if (f.neutral != null)
+            b.setNeutralButton(f.neutral, press(f, FormDialog.NEUTRAL, fv));
+        if (f.negative != null)
+            b.setNegativeButton(f.negative, null);
+        showTyping(b);
+    }
+
+    private DialogInterface.OnClickListener press(final FormDialog f,
+            final String button, final FormView[] fv) {
+        return new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface di, int w) {
+                handle(f.press(button, fv[0].values()));
             }
         };
     }
@@ -1884,34 +1435,8 @@ public final class BlastPane {
         }
     }
 
-    private GeoPoint selfPoint() {
-        try {
-            Marker self = ATAKUtilities.findSelf(mapView);
-            GeoPoint gp = self != null ? self.getPoint() : null;
-            if (gp != null && gp.isValid()
-                    && !(gp.getLatitude() == 0 && gp.getLongitude() == 0))
-                return gp;
-        } catch (RuntimeException e) {
-            Log.w(TAG, "no self position", e);
-        }
-        return null;
-    }
-
     // ------------------------------------------------------------------
     // Status and delete
-
-    /**
-     * The incident if it is still on the map; otherwise tells the user,
-     * refreshes the pane and returns null.
-     */
-    private Marker live(String uid) {
-        Marker l = uid == null ? null : store.liveMarker(uid);
-        if (l == null) {
-            toast("This incident is no longer on the map.");
-            afterDelete();
-        }
-        return l;
-    }
 
     private void afterDelete() {
         // Keep the selection if a different incident was deleted.
@@ -1921,10 +1446,6 @@ public final class BlastPane {
 
     // ------------------------------------------------------------------
     // Helpers
-
-    private String callsign() {
-        return team.callsign();
-    }
 
     private void toast(String s) {
         Toast.makeText(mapView.getContext(), s, Toast.LENGTH_SHORT).show();

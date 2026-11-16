@@ -17,7 +17,8 @@ public final class PolarForm {
     }
 
     public static final String AZ = "az", MAG = "mag", FTB = "ftb";
-    public static final String TITLE = "Place from what you observed";
+    public static final String TITLE = "Place from what you observed",
+            NO_GPS = "No GPS position yet: tap the map instead.";
 
     /** Digits accepted in each number field. */
     static final int DIGITS = 4;

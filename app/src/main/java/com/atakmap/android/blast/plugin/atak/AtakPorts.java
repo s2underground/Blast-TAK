@@ -58,8 +58,7 @@ public final class AtakPorts {
                     double ce = gp.getCE();
                     boolean known = !Double.isNaN(ce) && ce > 0
                             && ce < 9999999;
-                    return new Fix(gp.getLatitude(), gp.getLongitude(),
-                            known ? ce : Double.NaN);
+                    return fixOf(gp, known ? ce : Double.NaN);
                 } catch (RuntimeException e) {
                     Log.w(TAG, "no self position", e);
                     return null;
@@ -129,6 +128,36 @@ public final class AtakPorts {
             }
 
             @Override
+            public String create(PositionSource.Fix at, BlastRecord r) {
+                try {
+                    return uidOf(store.create(geoPoint(at), r));
+                } catch (RuntimeException e) {
+                    Log.e(TAG, "place failed", e);
+                    return null;
+                }
+            }
+
+            @Override
+            public String create(PositionSource.Fix at, UxoRecord r) {
+                try {
+                    return uidOf(store.createUxo(geoPoint(at), r));
+                } catch (RuntimeException e) {
+                    Log.e(TAG, "UXO place failed", e);
+                    return null;
+                }
+            }
+
+            @Override
+            public String create(PositionSource.Fix at, NucRecord r) {
+                try {
+                    return uidOf(store.createNuc(geoPoint(at), r));
+                } catch (RuntimeException e) {
+                    Log.e(TAG, "nuclear place failed", e);
+                    return null;
+                }
+            }
+
+            @Override
             public boolean write(String uid, BlastRecord r) {
                 Marker m = store.liveMarker(uid);
                 return m != null && store.write(m, r);
@@ -169,6 +198,43 @@ public final class AtakPorts {
                         cot.put(mi.getUID(), ev.toString());
                 }
                 return cot;
+            }
+        };
+    }
+
+    /**
+     * A point as the core's Fix, keeping its height (HAE; unknown for
+     * other references) and raw errors so {@link #geoPoint} rebuilds it.
+     */
+    public static PositionSource.Fix fixOf(GeoPoint gp, double accuracyM) {
+        double hae = gp.isAltitudeValid() && gp.getAltitudeReference()
+                == GeoPoint.AltitudeReference.HAE ? gp.getAltitude()
+                        : Double.NaN;
+        return new PositionSource.Fix(gp.getLatitude(), gp.getLongitude(),
+                accuracyM, hae, gp.getCE(), gp.getLE());
+    }
+
+    /** The point a Fix describes (what {@link #fixOf} took apart). */
+    public static GeoPoint geoPoint(PositionSource.Fix f) {
+        return new GeoPoint(f.lat, f.lon, f.haeM,
+                GeoPoint.AltitudeReference.HAE, f.ceM, f.leM);
+    }
+
+    private static String uidOf(Marker m) {
+        return m == null ? null : m.getUID();
+    }
+
+    /**
+     * A marker's position as a position source (the "Place at" target);
+     * null fix when it has no valid point.
+     */
+    public static PositionSource pointOf(final PointMapItem item) {
+        return new PositionSource() {
+            @Override
+            public Fix fix() {
+                GeoPoint gp = item.getPoint();
+                return gp == null || !gp.isValid() ? null
+                        : fixOf(gp, Double.NaN);
             }
         };
     }
@@ -305,12 +371,12 @@ public final class AtakPorts {
     public static MapControl map(final MapView mapView) {
         return new MapControl() {
             @Override
-            public double[] center() {
+            public PositionSource.Fix center() {
                 com.atakmap.coremap.maps.coords.GeoPointMetaData c = mapView
                         .getCenterPoint();
                 GeoPoint gp = c == null ? null : c.get();
-                return gp == null ? null
-                        : new double[] { gp.getLatitude(), gp.getLongitude() };
+                return gp == null || !gp.isValid() ? null
+                        : fixOf(gp, Double.NaN);
             }
 
             @Override
@@ -321,6 +387,13 @@ public final class AtakPorts {
                 return com.atakmap.coremap.conversions.CoordinateFormatUtilities
                         .formatToString(gp, com.atakmap.coremap.conversions
                                 .CoordinateFormat.MGRS);
+            }
+
+            @Override
+            public double magneticToTrue(double lat, double lon,
+                    double magneticDeg) {
+                return ATAKUtilities.convertFromMagneticToTrue(
+                        new GeoPoint(lat, lon), magneticDeg);
             }
         };
     }

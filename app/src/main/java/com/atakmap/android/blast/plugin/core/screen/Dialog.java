@@ -9,12 +9,16 @@ import java.util.List;
  * one list of tick boxes, and up to three buttons (positive, neutral and
  * Cancel). The host shows it in its own dialog style and passes the
  * chosen button's action back with the box's text ({@link #FIELD}) and
- * the ticks ({@link #option}).
+ * the ticks ({@link #option}). Or a list to tap one line of (no message):
+ * the tap passes {@link #itemAction} back with the line's index in
+ * {@link #ITEM}, and closes the dialog.
  */
 public final class Dialog {
 
     /** FormValues id of the text box. */
     public static final String FIELD = "field";
+    /** FormValues id of the tapped line's index (a list dialog). */
+    public static final String ITEM = "item";
 
     /** FormValues id of tick box {@code i}. */
     public static String option(int i) {
@@ -40,6 +44,10 @@ public final class Dialog {
     public final List<String> options;
     private final boolean[] checked;
 
+    /** Lines to tap one of (null for none) and the tap's action. */
+    public final List<String> items;
+    public final String itemAction;
+
     /** Button labels (null = no such button) and their actions. */
     public final String positive, positiveAction, neutral, neutralAction,
             negative;
@@ -59,6 +67,9 @@ public final class Dialog {
         options = b.options == null ? null
                 : Collections.unmodifiableList(new ArrayList<>(b.options));
         checked = b.checked == null ? null : b.checked.clone();
+        items = b.items == null ? null
+                : Collections.unmodifiableList(new ArrayList<>(b.items));
+        itemAction = b.itemAction;
         positive = b.positive;
         positiveAction = b.positiveAction;
         neutral = b.neutral;
@@ -89,6 +100,8 @@ public final class Dialog {
         private boolean fieldSelectAll;
         private List<String> options;
         private boolean[] checked;
+        private List<String> items;
+        private String itemAction;
         private String positive, positiveAction, neutral, neutralAction,
                 negative;
         private String uid;
@@ -115,6 +128,12 @@ public final class Dialog {
         public Builder options(List<String> labels, boolean[] on) {
             options = labels;
             checked = on;
+            return this;
+        }
+
+        public Builder items(List<String> lines, String action) {
+            items = lines;
+            itemAction = action;
             return this;
         }
 

@@ -1,0 +1,430 @@
+=== the section at the start
+  text 12 bold BLUE pad=10/4 | NEW INCIDENT: WHAT KIND OF THREAT?
+  buttons | mode_ied "SUSPICIOUS DEVICE\nbomb threat / IED\n(CISA/FBI card)" NORMAL w=1 | mode_uxo "MILITARY ORDNANCE (UXO)\nshells, bombs, mines,\nrockets, grenades" NORMAL w=1
+  buttons | mode_nuc "NUCLEAR DETONATION" NORMAL w=1
+  text 12 DIM | Not sure? Choose MILITARY ORDNANCE if it looks factory-made, otherwise SUSPICIOUS DEVICE.
+  section uxo hidden {
+    text 12 bold BLUE pad=10/4 | 1. WHAT DO YOU SEE?   (do not go closer)
+    buttons below=2 | uxo_cat_GREN_MINE_SUBMUN "Grenade, landmine or bomblet   300 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_PROJ_MORTAR "Artillery shell or mortar   375 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_MISSILE_ROCKET "Rocket or missile   475 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_LARGE_GUIDED_MISSILE "Large or guided missile   600 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_BOMB_DISPENSER "Aircraft bomb or dispenser   675 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_STOCKPILE "Pile or cache of ordnance   800 m" NORMAL w=1 start
+    buttons below=2 | uxo_cat_UNKNOWN "Unknown object   300 m" NORMAL w=1 start
+    buttons | uxo_large "It looks large (bomb or missile size): 675 m" NORMAL w=1 hidden
+    check uxo_multi false | More than one item (adds 50 m to the cordon)
+    text 12 bold BLUE pad=10/4 | 2. WHERE ARE YOU?
+    buttons below=2 | uxo_where_PATH "On a road or path I know is safe" NORMAL w=1 start
+    buttons below=2 | uxo_where_AREA "I may be in a minefield or an area with bomblets" NORMAL w=1 start
+    buttons below=2 | uxo_where_VEHICLE "In a vehicle" NORMAL w=1 start
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    text 12 bold BLUE pad=10/4 | 3. PLACE IT (never walk closer to get a fix)
+    buttons | uxo_target "" PRIMARY w=1 disabled hidden
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM | UXO incidents are never sent automatically: share them from the incident card when you choose.
+  }
+  section nuc hidden {
+    text 12 AMBER pad=4/4 | PLANNING ESTIMATE. Follow official instructions. Measure radiation with a dose-rate meter. For planning and training: shows FEMA's protective actions and reference distances for a detonation of the size you choose.
+    text 12 bold BLUE pad=10/4 | 1. YIELD
+    entry yield decimal max=8 w=2 [Yield] = [] change=yield_changed | nuc_kt "kt" SELECTED w=1 | nuc_mt "Mt" NORMAL w=1
+    buttons tiles | nuc_presets_PLANNING "FEMA\nscenarios" NORMAL w=1 | nuc_presets_FIELDED "Fielded\nweapons" NORMAL w=1 | nuc_presets_HISTORICAL "Tests &\nhistory" NORMAL w=1 | nuc_presets_YIELD "By\nyield" NORMAL w=1
+    text 12 bold BLUE pad=10/4 | 2. BURST
+    buttons below=2 | nuc_burst_UNKNOWN "Unknown: draw the worst case of both (recommended)" SELECTED w=1 start
+    buttons below=2 | nuc_burst_SURFACE "Surface / ground level (most fallout)" NORMAL w=1 start
+    buttons below=2 | nuc_burst_AIR "Air burst (outer envelope, little fallout)" NORMAL w=1 start
+    text 12 bold BLUE pad=10/4 | 3. WIND (optional, for fallout)
+    text 13 bold TEXT | Which way is the wind blowing FROM?
+    buttons | wind_from_0 "N" NORMAL w=1 | wind_from_1 "NE" NORMAL w=1 | wind_from_2 "E" NORMAL w=1 | wind_from_3 "SE" NORMAL w=1
+    buttons | wind_from_4 "S" NORMAL w=1 | wind_from_5 "SW" NORMAL w=1 | wind_from_6 "W" NORMAL w=1 | wind_from_7 "NW" NORMAL w=1
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [] | wind_set_from "Set" NORMAL w=1
+    text 13 bold TEXT | Wind speed
+    buttons | wind_speed_0 "Light\n~8 mph" NORMAL w=1 | wind_speed_1 "Moderate\n~15 mph" NORMAL w=1 | wind_speed_2 "Strong\n~30 mph" NORMAL w=1
+    entry wind_exact_speed decimal max=5 w=2 [Exact speed] = [] | wind_unit "mph" NORMAL w=1 | wind_set_speed "Set" NORMAL w=1
+    buttons | wind_none "Wind unknown (no fallout drawn)" SELECTED w=1
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    section nuc_preview rebuilt {
+    }
+    text 12 bold BLUE pad=10/4 | 4. PLACE GROUND ZERO
+    buttons | nuc_target "" PRIMARY w=1 disabled hidden
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 12 DIM | Nuclear reference incidents are never sent automatically: share them from the card when you choose.
+  }
+  section ied hidden {
+    text 12 bold BLUE pad=10/4 | 1. THREAT
+    buttons | row_PIPE_BOMB "Pipe Bomb\n5 lb" NORMAL w=1 icon=PIPE_BOMB | row_SUICIDE_BOMBER "Suicide Bomber\n20 lb" NORMAL w=1 icon=SUICIDE_BOMBER
+    buttons | row_BRIEFCASE "Briefcase/Suitcase\n50 lb" NORMAL w=1 icon=BRIEFCASE | row_CAR "Car\n500 lb" NORMAL w=1 icon=CAR
+    buttons | row_SUV_VAN "SUV/Van\n1,000 lb" NORMAL w=1 icon=SUV_VAN | row_SMALL_TRUCK "Small Delivery Truck\n4,000 lb" NORMAL w=1 icon=SMALL_TRUCK
+    buttons | row_CONTAINER_TRUCK "Container/Water Truck\n10,000 lb" NORMAL w=1 icon=CONTAINER_TRUCK | row_SEMI_TRAILER "Semi-Trailer\n60,000 lb" NORMAL w=1 icon=SEMI_TRAILER
+    buttons | custom "Custom quantity (lb or kg)" NORMAL w=1
+    section qty_row hidden {
+      entry qty decimal max=12 w=2 [Estimate (TNT equivalent)] = [] change=qty_changed top | unit_lb "lb" SELECTED_STANDOFF w=1 | unit_kg "kg" NORMAL w=1
+    }
+    text 13 DIM pad=4/4 slot=ied_sel | Choose the threat that best matches what you see.
+    text 12 bold BLUE pad=10/4 | 2. PLACE
+    buttons | ied_target "" PRIMARY w=1 disabled hidden
+    buttons | ied_pick "Tap map" NORMAL w=1 disabled | ied_self "My position" NORMAL w=1 disabled | ied_center "Map center" NORMAL w=1 disabled
+    check auto_send false | Send new incidents to everyone right away
+  }
+
+=== new: mode_ied
+  redraw: new-incident
+
+=== new: ied_self
+  toast: No GPS position yet.
+  redraw: new-incident
+
+=== new: ied_self
+  toast: Choose a threat first.
+  redraw: new-incident
+
+=== new: ied_pick
+  redraw: new-incident
+
+=== new: custom
+  redraw: new-incident focus=qty
+
+=== new: qty_changed
+  redraw: new-incident
+
+=== new: row_CAR
+  redraw: new-incident
+--- section (car chosen)
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 13 TEXT pad=4/4 slot=ied_sel | Car row (500 lb).\nMandatory evac 320 ft (98 m) · Shelter-in-place to 1,899 ft · Preferred 1,900 ft+ (580 m)
+    buttons | ied_pick "Tap map" NORMAL w=1 | ied_self "My position" NORMAL w=1 | ied_center "Map center" NORMAL w=1
+
+=== new: ied_self
+  port: create at 38.04360, -84.50370 hae 176.0 ce 8.0 <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="CAR" lbl="Car" cap_lb="500" mand_ft="320" sip_ft="1899" pref_ft="1900" by="CHARLIE-3" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+  toast: Incident placed. Use SEND TO ALL to share it.
+  redraw: card list new-incident scroll-top
+selected: new1
+--- section (after placing: a fresh start)
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 13 DIM pad=4/4 slot=ied_sel | Choose the threat that best matches what you see.
+    buttons | ied_pick "Tap map" NORMAL w=1 disabled | ied_self "My position" NORMAL w=1 disabled | ied_center "Map center" NORMAL w=1 disabled
+
+=== new: mode_ied
+  redraw: new-incident
+
+=== new: row_PIPE_BOMB
+  redraw: new-incident
+
+=== new: auto_send
+  port: setting blast.autoSend = true
+  redraw: new-incident
+
+=== new: ied_pick
+  redraw: new-incident
+  map tap: Tap the map or a marker where the device is. Press Cancel to stop.
+--- section (waiting for a map tap)
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 13 TEXT pad=4/4 slot=ied_sel | Pipe Bomb row (5 lb).\nMandatory evac 70 ft (21 m) · Shelter-in-place to 1,199 ft · Preferred 1,200 ft+ (366 m)
+    buttons | ied_pick "Cancel" NORMAL w=1 | ied_self "My position" NORMAL w=1 | ied_center "Map center" NORMAL w=1
+
+=== new: ied_pick
+  redraw: stop-map-tap new-incident
+
+=== new: ied_pick
+  redraw: new-incident
+  map tap: Tap the map or a marker where the device is. Press Cancel to stop.
+
+=== map tap on a marker (with height)
+  port: create at 38.04060, -84.50170 hae 182.5 ce 4.0 <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="PIPE_BOMB" lbl="Pipe Bomb" cap_lb="5" mand_ft="70" sip_ft="1199" pref_ft="1200" by="CHARLIE-3" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+  port: send to all new2
+  toast: Incident placed and sent to everyone.
+  redraw: card list new-incident scroll-top
+
+=== map tap when not waiting
+  redraw: new-incident
+
+=== new: mode_ied
+  redraw: new-incident
+
+=== new: row_BRIEFCASE
+  redraw: new-incident
+
+=== new: ied_pick
+  redraw: new-incident
+  map tap: Tap the map or a marker where the device is. Press Cancel to stop.
+
+=== map tap with no usable point
+  redraw: new-incident
+
+=== new: ied_pick
+  redraw: new-incident
+  map tap: Tap the map or a marker where the device is. Press Cancel to stop.
+
+=== the pane stops the map tap itself
+--- section (after the pane cancelled)
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 13 TEXT pad=4/4 slot=ied_sel | Briefcase/Suitcase row (50 lb).\nMandatory evac 150 ft (46 m) · Shelter-in-place to 1,849 ft · Preferred 1,850 ft+ (564 m)
+    buttons | ied_pick "Tap map" NORMAL w=1 | ied_self "My position" NORMAL w=1 | ied_center "Map center" NORMAL w=1
+
+=== new: ied_center
+  redraw: new-incident
+
+=== new: ied_center
+  port: create at 38.05060, -84.50370 <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="BRIEFCASE" lbl="Briefcase/Suitcase" cap_lb="50" mand_ft="150" sip_ft="1849" pref_ft="1850" by="CHARLIE-3" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+  toast: Could not place the incident.
+  redraw: new-incident
+
+=== new: ied_center
+  port: create at 38.05060, -84.50370 <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="BRIEFCASE" lbl="Briefcase/Suitcase" cap_lb="50" mand_ft="150" sip_ft="1849" pref_ft="1850" by="CHARLIE-3" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+  port: send to all new3
+  toast: Incident placed and sent to everyone.
+  redraw: card list new-incident scroll-top
+  port: setting blast.autoSend = false
+
+=== opened on a marker
+
+=== new: mode_ied
+  redraw: new-incident
+--- section (target offered, no threat)
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    buttons | uxo_target "Place at Alpha 1" PRIMARY w=1 disabled
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    buttons | nuc_target "Place at Alpha 1" PRIMARY w=1 disabled
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 13 DIM pad=4/4 slot=ied_sel | Choose the threat that best matches what you see.
+    buttons | ied_target "Place at Alpha 1" PRIMARY w=1 disabled
+    buttons | ied_pick "Tap map" NORMAL w=1 disabled | ied_self "My position" NORMAL w=1 disabled | ied_center "Map center" NORMAL w=1 disabled
+
+=== new: row_SUV_VAN
+  redraw: new-incident
+
+=== new: ied_target
+  port: create at 38.03660, -84.50270 <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="SUV_VAN" lbl="SUV/Van" cap_lb="1000" mand_ft="400" sip_ft="2399" pref_ft="2400" by="CHARLIE-3" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+  toast: Incident placed. Use SEND TO ALL to share it.
+  redraw: card list new-incident scroll-top
+--- section (target used up)
+    text 13 DIM pad=4/4 slot=uxo_sel | Choose what you see, then where you are.
+    buttons | uxo_pick "Tap map" NORMAL w=1 disabled | uxo_rb "Range & bearing" NORMAL w=1 disabled | uxo_center "Map center" NORMAL w=1 disabled
+    text 12 DIM slot=wind_status | No wind: fallout contours are not drawn. Everyone within 50 miles should still get inside.
+    text 13 DIM pad=4/4 slot=nuc_sel | Type a yield or choose a preset.
+    buttons | nuc_pick "Tap map" NORMAL w=1 disabled | nuc_center "Map center" NORMAL w=1 disabled | nuc_polar "From what I saw" NORMAL w=1 disabled
+    text 13 DIM pad=4/4 slot=ied_sel | Choose the threat that best matches what you see.
+    buttons | ied_pick "Tap map" NORMAL w=1 disabled | ied_self "My position" NORMAL w=1 disabled | ied_center "Map center" NORMAL w=1 disabled
+
+=== new: ied_target
+  redraw: new-incident
+
+=== new: mode_uxo
+  redraw: new-incident
+
+=== new: uxo_cat_PROJ_MORTAR
+  redraw: new-incident
+
+=== new: uxo_rb
+  redraw: new-incident
+  form: Place by range & bearing (5 items, pad 16/8)
+    buttons: Place | null | Cancel
+
+=== new: uxo_where_PATH
+  redraw: new-incident
+
+=== new: uxo_rb
+  toast: No GPS position yet: tap the map instead.
+  redraw: new-incident
+
+=== new: uxo_rb
+  redraw: new-incident
+  form: Place by range & bearing (5 items, pad 16/8)
+    buttons: Place | null | Cancel
+press positive
+  toast: Enter a distance between 1 m and 20 km.
+press positive
+  toast: Magnetic declination unavailable: enter a true bearing.
+press positive
+  port: create at 38.04346, -84.50029 <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="PATH" plc="RB" by="CHARLIE-3" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+  toast: UXO incident placed (not sent). Use REPORT or SEND on its card when you are outside the cordon.
+  redraw: card list new-incident scroll-top
+a second press on the same form (choices were reset):
+press positive
+  toast: Choose what you see and where you are first.
+
+=== new: mode_nuc
+  redraw: new-incident
+
+=== new: nuc_polar
+  toast: Enter a yield from 0.1 kt to 50 Mt first.
+  redraw: new-incident
+
+=== new: nuc_presets_FIELDED
+  dialog: Fielded weapons: choose a country
+    0) United States (11) -> preset_region
+    1) Russia (6) -> preset_region
+    2) China (2) -> preset_region
+    3) United Kingdom (1) -> preset_region
+    4) France (2) -> preset_region
+    5) India (2) -> preset_region
+    6) Pakistan (2) -> preset_region
+    7) North Korea (1) -> preset_region
+    negative: Cancel
+  redraw: new-incident
+choose line 0 of Fielded weapons: choose a country
+  dialog: United States: public estimates, upper value of ranges
+    0) US B61-12 bomb, lowest setting — 0.3 kt -> preset_list:FIELDED:United States
+    1) US W76-2 (Trident II, low yield) — 8 kt -> preset_list:FIELDED:United States
+    2) US B61-12 bomb (aircraft, incl. NATO Europe) — 0.3-50 kt (upper) -> preset_list:FIELDED:United States
+    3) US W76-1 (Trident II) — 90 kt -> preset_list:FIELDED:United States
+    4) US W80-1 (air-launched cruise missile) — 5-150 kt (upper) -> preset_list:FIELDED:United States
+    5) US W87 (Minuteman III) — 300 kt -> preset_list:FIELDED:United States
+    6) US W78 (Minuteman III) — 335 kt -> preset_list:FIELDED:United States
+    7) US B61-13 bomb (new, replacing B61-7) — about 360 kt (close to the B61-7's) -> preset_list:FIELDED:United States
+    8) US B61-11 earth-penetrating bomb — 400 kt -> preset_list:FIELDED:United States
+    9) US W88 (Trident II) — 455 kt -> preset_list:FIELDED:United States
+    10) US B83-1 bomb (few left, retiring) — up to 1.2 Mt -> preset_list:FIELDED:United States
+    negative: Cancel
+choose line 0 of United States: public estimates, upper value of ranges
+  redraw: new-incident
+--- section (a fielded preset chosen)
+    text 13 TEXT pad=4/4 slot=nuc_sel | US B61-12 bomb, lowest setting (0.3 kt): 0.3 kt, unknown (worst case of both). Will draw:\nOutside Glasstone's 1 kt-10 Mt charts: burn and radiation rings are extrapolated.
+
+=== new: nuc_presets_PLANNING
+  dialog: Planning scenarios
+    0) Improvised device, 0.1 kT — 0.1 kT -> preset_list:PLANNING
+    1) Improvised device, 1 kT — 1 kT -> preset_list:PLANNING
+    2) Improvised device, 10 kT (FEMA's main scenario) — 10 kT -> preset_list:PLANNING
+    negative: Cancel
+  redraw: new-incident
+choose line 99 of Planning scenarios
+choose line 1 of Planning scenarios
+  redraw: new-incident
+--- section (a FEMA preset chosen)
+    text 13 TEXT pad=4/4 slot=nuc_sel | Improvised device, 1 kT (1 kT): 1 kt, unknown (worst case of both). Will draw:
+
+=== new: nuc_presets_YIELD
+  dialog: By yield
+    0) 0.1 kt -> preset_list:YIELD
+    1) 0.3 kt -> preset_list:YIELD
+    2) 1 kt -> preset_list:YIELD
+    3) 5 kt -> preset_list:YIELD
+    4) 10 kt -> preset_list:YIELD
+    5) 20 kt -> preset_list:YIELD
+    6) 50 kt -> preset_list:YIELD
+    7) 100 kt -> preset_list:YIELD
+    8) 300 kt -> preset_list:YIELD
+    9) 500 kt -> preset_list:YIELD
+    10) 1 Mt -> preset_list:YIELD
+    11) 5 Mt -> preset_list:YIELD
+    12) 10 Mt -> preset_list:YIELD
+    13) 20 Mt -> preset_list:YIELD
+    14) 50 Mt -> preset_list:YIELD
+    negative: Cancel
+  redraw: new-incident
+
+=== new: nuc_presets_HISTORICAL
+  dialog: Tests and historical weapons: published estimates
+    0) North Korea test, Oct 2006 — est. 0.7-2 kt (upper); possibly a partial failure -> preset_list:HISTORICAL
+    1) North Korea test, May 2009 — est. 2-5.4 kt (upper) -> preset_list:HISTORICAL
+    2) Hiroshima, 1945 (Little Boy) — about 15 kt (air burst) -> preset_list:HISTORICAL
+    3) North Korea test, Feb 2013 — est. 6-16 kt (upper) -> preset_list:HISTORICAL
+    4) Nagasaki, 1945 (Fat Man) — about 21 kt (air burst) -> preset_list:HISTORICAL
+    5) Trinity test, 1945 — 24.8 kt (2021 revision) -> preset_list:HISTORICAL
+    6) North Korea test, Sep 2016 — est. 15-25 kt (upper) -> preset_list:HISTORICAL
+    7) Pakistan largest test, 1998 — claimed 30-36 kt (upper); seismic estimates far lower -> preset_list:HISTORICAL
+    8) India thermonuclear test, 1998 — claimed 43-45 kt (upper); seismic estimates far lower -> preset_list:HISTORICAL
+    9) US B61-3/-4 bombs (Europe, replaced by B61-12) — 0.3-170 kt (upper) -> preset_list:HISTORICAL
+    10) North Korea test, Sep 2017 — est. 70-280 kt (upper; often quoted 250) -> preset_list:HISTORICAL
+    11) France TN 81 (retired) — 300 kt -> preset_list:HISTORICAL
+    12) Ivy King test, 1952 — 500 kt, largest unboosted fission test -> preset_list:HISTORICAL
+    13) China JL-2 SLBM (replaced by JL-3) — 700 kt -> preset_list:HISTORICAL
+    14) US W59 (Minuteman I, retired) — 1 Mt -> preset_list:HISTORICAL
+    15) Soviet R-12 / SS-4 (Cuban Missile Crisis) — 1-2.3 Mt (upper) -> preset_list:HISTORICAL
+    16) US Mk 39 bomb (Goldsboro, 1961) — 3.8 Mt -> preset_list:HISTORICAL
+    17) US W53 (Titan II, retired) — 9 Mt -> preset_list:HISTORICAL
+    18) Ivy Mike test, 1952 (first thermonuclear) — 10.4 Mt -> preset_list:HISTORICAL
+    19) Castle Bravo test, 1954 — about 15 Mt (surface) -> preset_list:HISTORICAL
+    20) Tsar Bomba test, 1961 (largest ever) — about 50 Mt (air burst) -> preset_list:HISTORICAL
+    negative: Cancel
+  redraw: new-incident
+
+=== new: yield_changed
+  redraw: new-incident
+
+=== new: nuc_burst_AIR
+  redraw: new-incident
+
+=== new: nuc_polar
+  redraw: new-incident
+  form: Place from what you observed (4 items, pad 16/8)
+    buttons: Place | null | Cancel
+press positive
+  toast: Enter the flash-to-bang time, 1 to 300 s.
+press neutral
+
+=== a typed wind survives a failed map-tap placement
+
+=== new: nuc_pick
+  redraw: new-incident
+  map tap: Tap the map at ground zero. Press Cancel to stop.
+  port: create at 38.04060, -84.50370 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="20" burst="AIR" by="CHARLIE-3" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="1598" mdz_m="3384" ldz_m="12166" burn_m="3350" rad_m="1840"/>
+  toast: Could not place the incident.
+  redraw: new-incident
+--- section (wind box kept)
+    entry wind_exact_from decimal max=5 w=2 [Exact ° true (0-359)] = [123] | wind_set_from "Set" NORMAL w=1
+press positive
+  port: create at 38.07035, -84.46985 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="20" burst="AIR" by="CHARLIE-3" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="1598" mdz_m="3384" ldz_m="12166" burn_m="3350" rad_m="1840" o_lat="38.0436" o_lon="-84.5037" o_az="45" o_ftb="12" o_gs="SUS" o_gd="UNK" o_gc="UNK" o_gq="EE"/>
+  toast: Nuclear reference placed (not sent). Use SEND on its card to share it.
+  redraw: card list new-incident scroll-top
+placed by polar plot: flash-to-bang 12.0 s, azimuth 45.0, EE
+
+=== NBC 1 on n1
+  form: NBC 1 NUC report (17 items, scrolls, pad 14/6)
+    buttons: Save | Copy text | Cancel
+  live preview: NBC1 NUC\nBRAVO/16TEN38048450/103DGT//\nDELTA/011452ZNOV2026//\nFOXTROT/16TEN38048450/EE//\nGOLF/OBS/MSL/1/MSL/1//\nHOTEL/SURF//\nJULIET/9//\nKILO/CRATER//\nYANKEE/090DGT/024KPH//\nGENTEXT/GZ ESTIMATED BY POLAR PLOT, AZIMUTH 103DGT, FLASH-TO-BANG 9 S X 0.35 KM/S = 3.2 KM//
+press neutral
+  port: copy [Blast report] 264 chars
+  toast: Report copied. Paste it into a text, chat or email.
+press positive
+  port: write n1 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="270" wmph="15" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573" o_lat="38.0436" o_lon="-84.5037" o_az="103" o_ftb="9" o_k="CRATER" o_gs="OBS" o_gd="MSL" o_gc="MSL" o_gq="EE"/>
+  toast: Observations saved on the incident.
+  redraw: card
+  input az numeric max=4 | BRAVO: direction to the burst from you, degrees (as you entered it, magnetic) = [100]
+  check mag true | Magnetic (from a compass)
+press positive
+  toast: This incident is no longer on the map.
+  redraw: gone
+  toast: This incident is no longer on the map.
+  redraw: gone
+
+=== 9-line on u1
+  redraw: card list
+  form: EOD 9-line: UXO 1 Shell (17 items, scrolls, pad 16/8)
+    buttons: Save | Copy text | Cancel
+  live pri_note: Stops movement or threatens vital assets.
+  live preview: EOD 9-LINE (UXO)\n1. DTG: 011452Z NOV 26\n2. UNIT/LOCATION: CHARLIE-3, 16T EN 38041 84504\n3. CONTACT: CHARLIE-3\n4. TYPE: Projectiles and Mortars, 2 items, Two mortar rounds (observed without touching, disturbing or approaching)\n5. CBRN: None seen\n6. RESOURCES THREATENED: -\n7. IMPACT ON MISSION: -\n8. PROTECTIVE MEASURES: Cordon 375 m (1,240 ft) advised\n9. RECOMMENDED PRIORITY: IMMEDIATE
+press neutral
+  port: write u1 <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" r_n="2" r_desc="Two mortar rounds" r_pri="IMMEDIATE"/>
+  port: copy [Blast report] 386 chars
+  toast: Report saved on the incident. Share it with SEND TO ALL or Send to… when you choose.
+  redraw: card list
+  then:
+  toast: Report copied. Paste it into a text, chat or email.
+press positive
+  port: write u1 <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" r_n="2" r_desc="Two mortar rounds" r_pri="IMMEDIATE"/>
+  toast: Report saved on the incident. Share it with SEND TO ALL or Send to… when you choose.
+  redraw: card list
+  form: EOD 9-line: UXO 1 Shell (17 items, scrolls, pad 16/8)
+    buttons: Save | Copy text | Cancel
+left: [u1, new1, new2, new3, new4, new5, new6]

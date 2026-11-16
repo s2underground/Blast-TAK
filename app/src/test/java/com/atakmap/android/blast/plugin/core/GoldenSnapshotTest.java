@@ -103,6 +103,12 @@ public class GoldenSnapshotTest {
         Golden.check("app.txt", AppSnapshot.snapshot());
     }
 
+    /** Refactor step 5d: placing, the map tap and the forms. */
+    @Test
+    public void place() {
+        Golden.check("place.txt", PlaceSnapshot.snapshot());
+    }
+
     @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
@@ -130,6 +136,7 @@ public class GoldenSnapshotTest {
             Golden.check("live.txt", liveSnapshot());
             Golden.check("actions.txt", ActionsSnapshot.snapshot());
             Golden.check("app.txt", AppSnapshot.snapshot());
+            Golden.check("place.txt", PlaceSnapshot.snapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);

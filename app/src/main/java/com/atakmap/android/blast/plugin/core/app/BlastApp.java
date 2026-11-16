@@ -40,9 +40,12 @@ import java.util.List;
  * The Blast app as the host sees it: which incident is open, what the
  * open card and the incident list show (and whether they changed since
  * last time), the live YOU / Team lines, what every card, list, tab and
- * Reference button does, and the settings. Hosts call {@link #frame()} on
- * each refresh and pass button taps to {@link #tap} and dialog choices to
- * {@link #choose}, then carry out the {@link Outcome}.
+ * Reference button does, the new-incident section and placing, the report
+ * forms, and the settings. Hosts call {@link #frame()} on each refresh,
+ * draw {@link #newIncident}, pass button taps to {@link #tap} (or
+ * {@link #tapNew} for the new-incident section), dialog choices to
+ * {@link #choose}, form buttons to {@link FormDialog#press} and map taps
+ * to {@link #picked}, then carry out the {@link Outcome}.
  */
 public final class BlastApp {
 
@@ -68,6 +71,8 @@ public final class BlastApp {
     private final Settings settings;
     private final MapControl map;
     private final IncidentActions actions;
+    private final Placement placement;
+    private final CardForms forms;
 
     private String selectedUid;
     /** What the card / list show now; null = redraw next frame. */
@@ -87,11 +92,60 @@ public final class BlastApp {
         this.map = map;
         this.actions = new IncidentActions(incidents, share, team, clock,
                 clipboard, files);
+        this.placement = new Placement(this, incidents, share, team,
+                position, clock, map);
+        this.forms = new CardForms(this, incidents, position, team, actions,
+                placement);
     }
 
-    /** The button and dialog rules (for forms the host still shows). */
-    public IncidentActions actions() {
-        return actions;
+    // ------------------------------------------------------------------
+    // New incident
+
+    /**
+     * The new-incident section as it is now. {@code current}: what is in
+     * its boxes on screen, to keep (after a change from outside the
+     * section); null when the core already has it (after one of its
+     * outcomes).
+     */
+    public Screen newIncident(FormValues current) {
+        return placement.screen(current);
+    }
+
+    /**
+     * A button, box or tick in the new-incident section; null if
+     * {@code action} isn't one of its.
+     */
+    public Outcome tapNew(String action, FormValues v) {
+        return placement.tap(action, v);
+    }
+
+    /**
+     * The map was tapped while waiting for one (the host has stopped
+     * listening): where (null for no usable point, else with its height),
+     * {@code onMarker} if the tap was on a marker, and {@code current} as
+     * for {@link #newIncident}.
+     */
+    public Outcome picked(PositionSource.Fix at, boolean onMarker,
+            FormValues current) {
+        return placement.picked(at, onMarker, current);
+    }
+
+    /** The host stopped listening for a map tap itself (tab, pane closed). */
+    public void pickCancelled() {
+        placement.pickCancelled();
+    }
+
+    /**
+     * The marker to offer as "Place at {@code name}", or null to offer
+     * none. {@code where} gives its position when placing.
+     */
+    public void target(String name, PositionSource where) {
+        placement.target(name, where);
+    }
+
+    /** Forget the new-incident choices (pane opened, incident placed). */
+    public void resetNew() {
+        placement.reset();
     }
 
     // ------------------------------------------------------------------
@@ -260,7 +314,8 @@ public final class BlastApp {
         PositionSource.Fix f = position == null ? null : position.fix();
         if (f != null)
             return new double[] { f.lat, f.lon };
-        return map == null ? null : map.center();
+        PositionSource.Fix c = map == null ? null : map.center();
+        return c == null ? null : new double[] { c.lat, c.lon };
     }
 
     // ------------------------------------------------------------------
@@ -350,7 +405,7 @@ public final class BlastApp {
             if (incidents.get(uid) == null)
                 return gone();
             select(uid);
-            return Outcome.form(Outcome.Form.REPORT, uid, true);
+            return forms.report(uid).redrawAll();
         }
         if ((uid = IncidentList.uid(action, IncidentList.DELETE)) != null)
             return actions.card(uid, com.atakmap.android.blast.plugin.core
@@ -385,7 +440,7 @@ public final class BlastApp {
                 return o;
         } else if (cardKind == Kind.UXO) {
             if (UxoCard.REPORT.equals(action))
-                return Outcome.form(Outcome.Form.REPORT, uid, false);
+                return forms.report(uid);
             if (UxoCard.WHY.equals(action))
                 return Outcome.tab(true, UxoReference.RINGS);
         }
@@ -415,7 +470,7 @@ public final class BlastApp {
                         NucCard.EDM_APPLIED);
             }
             case NucCard.NBC1:
-                return Outcome.form(Outcome.Form.NBC1, uid, false);
+                return forms.nbc1(uid);
             case NucCard.PIC_CIVIL:
             case NucCard.PIC_MILITARY: {
                 boolean mil = NucCard.PIC_MILITARY.equals(action);
@@ -454,6 +509,7 @@ public final class BlastApp {
             invalidate(true, false);
             return Outcome.redraw(null, false).withSettings();
         }
-        return actions.choose(d, action, v);
+        Outcome o = placement.choose(action, v);
+        return o != null ? o : actions.choose(d, action, v);
     }
 }

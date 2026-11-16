@@ -52,6 +52,17 @@ public interface Incidents {
     /** The incident if it is still on the map, else null. */
     Incident get(String uid);
 
+    /**
+     * Put a new incident on the map at a position (with the height and
+     * errors it came with): its marker, rings and shapes, named by the
+     * host's numbering. Returns its uid, or null if it could not be placed.
+     */
+    String create(PositionSource.Fix at, BlastRecord r);
+
+    String create(PositionSource.Fix at, UxoRecord r);
+
+    String create(PositionSource.Fix at, NucRecord r);
+
     /** Save a changed record; false if the incident is gone. */
     boolean write(String uid, BlastRecord r);
 
