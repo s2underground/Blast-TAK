@@ -412,6 +412,16 @@ final class ActionsSnapshot {
                     new FormValues().put(Dialog.FIELD, typed)));
         out(sb, a.choose(rn, IncidentActions.RENAME_SEND, new FormValues()
                 .put(Dialog.FIELD, "Gate 2")));
+        // Audit: the change stands when only the send fails, and says so.
+        sb.append("\n=== rename / clear, then the send fails\n");
+        w.failSend = true;
+        out(sb, a.choose(rn, IncidentActions.RENAME_SEND, new FormValues()
+                .put(Dialog.FIELD, "Gate 3")));
+        out(sb, a.choose(a.card("u1", CardActions.STATUS).dialog,
+                IncidentActions.CLEAR_SEND, new FormValues()));
+        out(sb, a.choose(a.card("u1", CardActions.STATUS).dialog,
+                IncidentActions.REOPEN_SEND, new FormValues()));
+        w.failSend = false;
 
         sb.append("\n=== export\n");
         Dialog ex = a.card("n1", CardActions.EXPORT).dialog;

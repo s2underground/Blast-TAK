@@ -223,6 +223,20 @@
   port: send to all s1
   redraw: card list
 
+=== rename / clear, then the send fails
+  port: rename s1 [Gate 3]
+  port: send to all s1
+  toast: Renamed on this device, but sending failed. Use SEND TO ALL to try again.
+  redraw: card list
+  port: write u1 <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="CLEARED" cby="CHARLIE-3" ct="2026-11-01T14:52:05.000Z"/>
+  port: send to all u1
+  toast: Cleared on this device, but sending failed. Use SEND TO ALL to try again.
+  redraw: card list
+  port: write u1 <__blast_uxo v="1" src="ATP4-32.2" ed="2024-03-01" fig="31" cat="PROJ_MORTAR" lbl="Projectiles and Mortars" cord_m="375" multi="0" where="PATH" plc="MAP" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>
+  port: send to all u1
+  toast: Reopened on this device, but sending failed. Use SEND TO ALL to try again.
+  redraw: card list
+
 === export
   port: save NUC_1_10_kT_011452Z.zip (non-empty)
   port: save NUC_1_10_kT_011452Z.kmz (non-empty)
@@ -235,11 +249,11 @@
   dialog: Export
     message: Saved in export/Blast:\n• NUC_1_10_kT_011452Z.gpx\n\nImport a data package with ATAK's Import Manager or send it as a file; copy the KMZ to Google Earth and the GPX to a Garmin's GPX folder.\n\nCould not save:\n• KMZ (Google Earth)
     positive: OK -> null
-  port: save Gate_2_011452Z.zip (non-empty)
-  port: save Gate_2_011452Z.kmz (non-empty)
-  port: save Gate_2_011452Z.gpx (non-empty)
+  port: save Gate_3_011452Z.zip (non-empty)
+  port: save Gate_3_011452Z.kmz (non-empty)
+  port: save Gate_3_011452Z.gpx (non-empty)
   dialog: Export
-    message: Saved in export/Blast:\n• Gate_2_011452Z.zip\n• Gate_2_011452Z.kmz\n• Gate_2_011452Z.gpx\n\nImport a data package with ATAK's Import Manager or send it as a file; copy the KMZ to Google Earth and the GPX to a Garmin's GPX folder.
+    message: Saved in export/Blast:\n• Gate_3_011452Z.zip\n• Gate_3_011452Z.kmz\n• Gate_3_011452Z.gpx\n\nImport a data package with ATAK's Import Manager or send it as a file; copy the KMZ to Google Earth and the GPX to a Garmin's GPX folder.
     positive: OK -> null
   port: save UXO_1_Shell_011452Z.zip (non-empty)
   port: save UXO_1_Shell_011452Z.kmz (non-empty)

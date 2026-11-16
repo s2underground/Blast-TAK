@@ -323,6 +323,19 @@ public final class IncidentActions {
         }
     }
 
+    /**
+     * Send after a change made here; false if sending failed (the change
+     * stands either way, so the message must say so).
+     */
+    private boolean sent(String uid) {
+        try {
+            share.sendToAll(uid);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
     Outcome doRename(String uid, String typed, boolean send) {
         try {
             if (live(uid) == null)
@@ -331,8 +344,9 @@ public final class IncidentActions {
                 return toast("Enter a name.");
             if (!incidents.rename(uid, typed))
                 return toast("Could not rename the incident.");
-            if (send)
-                share.sendToAll(uid);
+            if (send && !sent(uid))
+                return redraw("Renamed on this device, but sending failed. "
+                        + "Use SEND TO ALL to try again.", true);
             return redraw(null, true);
         } catch (RuntimeException e) {
             return toast("Could not rename the incident.");
@@ -364,8 +378,10 @@ public final class IncidentActions {
                 return NOTHING;
             if (!ok)
                 return gone();
-            if (send)
-                share.sendToAll(uid);
+            if (send && !sent(uid))
+                return redraw((clearing ? "Cleared" : "Reopened")
+                        + " on this device, but sending failed. Use SEND TO "
+                        + "ALL to try again.", true);
             return redraw(null, true);
         } catch (RuntimeException e) {
             return toast(UPDATE_FAILED);
