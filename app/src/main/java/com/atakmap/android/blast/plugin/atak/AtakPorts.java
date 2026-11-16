@@ -7,6 +7,8 @@ import com.atakmap.android.blast.plugin.core.port.Clipboard;
 import com.atakmap.android.blast.plugin.core.port.Clock;
 import com.atakmap.android.blast.plugin.core.port.Files;
 import com.atakmap.android.blast.plugin.core.port.Incidents;
+import com.atakmap.android.blast.plugin.core.port.MapControl;
+import com.atakmap.android.blast.plugin.core.port.Settings;
 import com.atakmap.android.blast.plugin.core.port.PositionSource;
 import com.atakmap.android.blast.plugin.core.port.Share;
 import com.atakmap.android.blast.plugin.core.port.Team;
@@ -269,6 +271,56 @@ public final class AtakPorts {
             @Override
             public String folderLabel() {
                 return "atak/export/Blast";
+            }
+        };
+    }
+
+    /** ATAK's shared preferences. */
+    public static Settings settings(
+            final android.content.SharedPreferences prefs) {
+        return new Settings() {
+            @Override
+            public String getString(String key, String def) {
+                return prefs.getString(key, def);
+            }
+
+            @Override
+            public void putString(String key, String value) {
+                prefs.edit().putString(key, value).apply();
+            }
+
+            @Override
+            public boolean getBoolean(String key, boolean def) {
+                return prefs.getBoolean(key, def);
+            }
+
+            @Override
+            public void putBoolean(String key, boolean value) {
+                prefs.edit().putBoolean(key, value).apply();
+            }
+        };
+    }
+
+    /** The map centre and ATAK's MGRS formatting. */
+    public static MapControl map(final MapView mapView) {
+        return new MapControl() {
+            @Override
+            public double[] center() {
+                com.atakmap.coremap.maps.coords.GeoPointMetaData c = mapView
+                        .getCenterPoint();
+                GeoPoint gp = c == null ? null : c.get();
+                return gp == null ? null
+                        : new double[] { gp.getLatitude(), gp.getLongitude() };
+            }
+
+            @Override
+            public String mgrs(double lat, double lon) {
+                GeoPoint gp = new GeoPoint(lat, lon);
+                if (!gp.isValid())
+                    throw new IllegalArgumentException("invalid point");
+                return com.atakmap.coremap.conversions.CoordinateFormatUtilities
+                        .formatToString(gp, com.atakmap.coremap.conversions
+                                .CoordinateFormat.MGRS);
             }
         };
     }

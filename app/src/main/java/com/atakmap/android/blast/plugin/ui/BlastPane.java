@@ -37,14 +37,10 @@ import com.atakmap.android.blast.plugin.core.screen.Input;
 import com.atakmap.android.blast.plugin.core.screen.Nbc1Form;
 import com.atakmap.android.blast.plugin.core.screen.PolarForm;
 import com.atakmap.android.blast.plugin.core.screen.UxoReportForm;
-import com.atakmap.android.blast.plugin.core.screen.CardActions;
-import com.atakmap.android.blast.plugin.core.screen.UxoCard;
 import com.atakmap.android.blast.plugin.core.screen.Ink;
 import com.atakmap.android.blast.plugin.core.screen.Item;
 import com.atakmap.android.blast.plugin.core.screen.KeyRow;
-import com.atakmap.android.blast.plugin.core.screen.NucCard;
 import com.atakmap.android.blast.plugin.core.screen.EntryRow;
-import com.atakmap.android.blast.plugin.core.screen.WindPicker;
 import com.atakmap.android.blast.plugin.core.screen.NewIncident;
 import com.atakmap.android.blast.plugin.core.screen.NewIncident.Mode;
 import com.atakmap.android.blast.plugin.core.screen.Section;
@@ -54,23 +50,22 @@ import com.atakmap.android.blast.plugin.core.screen.MainPane;
 import com.atakmap.android.blast.plugin.core.screen.RangeBearingForm;
 import com.atakmap.android.blast.plugin.core.screen.ReferenceTab;
 import com.atakmap.android.blast.plugin.core.screen.TitleRow;
-import com.atakmap.android.blast.plugin.core.screen.Live;
 import com.atakmap.android.blast.plugin.core.port.PositionSource;
 import com.atakmap.android.blast.plugin.core.port.Team;
 import com.atakmap.android.blast.plugin.atak.AtakPorts;
+import com.atakmap.android.blast.plugin.core.app.BlastApp;
 import com.atakmap.android.blast.plugin.core.app.IncidentActions;
+import com.atakmap.android.blast.plugin.core.app.Outcome;
 import com.atakmap.android.blast.plugin.core.screen.Dialog;
 import com.atakmap.android.blast.plugin.core.screen.Legend;
 import com.atakmap.android.blast.plugin.core.screen.Screen;
 import com.atakmap.android.blast.plugin.core.screen.StandoffCard;
 import com.atakmap.android.blast.plugin.core.screen.Text;
 import com.atakmap.android.blast.plugin.core.screen.Tone;
-import com.atakmap.android.blast.plugin.core.Names;
 import com.atakmap.android.blast.plugin.atak.Sharing;
 import com.atakmap.android.blast.plugin.core.BlastRecord;
 import com.atakmap.android.blast.plugin.core.StandoffTable;
 import com.atakmap.android.blast.plugin.core.UxoRecord;
-import com.atakmap.android.blast.plugin.core.UxoReference;
 import com.atakmap.android.maps.MapEvent;
 import com.atakmap.android.maps.MapEventDispatcher;
 import com.atakmap.android.maps.MapItem;
@@ -82,11 +77,8 @@ import com.atakmap.android.preference.AtakPreferences;
 import com.atakmap.android.util.ATAKUtilities;
 import com.atakmap.android.toolbar.widgets.TextContainer;
 import com.atakmap.coremap.log.Log;
-import com.atakmap.android.blast.plugin.core.Geo;
-import com.atakmap.android.blast.plugin.core.NucMil;
 import com.atakmap.android.blast.plugin.core.NucPresets;
 import com.atakmap.android.blast.plugin.core.NucRecord;
-import com.atakmap.android.blast.plugin.core.NucReference;
 import com.atakmap.android.blast.plugin.core.NucText;
 import com.atakmap.coremap.maps.coords.GeoPoint;
 import com.atakmap.coremap.maps.coords.GeoPointMetaData;
@@ -105,9 +97,6 @@ import java.util.List;
 public final class BlastPane {
 
     private static final String TAG = "BlastPane";
-    private static final String PREF_AUTO_SEND = "blast.autoSend";
-    private static final String PREF_EMERGENCY = "blast.emergencyNumber";
-    private static final String DEFAULT_EMERGENCY = "911";
     /** 0.1-0.7 remembered the last threat; no longer used (removed on start). */
     private static final String PREF_LAST_ROW_OLD = "blast.lastRow";
     private static final long TICK_MS = 3000;
@@ -139,7 +128,9 @@ public final class BlastPane {
     /** Core ports: own position and the other contacts. */
     private final PositionSource position;
     private final Team team;
-    /** What the incident buttons and dialogs do (core). */
+    /** The app core: selection, card, list, buttons, settings. */
+    private final BlastApp app;
+    /** What the incident buttons and dialogs do (core, inside app). */
     private final IncidentActions actions;
 
     private final ScrollView root;
@@ -157,15 +148,8 @@ public final class BlastPane {
     private TextView debugLine;
 
     private Marker placeTarget;
-    private String selectedZoneUid;
-    /**
-     * What the card / list currently show; null means "redraw next time".
-     * (0.4 reset these to "", which is also the signature of "no incident",
-     * so a deleted incident's card was never cleared.)
-     */
-    private String cardSignature = null;
-    private String listSignature = null;
-    private TextView youText, teamText;
+    /** The open card's rendered views (live slots, boxes) or null. */
+    private Rendered cardView;
 
     private boolean picking;
     private MapEventDispatcher.MapEventDispatchListener pickListener;
@@ -189,11 +173,14 @@ public final class BlastPane {
         this.sharing = sharing;
         this.position = AtakPorts.position(mapView);
         this.team = AtakPorts.team(mapView);
-        this.actions = new IncidentActions(AtakPorts.incidents(store),
-                AtakPorts.share(store, sharing), team, AtakPorts.clock(),
-                AtakPorts.clipboard(mapView.getContext()), AtakPorts.files());
         this.prefs = AtakPreferences.getInstance(mapView.getContext())
                 .getSharedPrefs();
+        this.app = new BlastApp(AtakPorts.incidents(store),
+                AtakPorts.share(store, sharing), team, position,
+                AtakPorts.clock(), AtakPorts.clipboard(mapView.getContext()),
+                AtakPorts.files(), AtakPorts.settings(prefs),
+                AtakPorts.map(mapView));
+        this.actions = app.actions();
         this.root = new ScrollView(plugin);
         root.setBackgroundColor(BG);
         root.addView(buildRoot());
@@ -224,15 +211,14 @@ public final class BlastPane {
     // Entry points
 
     public void onShow() {
-        cardSignature = null;
-        listSignature = null;
+        app.invalidate(true, true);
         refresh();
     }
 
     /** Opened from the radial menu on a zone. */
     public void openZone(Marker zone) {
         placeTarget = null;
-        selectedZoneUid = zone.getUID();
+        app.select(zone.getUID());
         showTab(false, null);
         updateNew();
         onShow();
@@ -283,10 +269,7 @@ public final class BlastPane {
                 new ScreenAction() {
                     @Override
                     public void run(String action) {
-                        if (MainPane.TAB_INCIDENTS.equals(action))
-                            showTab(false, null);
-                        else if (MainPane.TAB_REFERENCE.equals(action))
-                            showTab(true, null);
+                        tap(action, new FormValues());
                     }
                 });
         incidentsView = (LinearLayout) build();
@@ -321,7 +304,7 @@ public final class BlastPane {
                 new ScreenAction() {
                     @Override
                     public void run(String action) {
-                        listAction(action);
+                        tap(action, new FormValues());
                     }
                 });
 
@@ -359,7 +342,7 @@ public final class BlastPane {
     }
 
     private boolean autoSend() {
-        return prefs.getBoolean(PREF_AUTO_SEND, false);
+        return app.autoSend();
     }
 
     /** Redraw the new-incident steps from the core (no capture). */
@@ -385,8 +368,7 @@ public final class BlastPane {
         if (r.toast != null)
             toast(r.toast);
         if (r.request == NewIncident.Request.AUTO_SEND)
-            prefs.edit().putBoolean(PREF_AUTO_SEND, newView.values()
-                    .checked(NewIncident.AUTO_SEND)).apply();
+            app.setAutoSend(newView.values().checked(NewIncident.AUTO_SEND));
         renderNew();
         switch (r.request) {
             case MODE_CHANGED:
@@ -461,7 +443,7 @@ public final class BlastPane {
                 return;
             }
             placeTarget = null;
-            selectedZoneUid = m.getUID();
+            app.select(m.getUID());
             resetThreat();
             toast(NewIncident.UXO_PLACED);
             onShow();
@@ -565,10 +547,6 @@ public final class BlastPane {
         b.show();
     }
 
-    private void saveWind(Marker card, double from, double mph) {
-        handle(actions.saveWind(card.getUID(), from, mph));
-    }
-
     private void placeNuc(GeoPoint at) {
         placeNuc(at, null);
     }
@@ -587,7 +565,7 @@ public final class BlastPane {
                 return;
             }
             placeTarget = null;
-            selectedZoneUid = m.getUID();
+            app.select(m.getUID());
             resetThreat();
             toast(NewIncident.NUC_PLACED);
             onShow();
@@ -656,30 +634,6 @@ public final class BlastPane {
         v.clearFocus();
     }
 
-    /** "SELECTED INCIDENT" header with Hide ▲ to collapse the card. */
-    private View selectedHeader() {
-        LinearLayout row = horizontal();
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        row.addView(header("SELECTED INCIDENT"), new LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        Button hide = button("Hide ▲", BTN);
-        hide.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                collapseSelected();
-            }
-        });
-        row.addView(hide);
-        return row;
-    }
-
-    private void collapseSelected() {
-        selectedZoneUid = null;
-        listSignature = null;
-        cardSignature = null;
-        refresh();
-    }
-
     /** Show a dialog with text fields so the keyboard can reach them. */
     private AlertDialog showTyping(AlertDialog.Builder b) {
         final AlertDialog d = b.create();
@@ -705,21 +659,9 @@ public final class BlastPane {
     // Military picture (FM 3-3-1 / FM 3-11.3) and NBC reports
 
     /** MGRS to 10 m (4 + 4 digits), spaces kept; "" if unavailable. */
-    private static String mgrs10(GeoPoint gp) {
-        if (gp == null || !gp.isValid())
-            return "";
-        try {
-            String s = com.atakmap.coremap.conversions.CoordinateFormatUtilities
-                    .formatToString(gp,
-                            com.atakmap.coremap.conversions.CoordinateFormat.MGRS);
-            String[] t = s.trim().split("\\s+");
-            if (t.length == 4 && t[2].length() == 5 && t[3].length() == 5)
-                return t[0] + " " + t[1] + " " + t[2].substring(0, 4) + " "
-                        + t[3].substring(0, 4);
-            return s;
-        } catch (RuntimeException e) {
-            return "";
-        }
+    private String mgrs10(GeoPoint gp) {
+        return gp == null || !gp.isValid() ? ""
+                : app.mgrs10(gp.getLatitude(), gp.getLongitude());
     }
 
     /** Store an updated nuclear record on its marker and refresh. */
@@ -728,8 +670,8 @@ public final class BlastPane {
     }
 
     /** NBC 1 NUC report builder (FM 3-11.3 Fig. G-3), saved on the incident. */
-    private void promptNbc1(Marker card) {
-        final Marker m = live(card);
+    private void promptNbc1(String uid) {
+        final Marker m = live(uid);
         final NucRecord r0 = m == null ? null : BlastStore.readNuc(m);
         if (r0 == null)
             return;
@@ -862,169 +804,18 @@ public final class BlastPane {
                 .setNegativeButton("Cancel", null));
     }
 
-    // ------------------------------------------------------------------
-    // Nuclear incident card: protective actions first
-
-    private void buildNucCard(final Marker m, final NucRecord r) {
-        zoneCard.setVisibility(View.VISIBLE);
-        zoneCard.addView(selectedHeader());
-        final LinearLayout card = vertical();
-        card.setBackgroundColor(CARD);
-        int p = dp(8);
-        card.setPadding(p, p, p, p);
-        zoneCard.addView(card);
-        // The core decides what the card says; this only renders it.
-        final WindPicker wind = NucCard.wind(r);
-        final Rendered[] rd = new Rendered[1];
-        rd[0] = render(NucCard.card(r, ATAKUtilities.getDisplayName(m),
-                mgrs10(m.getPoint()), wind), card, new ScreenAction() {
-                    @Override
-                    public void run(String action) {
-                        nucAction(action, m, wind, rd[0]);
-                    }
-                });
-        youText = rd[0].slots.get(NucCard.SLOT_YOU);
-        teamText = rd[0].slots.get(NucCard.SLOT_TEAM);
-    }
-
-    /** What the nuclear card's buttons do (ids from NucCard / CardActions). */
-    private void nucAction(String action, Marker m, WindPicker wind,
-            Rendered rd) {
-        WindPicker.Tap tap = wind.tap(action, rd.values());
-        if (tap != null) {
-            if (tap.error != null)
-                toast(tap.error);
-            rd.update(wind.screen());
-            if (tap.changed)
-                saveWind(m, wind.fromDeg(), wind.mph());
-            return;
-        }
-        switch (action) {
-            case NucCard.APPLY_EDM: {
-                NucMil.Edm e = NucMil.parseEdm(rd.values().get(NucCard.EDM));
-                NucRecord cur = BlastStore.readNuc(m);
-                if (e == null || cur == null) {
-                    toast(NucCard.EDM_ERROR);
-                    return;
-                }
-                saveNuc(m, cur.withEdm(e), NucCard.EDM_APPLIED);
-                break;
-            }
-            case NucCard.NBC1:
-                promptNbc1(m);
-                break;
-            case NucCard.PIC_CIVIL:
-            case NucCard.PIC_MILITARY: {
-                boolean mil = NucCard.PIC_MILITARY.equals(action);
-                NucRecord cur = BlastStore.readNuc(m);
-                if (cur != null && cur.mil.on != mil)
-                    saveNuc(m, cur.withMil(cur.mil.withOn(mil)), null);
-                break;
-            }
-            case NucCard.COPY_NBC3: {
-                NucRecord cur = BlastStore.readNuc(m);
-                String t = cur == null ? null
-                        : NucCard.nbc3Text(cur, mgrs10(m.getPoint()));
-                if (t != null)
-                    copy(t);
-                break;
-            }
-            case NucCard.HOW_ZONES:
-                showTab(true, NucReference.MIL);
-                break;
-            case NucCard.WHY:
-                showTab(true, NucReference.RINGS);
-                break;
-            case NucCard.WHAT_TO_DO:
-                showTab(true, NucReference.ACTIONS);
-                break;
-            default:
-                // SEND TO ALL (confirmed first), Send to…, Fly to, Rename,
-                // Export, status, Delete: as for every card.
-                standoffAction(action, m);
-        }
-    }
-
-    private void updateYouNuc(Marker m, NucRecord r) {
-        GeoPoint gz = m.getPoint();
-        if (youText == null || gz == null)
-            return;
-        Text[] t = Live.nuc(r, gz.getLatitude(), gz.getLongitude(), position,
-                team);
-        apply(youText, t[0]);
-        apply(teamText, t[1]);
-    }
-
-    // ------------------------------------------------------------------
-    // UXO incident card
-
-    private void buildUxoCard(final Marker m, final UxoRecord r) {
-        zoneCard.setVisibility(View.VISIBLE);
-        zoneCard.addView(selectedHeader());
-        LinearLayout card = vertical();
-        card.setBackgroundColor(CARD);
-        int p = dp(8);
-        card.setPadding(p, p, p, p);
-        zoneCard.addView(card);
-        // The core decides what the card says; this only renders it.
-        java.util.Map<String, TextView> slots = render(UxoCard.card(r,
-                ATAKUtilities.getDisplayName(m), emergencyNumber(), grid(m)),
-                card, new ScreenAction() {
-                    @Override
-                    public void run(String action) {
-                        uxoAction(action, m);
-                    }
-                }).slots;
-        youText = slots.get(UxoCard.SLOT_YOU);
-        teamText = slots.get(UxoCard.SLOT_TEAM);
-    }
-
-    /** What the UXO card's buttons do (ids from UxoCard / CardActions). */
-    private void uxoAction(String action, Marker m) {
-        switch (action) {
-            case UxoCard.REPORT:
-                promptReport(m);
-                break;
-            case UxoCard.WHY:
-                showTab(true, UxoReference.RINGS);
-                break;
-            default:
-                // SEND TO ALL (confirmed first), Send to…, Fly to, Rename,
-                // Export, status, Delete: as for every card.
-                standoffAction(action, m);
-        }
-    }
-
-    private void updateYouUxo(Marker m, UxoRecord r) {
-        GeoPoint c = m.getPoint();
-        if (youText == null || c == null)
-            return;
-        Text[] t = Live.uxo(r, c.getLatitude(), c.getLongitude(), position,
-                team);
-        apply(youText, t[0]);
-        apply(teamText, t[1]);
-    }
-
     /** The item's position in MGRS (as ATAK formats it). */
-    private static String grid(Marker m) {
+    private String grid(Marker m) {
         GeoPoint gp = m == null ? null : m.getPoint();
-        if (gp == null || !gp.isValid())
-            return "";
-        try {
-            return com.atakmap.coremap.conversions.CoordinateFormatUtilities
-                    .formatToString(gp,
-                            com.atakmap.coremap.conversions.CoordinateFormat.MGRS);
-        } catch (RuntimeException e) {
-            return (Math.round(gp.getLatitude() * 1e5) / 1e5) + ", "
-                    + (Math.round(gp.getLongitude() * 1e5) / 1e5);
-        }
+        return gp == null || !gp.isValid() ? ""
+                : app.grid(gp.getLatitude(), gp.getLongitude());
     }
 
     // ------------------------------------------------------------------
     // Report (simple or EOD 9-line), saved on the incident
 
-    private void promptReport(Marker card) {
-        final Marker m = live(card);
+    private void promptReport(String uid) {
+        final Marker m = live(uid);
         if (m == null)
             return;
         final UxoRecord r0 = BlastStore.readUxo(m);
@@ -1145,43 +936,7 @@ public final class BlastPane {
     }
 
     private String emergencyNumber() {
-        String n = prefs.getString(PREF_EMERGENCY, DEFAULT_EMERGENCY);
-        return n == null || n.trim().isEmpty() ? DEFAULT_EMERGENCY : n.trim();
-    }
-
-    private void promptEmergencyNumber() {
-        final EditText input = new EditText(mapView.getContext());
-        doneKey(input);
-        input.setSingleLine(true);
-        input.setText(emergencyNumber());
-        input.setInputType(InputType.TYPE_CLASS_PHONE);
-        input.setFilters(new android.text.InputFilter[] {
-                new android.text.InputFilter.LengthFilter(
-                        ReferenceTab.EMERGENCY_MAX)
-        });
-        showTyping(new AlertDialog.Builder(mapView.getContext())
-                .setTitle(ReferenceTab.EMERGENCY_TITLE)
-                .setMessage(ReferenceTab.EMERGENCY_HELP)
-                .setView(input)
-                .setPositiveButton("Save",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, int w) {
-                                String v = Names.sanitize(
-                                        input.getText().toString());
-                                prefs.edit().putString(PREF_EMERGENCY,
-                                        v == null ? DEFAULT_EMERGENCY : v)
-                                        .apply();
-                                if (refView != null)
-                                    refView.update(new Screen().add(
-                                            ReferenceTab.emergency(
-                                                    emergencyNumber())));
-                                cardSignature = null;
-                                refresh();
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                );
+        return app.emergencyNumber();
     }
 
     // ------------------------------------------------------------------
@@ -1193,8 +948,7 @@ public final class BlastPane {
                 new ScreenAction() {
                     @Override
                     public void run(String action) {
-                        if (ReferenceTab.CHANGE_EMERGENCY.equals(action))
-                            promptEmergencyNumber();
+                        tap(action, new FormValues());
                     }
                 });
         return col;
@@ -1230,7 +984,7 @@ public final class BlastPane {
                 return;
             }
             placeTarget = null;
-            selectedZoneUid = m.getUID();
+            app.select(m.getUID());
             resetThreat();
             if (autoSend()) {
                 sharing.sendToAll(m);
@@ -1330,116 +1084,83 @@ public final class BlastPane {
 
     private void refresh() {
         try {
-            refreshCard();
-            refreshList();
+            refreshCardAndList();
         } catch (RuntimeException e) {
             Log.e(TAG, "refresh failed", e);
         }
     }
 
-    private Marker selectedZone() {
-        if (selectedZoneUid == null)
-            return null;
-        // Not mapView.getMapItem alone: ATAK's UID index can still return
-        // an incident after it was deleted.
-        return store.liveMarker(selectedZoneUid);
-    }
-
-    private void refreshCard() {
-        Marker m = selectedZone();
-        NucRecord n = m == null ? null : BlastStore.readNuc(m);
-        UxoRecord u = m == null || n != null ? null : BlastStore.readUxo(m);
-        BlastRecord r = m == null || u != null || n != null ? null
-                : BlastStore.read(m);
-        String sig = m == null ? "" : m.getUID() + "|"
-                + m.getMetaString(BlastStore.META, "") + "|"
-                + m.getMetaString(BlastStore.META_UXO, "") + "|"
-                + m.getMetaString(BlastStore.META_NUC, "") + "|"
-                + ATAKUtilities.getDisplayName(m) + "|" + emergencyNumber();
-        if (!sig.equals(cardSignature)) {
-            cardSignature = sig;
-            if (n != null) {
-                zoneCard.removeAllViews();
-                youText = null;
-                teamText = null;
-                buildNucCard(m, n);
-            } else if (u != null) {
-                zoneCard.removeAllViews();
-                youText = null;
-                teamText = null;
-                buildUxoCard(m, u);
+    /** Draw what the core says the card and list look like now. */
+    private void refreshCardAndList() {
+        if (debugLine != null)
+            debugLine.setText("Debug: incidents " + store.lastScan());
+        BlastApp.Frame f = app.frame();
+        if (f.cardChanged) {
+            zoneCard.removeAllViews();
+            cardView = null;
+            if (f.card == null) {
+                zoneCard.setVisibility(View.GONE);
             } else {
-                buildCard(m, r);
-            }
-        }
-        if (m != null && n != null)
-            updateYouNuc(m, n);
-        else if (m != null && u != null)
-            updateYouUxo(m, u);
-        else if (m != null && r != null)
-            updateYou(m, r);
-    }
-
-    private void buildCard(final Marker m, final BlastRecord r) {
-        zoneCard.removeAllViews();
-        youText = null;
-        teamText = null;
-        if (m == null || r == null) {
-            zoneCard.setVisibility(View.GONE);
-            return;
-        }
-        zoneCard.setVisibility(View.VISIBLE);
-        zoneCard.addView(selectedHeader());
-        LinearLayout card = vertical();
-        card.setBackgroundColor(CARD);
-        int p = dp(8);
-        card.setPadding(p, p, p, p);
-        zoneCard.addView(card);
-        // The core decides what the card says; this only renders it.
-        java.util.Map<String, TextView> slots = render(StandoffCard.card(r,
-                ATAKUtilities.getDisplayName(m)), card, new ScreenAction() {
+                zoneCard.setVisibility(View.VISIBLE);
+                ScreenAction act = new ScreenAction() {
                     @Override
                     public void run(String action) {
-                        standoffAction(action, m);
+                        tap(action, cardView == null ? new FormValues()
+                                : cardView.values());
                     }
-                }).slots;
-        youText = slots.get(StandoffCard.SLOT_YOU);
-        teamText = slots.get(StandoffCard.SLOT_TEAM);
+                };
+                render(f.header, zoneCard, act);
+                LinearLayout card = vertical();
+                card.setBackgroundColor(CARD);
+                int p = dp(8);
+                card.setPadding(p, p, p, p);
+                zoneCard.addView(card);
+                // The core decides what the card says; this only renders it.
+                cardView = render(f.card, card, act);
+            }
+        }
+        if (cardView != null) {
+            apply(cardView.slots.get(StandoffCard.SLOT_YOU), f.you);
+            apply(cardView.slots.get(StandoffCard.SLOT_TEAM), f.team);
+        }
+        if (f.list != null)
+            listView.update(f.list);
     }
 
-    /** What the card buttons every incident has do (core IncidentActions). */
-    private void standoffAction(String action, Marker m) {
-        IncidentActions.Outcome o = actions.card(m.getUID(), action);
+    /** A button on the header, the list, the open card or the Reference. */
+    private void tap(String action, FormValues v) {
+        Outcome o = app.tap(action, v);
         if (o == null)
-            Log.w(TAG, "unknown card action " + action);
+            Log.w(TAG, "unknown action " + action);
         else
             handle(o);
     }
 
     /** Carry out what the core asked for after an action. */
-    private void handle(IncidentActions.Outcome o) {
+    private void handle(Outcome o) {
         if (o.toast != null)
             toast(o.toast);
         if (o.dialog != null)
             show(o.dialog);
+        if (o.restyle != null && cardView != null)
+            cardView.update(o.restyle);
+        if (o.settings && refView != null)
+            refView.update(new Screen().add(ReferenceTab.emergency(
+                    emergencyNumber())));
+        if (o.flyTo != null)
+            frame(o.flyTo);
         if (o.gone) {
             afterDelete();
         } else if (o.card || o.list) {
-            if (o.card)
-                cardSignature = null;
-            if (o.list)
-                listSignature = null;
+            app.invalidate(o.card, o.list);
             refresh();
         }
-        if (o.flyTo != null) {
-            Marker m = store.liveMarker(o.flyTo);
-            if (m == null) {
-                toast(IncidentActions.GONE);
-                afterDelete();
-            } else {
-                goTo(m);
-            }
-        }
+        if (o.reference != null)
+            showTab(o.reference, o.section);
+        if (o.form == Outcome.Form.REPORT)
+            promptReport(o.formUid);
+        else if (o.form == Outcome.Form.NBC1)
+            promptNbc1(o.formUid);
     }
 
     /** Show a core dialog; its buttons go back to the core. */
@@ -1505,7 +1226,7 @@ public final class BlastPane {
                     v.put(Dialog.FIELD, input.getText().toString());
                 for (int i = 0; i < ticks.length; i++)
                     v.put(Dialog.option(i), ticks[i]);
-                handle(actions.choose(d, action, v));
+                handle(app.choose(d, action, v));
             }
         };
     }
@@ -2109,116 +1830,17 @@ public final class BlastPane {
         v.setTextColor(color(t.tone));
     }
 
-    private void updateYou(Marker m, BlastRecord r) {
-        GeoPoint c = m.getPoint();
-        if (youText == null || c == null)
-            return;
-        Text[] t = Live.standoff(r, c.getLatitude(), c.getLongitude(),
-                position, team);
-        apply(youText, t[0]);
-        apply(teamText, t[1]);
-    }
-
-    private void refreshList() {
-        final GeoPoint ref = referencePoint();
-        if (debugLine != null)
-            debugLine.setText("Debug: incidents " + store.lastScan());
-        // Read each record once (parsing is not free).
-        List<IncidentList.Entry> entries = new ArrayList<>();
-        for (Marker m : store.all()) {
-            String uid = m.getUID(), name = ATAKUtilities.getDisplayName(m);
-            double d = distance(ref, m);
-            NucRecord nr = BlastStore.readNuc(m);
-            if (nr != null) {
-                entries.add(IncidentList.Entry.of(uid, name, nr, d));
-                continue;
-            }
-            UxoRecord u = BlastStore.readUxo(m);
-            if (u != null) {
-                entries.add(IncidentList.Entry.of(uid, name, u, d));
-                continue;
-            }
-            BlastRecord r = BlastStore.read(m);
-            if (r != null)
-                entries.add(IncidentList.Entry.of(uid, name, r, d));
-        }
-        List<IncidentList.Entry> sorted = IncidentList.sorted(entries);
-        String sig = IncidentList.signature(sorted, selectedZoneUid);
-        if (sig.equals(listSignature))
-            return;
-        listSignature = sig;
-        listView.update(IncidentList.screen(sorted, selectedZoneUid));
-    }
-
-    /** What the incident list's rows and buttons do. */
-    private void listAction(String action) {
-        if (IncidentList.DELETE_CLEARED.equals(action)) {
-            handle(actions.deleteCleared());
-            return;
-        }
-        String uid;
-        if ((uid = IncidentList.uid(action, IncidentList.SELECT)) != null) {
-            // Tap the selected incident again to collapse its card.
-            if (uid.equals(selectedZoneUid)) {
-                collapseSelected();
-                return;
-            }
-            selectedZoneUid = uid;
-            listSignature = null;
-            cardSignature = null;
-            refresh();
-            return;
-        }
-        for (String p : new String[] { IncidentList.GO,
-                IncidentList.NINE_LINE, IncidentList.DELETE })
-            if ((uid = IncidentList.uid(action, p)) != null) {
-                Marker m = store.liveMarker(uid);
-                if (m == null) {
-                    toast("This incident is no longer on the map.");
-                    afterDelete();
-                    return;
-                }
-                if (p.equals(IncidentList.GO)) {
-                    goTo(m);
-                } else if (p.equals(IncidentList.NINE_LINE)) {
-                    selectedZoneUid = m.getUID();
-                    listSignature = null;
-                    cardSignature = null;
-                    refresh();
-                    promptReport(m);
-                } else {
-                    handle(actions.card(uid, CardActions.DELETE));
-                }
-                return;
-            }
-    }
-
-    private static boolean isCleared(Marker m) {
-        NucRecord n = BlastStore.readNuc(m);
-        if (n != null)
-            return n.isCleared();
-        UxoRecord u = BlastStore.readUxo(m);
-        if (u != null)
-            return u.isCleared();
-        BlastRecord r = BlastStore.read(m);
-        return r != null && r.isCleared();
-    }
-
-    /** Fly to the incident, framing the preferred ring. */
-    private void goTo(Marker card) {
-        Marker m = live(card);
+    /** Frame the map on an incident's outer ring (or its marker). */
+    private void frame(String uid) {
+        Marker m = store.liveMarker(uid);
         if (m == null)
             return;
-        selectedZoneUid = m.getUID();
-        listSignature = null;
-        cardSignature = null;
-        MapItem pref = store.liveItem(m.getUID() + BlastStore.PREF_SUFFIX);
+        MapItem pref = store.liveItem(uid + BlastStore.PREF_SUFFIX);
         if (pref == null)
-            pref = store.liveItem(m.getUID() + BlastStore.CORDON_SUFFIX);
+            pref = store.liveItem(uid + BlastStore.CORDON_SUFFIX);
         if (pref == null)
-            pref = store.liveItem(m.getUID() + NucText.Ring.LDZ.suffix);
+            pref = store.liveItem(uid + NucText.Ring.LDZ.suffix);
         MapTouchController.goTo(pref != null ? pref : m, false);
-        refresh();
     }
 
     private int threatIcon(String rowId) {
@@ -2260,27 +1882,6 @@ public final class BlastPane {
         }
     }
 
-    /** Self position, or the map centre without a fix (for list sorting). */
-    private GeoPoint referencePoint() {
-        GeoPoint gp = selfPoint();
-        if (gp != null)
-            return gp;
-        GeoPointMetaData c = mapView.getCenterPoint();
-        return c != null ? c.get() : null;
-    }
-
-    private static double distance(GeoPoint ref, Marker m) {
-        return distance(ref, m.getPoint());
-    }
-
-    /** WGS84 geodesic distance (core.Geo, tested against GeographicLib). */
-    private static double distance(GeoPoint a, GeoPoint b) {
-        if (a == null || b == null || !a.isValid() || !b.isValid())
-            return Double.NaN;
-        return Geo.distance(a.getLatitude(), a.getLongitude(),
-                b.getLatitude(), b.getLongitude());
-    }
-
     private GeoPoint selfPoint() {
         try {
             Marker self = ATAKUtilities.findSelf(mapView);
@@ -2301,8 +1902,8 @@ public final class BlastPane {
      * The incident if it is still on the map; otherwise tells the user,
      * refreshes the pane and returns null.
      */
-    private Marker live(Marker m) {
-        Marker l = m == null ? null : store.liveMarker(m.getUID());
+    private Marker live(String uid) {
+        Marker l = uid == null ? null : store.liveMarker(uid);
         if (l == null) {
             toast("This incident is no longer on the map.");
             afterDelete();
@@ -2312,10 +1913,7 @@ public final class BlastPane {
 
     private void afterDelete() {
         // Keep the selection if a different incident was deleted.
-        if (selectedZone() == null)
-            selectedZoneUid = null;
-        cardSignature = null;
-        listSignature = null;
+        app.afterDelete();
         refresh();
     }
 
@@ -2366,12 +1964,6 @@ public final class BlastPane {
         t.setTextColor(color);
         if (bold)
             t.setTypeface(Typeface.DEFAULT_BOLD);
-        return t;
-    }
-
-    private TextView header(String s) {
-        TextView t = text(s, 12, BLUE, true);
-        t.setPadding(0, dp(10), 0, dp(4));
         return t;
     }
 

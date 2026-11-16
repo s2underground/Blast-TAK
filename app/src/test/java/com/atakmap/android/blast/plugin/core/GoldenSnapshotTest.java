@@ -99,6 +99,11 @@ public class GoldenSnapshotTest {
     }
 
     @Test
+    public void app() {
+        Golden.check("app.txt", AppSnapshot.snapshot());
+    }
+
+    @Test
     public void reference() {
         Golden.check("reference.txt", referenceSnapshot());
     }
@@ -124,6 +129,7 @@ public class GoldenSnapshotTest {
             Golden.check("pane.txt", paneSnapshot());
             Golden.check("live.txt", liveSnapshot());
             Golden.check("actions.txt", ActionsSnapshot.snapshot());
+            Golden.check("app.txt", AppSnapshot.snapshot());
         } finally {
             TimeZone.setDefault(tz);
             Locale.setDefault(loc);

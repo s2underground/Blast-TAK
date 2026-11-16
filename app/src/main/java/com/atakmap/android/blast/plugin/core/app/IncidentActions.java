@@ -62,43 +62,18 @@ public final class IncidentActions {
     public static final String GONE = "This incident is no longer on the map.",
             UPDATE_FAILED = "Could not update the incident.";
 
-    /** What the host should do after an action. */
-    public static final class Outcome {
-        /** A short message, or null. */
-        public final String toast;
-        /** A dialog to show, or null. */
-        public final Dialog dialog;
-        /** Redraw the open card / the list. */
-        public final boolean card, list;
-        /** The incident went away: tidy the selection and redraw. */
-        public final boolean gone;
-        /** Fly the map to this incident (host), or null. */
-        public final String flyTo;
-
-        Outcome(String toast, Dialog dialog, boolean card, boolean list,
-                boolean gone, String flyTo) {
-            this.toast = toast;
-            this.dialog = dialog;
-            this.card = card;
-            this.list = list;
-            this.gone = gone;
-            this.flyTo = flyTo;
-        }
-    }
-
-    static final Outcome NOTHING = new Outcome(null, null, false, false,
-            false, null);
+    static final Outcome NOTHING = Outcome.NOTHING;
 
     private static Outcome toast(String s) {
-        return new Outcome(s, null, false, false, false, null);
+        return Outcome.toast(s);
     }
 
     private static Outcome dialog(Dialog d) {
-        return new Outcome(null, d, false, false, false, null);
+        return Outcome.dialog(d);
     }
 
     private static Outcome redraw(String toast, boolean list) {
-        return new Outcome(toast, null, true, list, false, null);
+        return Outcome.redraw(toast, list);
     }
 
     private static Outcome gone() {

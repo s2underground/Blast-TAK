@@ -28,7 +28,62 @@ final class ActionsSnapshot {
     }
 
     static final class World implements Incidents, Share, Team, Clock,
-            Clipboard, Files {
+            Clipboard, Files,
+            com.atakmap.android.blast.plugin.core.port.PositionSource,
+            com.atakmap.android.blast.plugin.core.port.Settings,
+            com.atakmap.android.blast.plugin.core.port.MapControl {
+        final Map<String, Object> prefs = new LinkedHashMap<>();
+        double[] self;
+        double[] centre = { GoldenSnapshotTest.LAT + 0.01,
+                GoldenSnapshotTest.LON };
+        boolean mgrsFails;
+
+        @Override
+        public Fix fix() {
+            return self == null ? null : new Fix(self[0], self[1], 8);
+        }
+
+        @Override
+        public String getString(String key, String def) {
+            Object v = prefs.get(key);
+            return v instanceof String ? (String) v : def;
+        }
+
+        @Override
+        public void putString(String key, String value) {
+            log.append("  port: setting ").append(key).append(" = [")
+                    .append(value).append("]\n");
+            prefs.put(key, value);
+        }
+
+        @Override
+        public boolean getBoolean(String key, boolean def) {
+            Object v = prefs.get(key);
+            return v instanceof Boolean ? (Boolean) v : def;
+        }
+
+        @Override
+        public void putBoolean(String key, boolean value) {
+            log.append("  port: setting ").append(key).append(" = ")
+                    .append(value).append("\n");
+            prefs.put(key, value);
+        }
+
+        @Override
+        public double[] center() {
+            return centre;
+        }
+
+        @Override
+        public String mgrs(double lat, double lon) {
+            if (mgrsFails)
+                throw new IllegalStateException("no grid");
+            return "16T EN " + String.format(java.util.Locale.US, "%05d",
+                    Math.round(Math.abs(lat * 1000)) % 100000) + " "
+                    + String.format(java.util.Locale.US, "%05d",
+                            Math.round(Math.abs(lon * 1000)) % 100000);
+        }
+
         final Map<String, Incident> map = new LinkedHashMap<>();
         final StringBuilder log;
         boolean failSend, failWrite, noClipboard, failFiles;
@@ -198,7 +253,7 @@ final class ActionsSnapshot {
         return sb.toString();
     }
 
-    static void out(StringBuilder sb, IncidentActions.Outcome o) {
+    static void out(StringBuilder sb, com.atakmap.android.blast.plugin.core.app.Outcome o) {
         if (o == null) {
             sb.append("  -> null (not a shared card action)\n");
             return;
@@ -216,6 +271,18 @@ final class ActionsSnapshot {
             f.append(" gone");
         if (o.flyTo != null)
             f.append(" fly-to=").append(o.flyTo);
+        if (o.reference != null)
+            f.append(o.reference ? " tab=REFERENCE" : " tab=INCIDENTS");
+        if (o.section != null)
+            f.append(" section=").append(o.section);
+        if (o.form != com.atakmap.android.blast.plugin.core.app.Outcome.Form.NONE)
+            f.append(" form=").append(o.form).append(" for ")
+                    .append(o.formUid);
+        if (o.settings)
+            f.append(" settings");
+        if (o.restyle != null)
+            f.append(" restyle(").append(o.restyle.items().size())
+                    .append(" items)");
         if (f.length() > 0)
             sb.append("  redraw:").append(f).append("\n");
     }
@@ -252,7 +319,7 @@ final class ActionsSnapshot {
         sb.append("\n=== send failure\n");
         w.failSend = true;
         out(sb, a.card("s1", CardActions.SEND_ALL));
-        IncidentActions.Outcome o = a.card("u1", CardActions.SEND_ALL);
+        com.atakmap.android.blast.plugin.core.app.Outcome o = a.card("u1", CardActions.SEND_ALL);
         out(sb, a.choose(o.dialog, IncidentActions.SEND_CONFIRMED,
                 new FormValues()));
         w.failSend = false;

@@ -1,0 +1,313 @@
+settings: emergency 911, auto-send false
+
+--- frame (start, no fix: distances from the map centre): card HIDDEN, list NEW
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 3 active
+    | delete_cleared "Delete all cleared" NORMAL w=1 hidden
+  section rows rebuilt {
+    listrow sel:s1 bar=RED
+      text 14 TEXT icon=CAR | ▸ BLAST 1 Car (shown)\n3,642 ft (1,110 m) · you: PREFERRED EVACUATION
+      | go:s1 "Go to" NORMAL w=1 | del:s1 "Delete" NORMAL w=1 danger
+    listrow sel:u1 bar=ORANGE
+      text 14 TEXT | ▸ UXO 1 Shell (shown)\n3,642 ft (1,110 m) · you: outside cordon 375 m
+      | go:u1 "Go to" NORMAL w=1 | nine:u1 "9-line" NORMAL w=1 | del:u1 "Delete" NORMAL w=1 danger
+    listrow sel:n1 bar=NUC
+      text 14 TEXT | ▸ NUC 1 10 kT (shown)\n3,642 ft (1,110 m) · you: Moderate Damage Zone
+      | go:n1 "Go to" NORMAL w=1 | del:n1 "Delete" NORMAL w=1 danger
+  }
+
+--- frame (again): card same, list same
+
+--- frame (a fix arrives: distances from you): card same, list NEW
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 3 active
+    | delete_cleared "Delete all cleared" NORMAL w=1 hidden
+  section rows rebuilt {
+    listrow sel:s1 bar=RED
+      text 14 TEXT icon=CAR | ▸ BLAST 1 Car (shown)\n1,092 ft (333 m) · you: SHELTER-IN-PLACE
+      | go:s1 "Go to" NORMAL w=1 | del:s1 "Delete" NORMAL w=1 danger
+    listrow sel:u1 bar=ORANGE
+      text 14 TEXT | ▸ UXO 1 Shell (shown)\n1,092 ft (333 m) · you: INSIDE cordon 375 m
+      | go:u1 "Go to" NORMAL w=1 | nine:u1 "9-line" NORMAL w=1 | del:u1 "Delete" NORMAL w=1 danger
+    listrow sel:n1 bar=NUC
+      text 14 TEXT | ▸ NUC 1 10 kT (shown)\n1,092 ft (333 m) · you: Severe Damage Zone
+      | go:n1 "Go to" NORMAL w=1 | del:n1 "Delete" NORMAL w=1 danger
+  }
+
+=== tap sel:s1
+  redraw: card list
+
+--- frame (after selecting): card NEW, list NEW
+  titlerow
+    text 12 bold BLUE pad=10/4 | SELECTED INCIDENT
+    | hide_selected "Hide ▲" NORMAL w=1
+  text 17 bold TEXT icon=CAR | BLAST 1 Car (shown)
+  text 13 bold AMBER | Car (500 lb)
+  … 19 items
+  text 14 AMBER pad=6/0 slot=you | YOU: 1,092 ft (333 m) from the device: SHELTER-IN-PLACE zone.\nMove about 811 ft farther, to at least 1,900 ft (580 m). If you can't, shelter inside a building away from windows and exterior walls.
+  text 12 DIM slot=team | Team: no other contacts on the map.
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 3 active
+    | delete_cleared "Delete all cleared" NORMAL w=1 hidden
+  section rows rebuilt {
+    listrow sel:s1 selected bar=RED
+      text 14 bold TEXT icon=CAR | ▾ BLAST 1 Car (shown)\n1,092 ft (333 m) · you: SHELTER-IN-PLACE
+      | go:s1 "Go to" NORMAL w=1 | del:s1 "Delete" NORMAL w=1 danger
+    listrow sel:u1 bar=ORANGE
+      text 14 TEXT | ▸ UXO 1 Shell (shown)\n1,092 ft (333 m) · you: INSIDE cordon 375 m
+      | go:u1 "Go to" NORMAL w=1 | nine:u1 "9-line" NORMAL w=1 | del:u1 "Delete" NORMAL w=1 danger
+    listrow sel:n1 bar=NUC
+      text 14 TEXT | ▸ NUC 1 10 kT (shown)\n1,092 ft (333 m) · you: Severe Damage Zone
+      | go:n1 "Go to" NORMAL w=1 | del:n1 "Delete" NORMAL w=1 danger
+  }
+
+--- frame (again): card same, list same
+  text 14 AMBER pad=6/0 slot=you | YOU: 1,092 ft (333 m) from the device: SHELTER-IN-PLACE zone.\nMove about 811 ft farther, to at least 1,900 ft (580 m). If you can't, shelter inside a building away from windows and exterior walls.
+  text 12 DIM slot=team | Team: no other contacts on the map.
+
+=== tap sel:s1
+  redraw: card list
+
+--- frame (after tapping it again): card HIDDEN, list NEW
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 3 active
+    | delete_cleared "Delete all cleared" NORMAL w=1 hidden
+  section rows rebuilt {
+    listrow sel:s1 bar=RED
+      text 14 TEXT icon=CAR | ▸ BLAST 1 Car (shown)\n1,092 ft (333 m) · you: SHELTER-IN-PLACE
+      | go:s1 "Go to" NORMAL w=1 | del:s1 "Delete" NORMAL w=1 danger
+    listrow sel:u1 bar=ORANGE
+      text 14 TEXT | ▸ UXO 1 Shell (shown)\n1,092 ft (333 m) · you: INSIDE cordon 375 m
+      | go:u1 "Go to" NORMAL w=1 | nine:u1 "9-line" NORMAL w=1 | del:u1 "Delete" NORMAL w=1 danger
+    listrow sel:n1 bar=NUC
+      text 14 TEXT | ▸ NUC 1 10 kT (shown)\n1,092 ft (333 m) · you: Severe Damage Zone
+      | go:n1 "Go to" NORMAL w=1 | del:n1 "Delete" NORMAL w=1 danger
+  }
+
+=== tap go:u1
+  redraw: card list fly-to=u1
+
+--- frame (after Go to): card NEW, list NEW
+  titlerow
+    text 12 bold BLUE pad=10/4 | SELECTED INCIDENT
+    | hide_selected "Hide ▲" NORMAL w=1
+  text 17 bold TEXT | UXO 1 Shell (shown)
+  text 13 bold ORANGE | Artillery shell or mortar
+  … 28 items
+  text 14 RED pad=6/0 slot=you | YOU: 1,092 ft (333 m) from the item: INSIDE the 375 m cordon.\nMove out to at least 375 m (1,240 ft), about 138 ft (42 m) farther, without going closer to the item.
+  text 12 DIM slot=team | Team: no other contacts on the map.
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 3 active
+    | delete_cleared "Delete all cleared" NORMAL w=1 hidden
+  section rows rebuilt {
+    listrow sel:s1 bar=RED
+      text 14 TEXT icon=CAR | ▸ BLAST 1 Car (shown)\n1,092 ft (333 m) · you: SHELTER-IN-PLACE
+      | go:s1 "Go to" NORMAL w=1 | del:s1 "Delete" NORMAL w=1 danger
+    listrow sel:u1 selected bar=ORANGE
+      text 14 bold TEXT | ▾ UXO 1 Shell (shown)\n1,092 ft (333 m) · you: INSIDE cordon 375 m
+      | go:u1 "Go to" NORMAL w=1 | nine:u1 "9-line" NORMAL w=1 | del:u1 "Delete" NORMAL w=1 danger
+    listrow sel:n1 bar=NUC
+      text 14 TEXT | ▸ NUC 1 10 kT (shown)\n1,092 ft (333 m) · you: Severe Damage Zone
+      | go:n1 "Go to" NORMAL w=1 | del:n1 "Delete" NORMAL w=1 danger
+  }
+
+=== tap report
+  redraw: form=REPORT for u1
+
+=== tap why
+  redraw: tab=REFERENCE section=RINGS
+
+=== tap send_all
+  dialog: Send to everyone? [about u1]
+    message: Sends the marker, cordon and report to every connected TAK client.\n\nIn conflict areas, reporting or marking items can put people at risk. Choose who receives this report.\n\nOnly transmit from outside the cordon.
+    positive: Send to all -> send_confirmed
+    negative: Cancel
+
+=== tap fly
+  redraw: card list fly-to=u1
+
+=== tap nine:u1
+  redraw: card list form=REPORT for u1
+
+=== tap hide_selected
+  redraw: card list
+
+--- frame (after Hide): card HIDDEN, list NEW
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 3 active
+    | delete_cleared "Delete all cleared" NORMAL w=1 hidden
+  section rows rebuilt {
+    listrow sel:s1 bar=RED
+      text 14 TEXT icon=CAR | ▸ BLAST 1 Car (shown)\n1,092 ft (333 m) · you: SHELTER-IN-PLACE
+      | go:s1 "Go to" NORMAL w=1 | del:s1 "Delete" NORMAL w=1 danger
+    listrow sel:u1 bar=ORANGE
+      text 14 TEXT | ▸ UXO 1 Shell (shown)\n1,092 ft (333 m) · you: INSIDE cordon 375 m
+      | go:u1 "Go to" NORMAL w=1 | nine:u1 "9-line" NORMAL w=1 | del:u1 "Delete" NORMAL w=1 danger
+    listrow sel:n1 bar=NUC
+      text 14 TEXT | ▸ NUC 1 10 kT (shown)\n1,092 ft (333 m) · you: Severe Damage Zone
+      | go:n1 "Go to" NORMAL w=1 | del:n1 "Delete" NORMAL w=1 danger
+  }
+
+=== tap why
+  -> null (not a shared card action)
+
+=== tap sel:n1
+  redraw: card list
+
+--- frame (nuclear card): card NEW, list NEW
+  titlerow
+    text 12 bold BLUE pad=10/4 | SELECTED INCIDENT
+    | hide_selected "Hide ▲" NORMAL w=1
+  text 17 bold TEXT | NUC 1 10 kT (shown)
+  text 13 bold NUC | Nuclear detonation 10 kt, surface burst
+  … 54 items
+  text 14 RED pad=6/0 slot=you | YOU: 0.21 mi (0.33 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside the idealized 300 R/h (H+1) fallout contour; fallout could arrive about 1 min after the detonation. Get inside the best shelter close by and stay inside.
+  text 12 DIM slot=team | Team: no other contacts on the map.
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 3 active
+    | delete_cleared "Delete all cleared" NORMAL w=1 hidden
+  section rows rebuilt {
+    listrow sel:s1 bar=RED
+      text 14 TEXT icon=CAR | ▸ BLAST 1 Car (shown)\n1,092 ft (333 m) · you: SHELTER-IN-PLACE
+      | go:s1 "Go to" NORMAL w=1 | del:s1 "Delete" NORMAL w=1 danger
+    listrow sel:u1 bar=ORANGE
+      text 14 TEXT | ▸ UXO 1 Shell (shown)\n1,092 ft (333 m) · you: INSIDE cordon 375 m
+      | go:u1 "Go to" NORMAL w=1 | nine:u1 "9-line" NORMAL w=1 | del:u1 "Delete" NORMAL w=1 danger
+    listrow sel:n1 selected bar=NUC
+      text 14 bold TEXT | ▾ NUC 1 10 kT (shown)\n1,092 ft (333 m) · you: Severe Damage Zone
+      | go:n1 "Go to" NORMAL w=1 | del:n1 "Delete" NORMAL w=1 danger
+  }
+
+=== tap wind_from_2
+  port: write n1 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="90" wmph="15" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573"/>
+  toast: Wind updated on this device. Use SEND to share it.
+  redraw: card restyle(9 items)
+
+--- frame (after the wind change): card NEW, list same
+  titlerow
+    text 12 bold BLUE pad=10/4 | SELECTED INCIDENT
+    | hide_selected "Hide ▲" NORMAL w=1
+  text 17 bold TEXT | NUC 1 10 kT (shown)
+  text 13 bold NUC | Nuclear detonation 10 kt, surface burst
+  … 54 items
+  text 14 RED pad=6/0 slot=you | YOU: 0.21 mi (0.33 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside the idealized 300 R/h (H+1) fallout contour. Get inside the best shelter close by and stay inside.
+  text 12 DIM slot=team | Team: no other contacts on the map.
+
+=== tap wind_set_from
+  toast: Enter a direction from 0 to 359.
+  redraw: restyle(9 items)
+
+=== tap apply_edm
+  toast: Enter 3, 6 or 9 digits from the EDM line.
+
+=== tap apply_edm
+  port: write n1 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="270" wmph="9.942" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573" wedm="1"/>
+  toast: EDM applied on this device. Use SEND to share it.
+  redraw: card
+
+=== tap pic_military
+  port: write n1 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="270" wmph="9.942" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573" fo="MIL" wedm="1"/>
+  redraw: card
+
+=== tap pic_military
+
+=== tap copy_nbc3
+  port: copy [Blast report] 176 chars
+  toast: Report copied. Paste it into a text, chat or email.
+
+=== tap pic_civil
+  port: write n1 <__blast_nuc v="1" mdl="BLAST-NUC" ed="2026-11" y_kt="10" burst="SURFACE" pre="FEMA_10" plbl="Improvised device, 10 kT (FEMA&apos;s main scenario)" wfrom="270" wmph="9.942" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE" sdz_m="805" mdz_m="1609" ldz_m="4828" burn_m="1838" rad_m="1573" wedm="1"/>
+  redraw: card
+
+=== tap copy_nbc3
+
+=== tap how_zones
+  redraw: tab=REFERENCE section=NUC_MIL
+
+=== tap why
+  redraw: tab=REFERENCE section=NUC_RINGS
+
+=== tap what_to_do
+  redraw: tab=REFERENCE section=NUC_ACTIONS
+
+=== tap nbc1
+  redraw: form=NBC1 for n1
+
+=== tap send_all
+  dialog: Send to everyone? [about n1]
+    message: Sends the marker, rings and any fallout outlines to every connected TAK client. They are labelled planning estimates.\n\nIf this is an exercise, say so in the name first (Rename…).
+    positive: Send to all -> send_confirmed
+    negative: Cancel
+
+--- frame (after the nuclear buttons): card NEW, list same
+  titlerow
+    text 12 bold BLUE pad=10/4 | SELECTED INCIDENT
+    | hide_selected "Hide ▲" NORMAL w=1
+  text 17 bold TEXT | NUC 1 10 kT (shown)
+  text 13 bold NUC | Nuclear detonation 10 kt, surface burst
+  … 54 items
+  text 14 RED pad=6/0 slot=you | YOU: 0.21 mi (0.33 km) from ground zero: in the Severe Damage Zone.\nInside the burn ring. Inside the initial-radiation ring. Inside the idealized 300 R/h (H+1) fallout contour; fallout could arrive about 1 min after the detonation. Get inside the best shelter close by and stay inside.
+  text 12 DIM slot=team | Team: no other contacts on the map.
+
+=== tap tab_reference
+  redraw: tab=REFERENCE
+
+=== tap tab_incidents
+  redraw: tab=INCIDENTS
+
+=== tap change_emergency
+  dialog: Emergency number
+    message: Shown on UXO cards and reports, e.g. 911, 112, 101 / 102 or a mine action centre.
+    field PHONE max=24 = [911]
+    positive: Save -> set_emergency
+    negative: Cancel
+choose Save [  112 ]
+  port: setting blast.emergencyNumber = [112]
+  redraw: card settings
+emergency now 112
+choose Save [   ]
+  port: setting blast.emergencyNumber = [911]
+  redraw: card settings
+emergency now 911
+  port: setting blast.autoSend = true
+auto-send now true
+
+=== tap del:u1
+  dialog: Delete UXO 1 Shell (shown)? [about u1]
+    message: Removes the marker and the rings of this incident.\n\nDelete for everyone also sends a remove request to every connected TAK client. Clients that are offline keep their copy.
+    positive: Delete for everyone -> delete_all
+    neutral: This device only -> delete_local
+    negative: Cancel
+
+=== tap go:gone
+  toast: This incident is no longer on the map.
+  redraw: gone
+
+=== tap nine:gone
+  toast: This incident is no longer on the map.
+  redraw: gone
+
+=== tap delete_cleared
+
+=== unknown action -> null
+
+n1 removed elsewhere; afterDelete
+selected: null
+
+--- frame (after the open incident went away): card HIDDEN, list NEW
+  titlerow button-bottom
+    text 12 bold BLUE pad=10/4 slot=list_heading | INCIDENTS ON THE MAP: 2 active
+    | delete_cleared "Delete all cleared" NORMAL w=1 hidden
+  section rows rebuilt {
+    listrow sel:s1 bar=RED
+      text 14 TEXT icon=CAR | ▸ BLAST 1 Car (shown)\n1,092 ft (333 m) · you: SHELTER-IN-PLACE
+      | go:s1 "Go to" NORMAL w=1 | del:s1 "Delete" NORMAL w=1 danger
+    listrow sel:u1 bar=ORANGE
+      text 14 TEXT | ▸ UXO 1 Shell (shown)\n1,092 ft (333 m) · you: INSIDE cordon 375 m
+      | go:u1 "Go to" NORMAL w=1 | nine:u1 "9-line" NORMAL w=1 | del:u1 "Delete" NORMAL w=1 danger
+  }
+
+=== grid references
+grid 16T EN 38041 84504 | mgrs10 16T EN 3804 8450
+NaN: [] []
+host can't format: grid 38.0406, -84.5037 | mgrs10 []
