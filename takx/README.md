@@ -10,7 +10,12 @@ not kept when the plugin stops; nothing is sent or received yet.
 ## Build
 
 TAK-X plugins compile against jars from a TAK-X install. They are licensed
-and must never be committed. With TAK-X installed (Java 17 or later):
+and must never be committed. Build with a **JDK 17** installed (the build
+asks Gradle for a Java 17 compiler): newer compilers write class details
+that TAK-X 5.8's class indexer can't store, and TAK-X then silently leaves
+the plugin out of its list. `gradle build` / `gradle install` run
+`checkIndex`, which indexes the jar the way TAK-X does and fails if it
+can't. With TAK-X installed:
 
     cd takx
     gradle jar -PtakxInstallDir="C:/Program Files/TAKX-CIV"

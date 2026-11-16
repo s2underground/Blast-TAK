@@ -12,7 +12,7 @@ plugins {
     id 'java'
 }
 
-version = '0.1.1'
+version = '0.1.2'
 
 ext {
     takxInstallDir = findProperty('takxInstallDir') ?: 'C:/Program Files/TAKX-CIV'
@@ -30,6 +30,12 @@ repositories {
     mavenCentral()
 }
 
+// checkIndex (below): index the built jar the way TAK-X does.
+sourceSets {
+    indexCheck {
+    }
+}
+
 dependencies {
     // Provided by TAK-X at run time: compile against them, don't bundle.
     compileOnly "gov.takx:platform:$takxVersion"
@@ -39,6 +45,9 @@ dependencies {
     compileOnly 'jakarta.annotation:jakarta.annotation-api:2.1.1'
     compileOnly 'jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.1'
     compileOnly 'org.slf4j:slf4j-api:2.0.3'
+
+    // The class indexer TAK-X 5.8 uses when it scans plugin jars.
+    indexCheckImplementation 'org.jboss:jandex:2.4.3.Final'
 }
 
 sourceSets {
@@ -55,9 +64,17 @@ sourceSets {
     }
 }
 
-// TAK-X runs Java 17.
+// Compile with a JDK 17 compiler, as TAK-X runs Java 17. Not just
+// --release 17: javac 21+ writes unnamed MethodParameters entries for enum
+// constructors, and TAK-X 5.8's class indexer (Jandex 2.4.3) can't store
+// them, so TAK-X silently skips the whole plugin (see checkIndex).
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 tasks.withType(JavaCompile).configureEach {
-    options.release = 17
     options.encoding = 'UTF-8'
 }
 
@@ -67,10 +84,21 @@ jar {
     archiveFileName = "plugin.blast-${version}.jar"
 }
 
+// Fails the build if TAK-X couldn't index the jar (it would ignore it).
+tasks.register('checkIndex', JavaExec) {
+    group = 'verification'
+    description = 'Index the plugin jar as TAK-X 5.8 does (Jandex 2.4.3)'
+    dependsOn jar
+    classpath = sourceSets.indexCheck.runtimeClasspath
+    mainClass = 'IndexCheck'
+    args jar.archiveFile.get().asFile.path
+}
+check.dependsOn checkIndex
+
 tasks.register('install', Copy) {
     group = 'build'
     description = 'Copy the plugin jar into <takxInstallDir>/plugins'
-    dependsOn jar
+    dependsOn jar, checkIndex
     from jar.archiveFile
     into "${takxInstallDir}/plugins"
 }
