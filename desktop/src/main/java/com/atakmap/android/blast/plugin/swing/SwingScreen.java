@@ -205,7 +205,7 @@ public final class SwingScreen {
                     JTextField e = entries.get(er.id);
                     if (e != null && er.value != null
                             && !er.value.equals(e.getText()))
-                        quietly(() -> e.setText(er.value));
+                        quietly(() -> setText(e, er.value));
                 } else if (it instanceof Check) {
                     Check c = (Check) it;
                     JCheckBox cb = checks.get(c.id);
@@ -253,6 +253,28 @@ public final class SwingScreen {
         }
     }
 
+    /**
+     * Set a box's text without Swing scrolling the pane to its caret (the
+     * core fills boxes itself, e.g. a wind direction tap; that must not
+     * move the pane).
+     */
+    public static void setText(javax.swing.text.JTextComponent c,
+            String text) {
+        javax.swing.text.Caret caret = c.getCaret();
+        if (!(caret instanceof javax.swing.text.DefaultCaret)) {
+            c.setText(text);
+            return;
+        }
+        javax.swing.text.DefaultCaret dc = (javax.swing.text.DefaultCaret) caret;
+        int policy = dc.getUpdatePolicy();
+        dc.setUpdatePolicy(javax.swing.text.DefaultCaret.NEVER_UPDATE);
+        try {
+            c.setText(text);
+        } finally {
+            dc.setUpdatePolicy(policy);
+        }
+    }
+
     /** Set a slot's text and colour from a core Text. */
     public static void apply(JComponent v, Text t) {
         if (v == null || t == null)
@@ -283,7 +305,11 @@ public final class SwingScreen {
     /** A wrapping, read-only text block. */
     public static JTextArea textArea(String s, float size, Color c, boolean bold,
             boolean mono) {
-        JTextArea a = new JTextArea(s);
+        // Caret policy first: text set in the constructor would queue a
+        // scroll to the caret that runs once the area is on screen.
+        JTextArea a = new JTextArea();
+        stayPut(a);
+        a.setText(s);
         a.setEditable(false);
         a.setLineWrap(true);
         a.setWrapStyleWord(true);
@@ -294,6 +320,17 @@ public final class SwingScreen {
         a.setBorder(null);
         a.setAlignmentX(Component.LEFT_ALIGNMENT);
         return a;
+    }
+
+    /**
+     * Setting a text component's text moves its caret, and Swing then
+     * scrolls the pane to show the caret: live lines updated every few
+     * seconds would keep yanking the pane. Read-only text never scrolls.
+     */
+    private static void stayPut(javax.swing.text.JTextComponent c) {
+        if (c.getCaret() instanceof javax.swing.text.DefaultCaret)
+            ((javax.swing.text.DefaultCaret) c.getCaret()).setUpdatePolicy(
+                    javax.swing.text.DefaultCaret.NEVER_UPDATE);
     }
 
     private static final Pattern URL = Pattern.compile(
@@ -320,8 +357,10 @@ public final class SwingScreen {
         if (!any)
             return textArea(t.text, t.size, color(t.tone), t.bold, t.mono);
         html.append(esc(t.text.substring(at))).append("</body></html>");
-        JEditorPane p = new JEditorPane("text/html", html.toString()
-                .replace("\n", "<br>"));
+        JEditorPane p = new JEditorPane();
+        stayPut(p);
+        p.setContentType("text/html");
+        p.setText(html.toString().replace("\n", "<br>"));
         p.setEditable(false);
         p.setOpaque(false);
         p.setBorder(null);
