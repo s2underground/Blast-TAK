@@ -131,7 +131,7 @@ public final class NucCard {
         s.add(CardActions.sendRow(6, false));
         s.add(CardActions.renameRow());
         s.add(CardActions.statusRow(grey));
-        s.add(CardActions.labelsRow(labels));
+        s.add(CardActions.labelsRow(labels, true));
         s.add(new Buttons(Button.of(WHY, "Why these distances?")));
         s.add(new Buttons(Button.of(WHAT_TO_DO, "What to do (FEMA)")));
         s.add(Text.of(NucText.basis(r), 12, Tone.DIM, false));

@@ -29,9 +29,17 @@ public final class CardActions {
      * are shown now).
      */
     public static Buttons labelsRow(boolean shown) {
-        return new Buttons(Button.of(LABELS, shown
-                ? "Hide ring & fallout labels"
-                : "Show ring & fallout labels"));
+        return labelsRow(shown, false);
+    }
+
+    /**
+     * @param fallout the card can draw fallout / zone outlines (nuclear),
+     *        whose names the switch also hides
+     */
+    public static Buttons labelsRow(boolean shown, boolean fallout) {
+        String what = fallout ? "ring & fallout labels" : "ring labels";
+        return new Buttons(Button.of(LABELS, (shown ? "Hide " : "Show ")
+                + what));
     }
 
     /** Mark cleared (or Reopen) / Delete…. */
