@@ -21,6 +21,7 @@ import gov.takx.api.annotation.NodeUUID;
 import gov.takx.api.globe.IGlobeDelegate;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IMapObjectManager;
+import gov.takx.api.mapobject.IMapObjectManagerListener;
 import gov.takx.api.mapobject.IMapObjectSelectListener;
 import gov.takx.api.mapobject.MapObjectSelectEvent;
 import gov.takx.api.plugin.annotations.AppPlugin;
@@ -84,7 +85,7 @@ import javax.swing.Timer;
 public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     static final String FAMILY = "com.s2underground.blast";
-    static final String VERSION = "0.1.5";
+    static final String VERSION = "0.1.6";
 
     private static final Logger LOG = LoggerFactory.getLogger(
             BlastTakxPlugin.class);
@@ -126,6 +127,8 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
     private SwingPane.Picked picking;
     private TakxReceiver receiver;
     private ICommonCommoManager listeningTo;
+    private IMapObjectManager watching;
+    private IMapObjectManagerListener removals;
 
     @Override
     public void start() {
@@ -205,6 +208,7 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
                 labels = new TakxLabels(globe, ports, app::ringLabels);
             listenToGlobe();
             listenToNetwork();
+            listenForDeletes();
             timer = new Timer(3000, e -> pane.refresh());
             timer.start();
         } catch (RuntimeException e) {
@@ -219,6 +223,9 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
             if (listeningTo != null && receiver != null)
                 listeningTo.removeCotEventListener(receiver);
             listeningTo = null;
+            if (watching != null && removals != null)
+                watching.removeMapObjectManagerListener(removals);
+            watching = null;
             stopPick();
             if (globe != null) {
                 if (selectListener != null)
@@ -283,6 +290,51 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         gov.nasa.worldwind.WorldWindow w = window();
         if (w != null)
             w.getInputHandler().addMouseListener(clickListener);
+    }
+
+    /**
+     * Deleting an incident's marker in TAK-X deletes the incident on this
+     * device (its rings, outlines and labels too), as on ATAK.
+     */
+    private void listenForDeletes() {
+        IMapObjectManager m = optional(mapObjects);
+        if (m == null)
+            return;
+        removals = new IMapObjectManagerListener() {
+            @Override
+            public void clientMapObjectAdded(IMapObject o) {
+            }
+
+            @Override
+            public void clientMapObjectRemoved(IMapObject o) {
+                SwingUtilities.invokeLater(() -> markerGone(o));
+            }
+
+            @Override
+            public void mapObjectPartialDelete(IMapObject o, long t) {
+            }
+        };
+        m.addMapObjectManagerListener(removals);
+        watching = m;
+    }
+
+    private void markerGone(IMapObject o) {
+        try {
+            if (shapes == null)
+                return;
+            String uid = shapes.markerRemoved(o);
+            if (uid == null || shapes.stillThere(o))
+                return;
+            MemoryPorts.Stored s = ports.stored(uid);
+            LOG.info("marker of {} deleted in TAK-X: deleting the incident",
+                    uid);
+            shapes.forgetMarker(uid);
+            ports.delete(uid);
+            if (s != null)
+                toast("Deleted " + s.name + " (its marker was deleted).");
+        } catch (RuntimeException e) {
+            LOG.warn("could not follow a deleted marker", e);
+        }
     }
 
     /** Incidents other devices send (see TakxReceiver). */

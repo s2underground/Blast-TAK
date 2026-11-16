@@ -103,6 +103,49 @@ final class TakxShapes {
         return uid;
     }
 
+    /**
+     * The incident whose marker this was, when a marker is removed by
+     * someone other than this plugin (the user deleted it in TAK-X): one
+     * of this plugin's markers, or TAK-X's copy of a received incident's.
+     * Null for anything else, including markers this plugin is replacing
+     * (they are forgotten before they are deleted).
+     */
+    String markerRemoved(IMapObject o) {
+        String u = o == null ? null : o.getUid();
+        if (u == null)
+            return null;
+        String uid = markerOwner.get(u);
+        if (uid != null)
+            return uid;
+        MemoryPorts.Stored s = ports.stored(u);
+        return s != null && s.remote ? u : null;
+    }
+
+    /**
+     * Whether TAK-X still has this object: it also reports objects as
+     * removed when it only hides them.
+     */
+    boolean stillThere(IMapObject o) {
+        if (objects == null)
+            return false;
+        try {
+            String u = o.getUid();
+            for (IMapObject m : objects.getMapObjects())
+                if (m == o || (u != null && u.equals(m.getUid())))
+                    return true;
+        } catch (Exception | LinkageError e) {
+            LOG.debug("could not list map objects", e);
+        }
+        return false;
+    }
+
+    /** The user deleted this incident's marker: don't delete it again. */
+    void forgetMarker(String uid) {
+        IMapObject m = markers.remove(uid);
+        if (m != null)
+            markerOwner.remove(m.getUid());
+    }
+
     /** Bring the globe up to date with the incidents. */
     void sync() {
         Set<String> live = new HashSet<>();
