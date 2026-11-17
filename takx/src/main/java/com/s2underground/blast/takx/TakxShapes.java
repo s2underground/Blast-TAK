@@ -156,26 +156,6 @@ final class TakxShapes {
             out.add(uid);
     }
 
-    /** For the log: what TAK-X says about a removed object. */
-    String describeRemoval(IMapObject o) {
-        if (o == null)
-            return "null";
-        String u = o.getUid(), key = o.getKey();
-        String mine = markerOwner.get(u);
-        boolean listed = false;
-        try {
-            for (IMapObject m : objects.getMapObjects())
-                if (m == o || (u != null && u.equals(m.getUid())))
-                    listed = true;
-        } catch (Exception | LinkageError e) {
-            // unknown
-        }
-        return "uid=" + u + " key=" + key + " incident=" + (mine != null
-                ? mine : ports.stored(u) != null ? u + " (received)"
-                        : "none") + " keyExists=" + (key != null
-                                && keyExists(key)) + " listed=" + listed;
-    }
-
     /** Whether a removed object is one of the incident markers. */
     boolean isIncidentMarker(IMapObject o) {
         String u = o == null ? null : o.getUid();
@@ -261,7 +241,7 @@ final class TakxShapes {
         } catch (Exception | LinkageError e) {
             LOG.warn("could not remove the received copy of {}", uid, e);
         }
-        LOG.info("removed {} received items of {}", n, uid);
+        LOG.debug("removed {} received items of {}", n, uid);
     }
 
     private static String recordXml(MemoryPorts.Stored s) {

@@ -85,7 +85,7 @@ import javax.swing.Timer;
 public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     static final String FAMILY = "com.s2underground.blast";
-    static final String VERSION = "0.1.9";
+    static final String VERSION = "1.2";
 
     private static final Logger LOG = LoggerFactory.getLogger(
             BlastTakxPlugin.class);
@@ -209,14 +209,16 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
             listenToGlobe();
             listenToNetwork();
             listenForDeletes();
-            watchKeyboard();
             timer = new Timer(3000, e -> {
                 checkMarkers();
                 pane.refresh();
             });
             timer.start();
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | LinkageError e) {
+            // LinkageError: a TAK-X version without an API Blast uses.
             LOG.error("Blast could not start", e);
+            if (panel != null)
+                toast("Blast could not start fully: see takx.log.");
         }
     }
 
@@ -224,7 +226,6 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         try {
             if (timer != null)
                 timer.stop();
-            unwatchKeyboard();
             if (listeningTo != null && receiver != null)
                 listeningTo.removeCotEventListener(receiver);
             listeningTo = null;
@@ -245,7 +246,7 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
                 labels.remove();
             if (panel != null)
                 delegate.getUISpaceManager().removeComponent(panel);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | LinkageError e) {
             LOG.warn("Blast did not stop cleanly", e);
         }
     }
@@ -315,13 +316,8 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
                 SwingUtilities.invokeLater(() -> {
                     if (shapes == null || !shapes.isIncidentMarker(o))
                         return;
-                    LOG.info("TAK-X removed an incident marker: {}",
-                            shapes.describeRemoval(o));
-                    Timer t = new Timer(500, e -> {
-                        LOG.info("half a second later: {}",
-                                shapes.describeRemoval(o));
-                        checkMarkers();
-                    });
+                    // Check once TAK-X has finished removing it.
+                    Timer t = new Timer(500, e -> checkMarkers());
                     t.setRepeats(false);
                     t.start();
                 });
@@ -417,14 +413,20 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     /** TAK-X's current position (GPS, fixed or none). */
     private PositionSource.Fix ownPosition() {
-        if (locations == null || !locations.isResolvable())
-            return null;
-        GeoPointMetaData m = locations.get().getCurrentLocation();
-        GeoPoint gp = m == null ? null : m.get();
-        if (gp == null || !gp.isValid() || (gp.getLatitude() == 0
-                && gp.getLongitude() == 0))
-            return null;
-        return PositionSource.Fix.at(gp.getLatitude(), gp.getLongitude());
+        try {
+            if (locations == null || !locations.isResolvable())
+                return null;
+            GeoPointMetaData m = locations.get().getCurrentLocation();
+            GeoPoint gp = m == null ? null : m.get();
+            if (gp == null || !gp.isValid() || (gp.getLatitude() == 0
+                    && gp.getLongitude() == 0))
+                return null;
+            return PositionSource.Fix.at(gp.getLatitude(),
+                    gp.getLongitude());
+        } catch (RuntimeException e) {
+            LOG.debug("no position from TAK-X", e);
+            return null; // the cards say there is no position
+        }
     }
 
     private MapControl mapControl() {
@@ -515,86 +517,6 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
                 main = f;
                 break;
             }
-        Window owner = main != null ? main : w;
-        LOG.info("dialog owner: {} (panel in {})", describe(owner),
-                describe(w));
-        return owner;
-    }
-
-    private static String describe(Window w) {
-        if (w == null)
-            return "none";
-        String t = w instanceof java.awt.Frame ? ((java.awt.Frame) w)
-                .getTitle() : w instanceof java.awt.Dialog
-                        ? ((java.awt.Dialog) w).getTitle() : "";
-        return w.getClass().getName() + " '" + t + "' focusable="
-                + w.isFocusableWindow() + " active=" + w.isActive();
-    }
-
-    // ------------------------------------------------------------------
-    // Keyboard diagnostics (Rename box not taking keys in TAK-X): logs
-    // where focus and keys go while one of Blast's dialogs is open.
-
-    private java.awt.KeyEventDispatcher keyWatch;
-    private java.beans.PropertyChangeListener focusWatch;
-    private int keysLogged;
-
-    private static boolean blastDialog(Object o) {
-        return o instanceof javax.swing.JDialog && Boolean.TRUE.equals(
-                ((javax.swing.JDialog) o).getRootPane().getClientProperty(
-                        SwingPane.BLAST_DIALOG));
-    }
-
-    private static boolean blastDialogOpen() {
-        for (Window w : Window.getWindows())
-            if (w.isShowing() && blastDialog(w))
-                return true;
-        return false;
-    }
-
-    private void watchKeyboard() {
-        java.awt.KeyboardFocusManager m = java.awt.KeyboardFocusManager
-                .getCurrentKeyboardFocusManager();
-        focusWatch = e -> {
-            if (!blastDialogOpen() && !blastDialog(e.getOldValue())
-                    && !blastDialog(e.getNewValue()))
-                return;
-            Object v = e.getNewValue();
-            LOG.info("focus: {} -> {}", e.getPropertyName(), v == null
-                    ? "none" : v.getClass().getName());
-            if ("focusedWindow".equals(e.getPropertyName()))
-                keysLogged = 0;
-        };
-        m.addPropertyChangeListener("focusedWindow", focusWatch);
-        m.addPropertyChangeListener("focusOwner", focusWatch);
-        keyWatch = e -> {
-            if (keysLogged < 6 && e.getID() == java.awt.event.KeyEvent
-                    .KEY_PRESSED && blastDialogOpen()) {
-                keysLogged++;
-                java.awt.Window fw = m.getFocusedWindow();
-                LOG.info("key {} to {} (focused window {}, consumed {})",
-                        java.awt.event.KeyEvent.getKeyText(e.getKeyCode()),
-                        e.getComponent() == null ? "none"
-                                : e.getComponent().getClass().getName(),
-                        fw == null ? "none" : fw.getClass().getName()
-                                + (blastDialog(fw) ? " (Blast)" : ""),
-                        e.isConsumed());
-            }
-            return false; // only watching
-        };
-        m.addKeyEventDispatcher(keyWatch);
-    }
-
-    private void unwatchKeyboard() {
-        java.awt.KeyboardFocusManager m = java.awt.KeyboardFocusManager
-                .getCurrentKeyboardFocusManager();
-        if (keyWatch != null)
-            m.removeKeyEventDispatcher(keyWatch);
-        if (focusWatch != null) {
-            m.removePropertyChangeListener("focusedWindow", focusWatch);
-            m.removePropertyChangeListener("focusOwner", focusWatch);
-        }
-        keyWatch = null;
-        focusWatch = null;
+        return main != null ? main : w;
     }
 }
