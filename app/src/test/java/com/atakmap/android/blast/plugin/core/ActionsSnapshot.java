@@ -37,6 +37,8 @@ final class ActionsSnapshot {
         double[] centre = { GoldenSnapshotTest.LAT + 0.01,
                 GoldenSnapshotTest.LON };
         boolean mgrsFails;
+        /** When set, mgrs() returns this text as is (a host's own format). */
+        String mgrsText;
 
         @Override
         public Fix fix() {
@@ -90,6 +92,8 @@ final class ActionsSnapshot {
         public String mgrs(double lat, double lon) {
             if (mgrsFails)
                 throw new IllegalStateException("no grid");
+            if (mgrsText != null)
+                return mgrsText;
             return "16T EN " + String.format(java.util.Locale.US, "%05d",
                     Math.round(Math.abs(lat * 1000)) % 100000) + " "
                     + String.format(java.util.Locale.US, "%05d",

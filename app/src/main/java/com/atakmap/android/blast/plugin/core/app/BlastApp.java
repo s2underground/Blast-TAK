@@ -326,11 +326,31 @@ public final class BlastApp {
         if (Double.isNaN(lat) || Double.isNaN(lon))
             return "";
         try {
-            return map.mgrs(lat, lon);
+            String s = map.mgrs(lat, lon);
+            return s == null ? "" : cleanGrid(s);
         } catch (RuntimeException e) {
             return plain(Math.round(lat * 1e5) / 1e5) + ", "
                     + plain(Math.round(lon * 1e5) / 1e5);
         }
+    }
+
+    /**
+     * A host's MGRS text with only plain single spaces between its parts.
+     * ATAK writes an invisible LEFT-TO-RIGHT MARK (U+200E) after each part
+     * ("16S\u200E GH\u200E 19064\u200E 13261"): those marks went into copied
+     * reports, and they hid the parts from {@link #mgrs10}, which then gave
+     * the 1 m reference instead of the 10 m one.
+     */
+    static String cleanGrid(String s) {
+        StringBuilder b = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '\u200E' || c == '\u200F' || c == '\u200B'
+                    || c == '\uFEFF')
+                continue; // direction marks, zero-width space, BOM
+            b.append(Character.isWhitespace(c) || c == '\u00A0' ? ' ' : c);
+        }
+        return b.toString().trim().replaceAll(" {2,}", " ");
     }
 
     /**
@@ -352,7 +372,8 @@ public final class BlastApp {
             String s = map.mgrs(lat, lon);
             if (s == null)
                 return "";
-            String[] t = s.trim().split("\\s+");
+            s = cleanGrid(s);
+            String[] t = s.split(" ");
             if (t.length == 4 && t[2].length() == 5 && t[3].length() == 5)
                 return t[0] + " " + t[1] + " " + t[2].substring(0, 4) + " "
                         + t[3].substring(0, 4);
