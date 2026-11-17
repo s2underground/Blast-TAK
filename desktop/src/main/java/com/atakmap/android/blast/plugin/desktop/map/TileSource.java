@@ -71,18 +71,11 @@ public final class TileSource {
             "Tiles courtesy of the U.S. Geological Survey", 0, 16, null,
             null);
 
-    public static final TileSource USGS_IMAGERY_TOPO = new TileSource(
-            Kind.ONLINE, "usgs-imagery-topo", "USGS Imagery + Topo",
-            "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}",
-            "Tiles courtesy of the U.S. Geological Survey", 0, 16, null,
-            null);
-
     public static List<TileSource> builtIn() {
         List<TileSource> l = new ArrayList<>();
         l.add(OSM);
         l.add(USGS_TOPO);
         l.add(USGS_IMAGERY);
-        l.add(USGS_IMAGERY_TOPO);
         l.add(NONE);
         return l;
     }

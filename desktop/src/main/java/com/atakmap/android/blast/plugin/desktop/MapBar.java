@@ -121,6 +121,10 @@ final class MapBar {
                 dead.add(path);
             }
         }
+        // USGS Imagery + Topo was in the test builds; its tile cache has
+        // gaps (404 over large areas), so it was taken out.
+        if ("usgs-imagery-topo".equals(id))
+            id = TileSource.USGS_IMAGERY.id;
         TileSource pick = TileSource.NONE;
         for (int i = 0; i < model.getSize(); i++)
             if (model.getElementAt(i).id.equals(id))

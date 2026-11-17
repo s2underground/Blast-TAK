@@ -337,6 +337,7 @@ public final class TileStore {
             if (r.statusCode() == 404 || r.statusCode() == 204) {
                 // No tile here (outside the map's area or zooms): the
                 // lower zoom's tile stands in.
+                problem(s.name + " has no map for some squares here");
                 if (have)
                     drop(k);
                 else
