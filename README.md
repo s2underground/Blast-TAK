@@ -74,6 +74,16 @@ or department procedures.
 _________________________________________________________________
 STATUS
 
+1.2.1 (Nov 2026): Stability release, meant to last. A Blast error can no
+longer close ATAK (every way ATAK calls Blast is guarded; errors are
+logged and reported). Decimal commas: "2,5" is read as 2.5 (it was 25);
+a comma only groups thousands where it groups three digits ("1,000").
+Grid references copied from ATAK no longer carry its invisible
+direction marks. Rings and outlines are sent with the marker's one-year
+stale time, so TAK-X, WinTAK and TAK Server keep an incident's rings as
+long as its marker. Incidents from a newer Blast are always shown (an
+ordnance type this build doesn't have uses the sender's cordon). The
+CoT format is unchanged: 1.0 to 1.2.1 clients share incidents as before.
 1.2 (Nov 2026): Hide / show ring labels on every card (ring distances
 and, for nuclear incidents, the fallout band titles; remembered on the
 device). Fixes (all also in 1.1): web addresses on the Reference tab

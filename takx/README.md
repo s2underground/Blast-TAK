@@ -1,6 +1,6 @@
 # Blast for TAK-X
 
-Blast as a TAK-X app plugin. It has the same features as Blast 1.2 for
+Blast as a TAK-X app plugin. It has the same features as Blast 1.2.1 for
 ATAK (bomb threats, military ordnance, the nuclear reference, cards,
 reports, exports and the Reference tab), docked on the right of TAK-X,
 with incidents drawn on the TAK-X globe. ATAK and TAK-X users share
@@ -12,8 +12,8 @@ incidents with 1.1 and newer).
 
 Requires TAK-X 5.8 (TAKX-CIV 5.8, Java 17, as installed).
 
-1. Download `plugin.blast-1.2.zip` from the release and unzip it. It holds
-   one file, `plugin.blast-1.2.jar`. Keep that name: TAK-X recognises
+1. Download `plugin.blast-1.2.1.zip` from the release and unzip it. It holds
+   one file, `plugin.blast-1.2.1.jar`. Keep that name: TAK-X recognises
    plugins by it.
 2. Close TAK-X and copy the jar into the `plugins` folder of your TAK-X
    install (for example `C:\Program Files\TAKX\plugins`). Remove any older
