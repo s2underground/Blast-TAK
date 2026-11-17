@@ -47,10 +47,23 @@ public final class BlastDesktop implements SwingPane.Host {
     private final TileStore tiles;
     private final Mesh mesh;
     final SwingPane pane;
-    final JFrame frame = new JFrame("Blast " + VERSION);
+    final JFrame frame = new JFrame("Blast " + VERSION + (LABEL.isEmpty()
+            ? "" : " (" + LABEL + ": not for release)"));
     private final JLabel status = new JLabel(" ");
 
     static final String VERSION = "1.2";
+    /** A test build's label from the jar ("test1"), or "". */
+    static final String LABEL = label();
+
+    private static String label() {
+        try (java.io.InputStream in = BlastDesktop.class.getResourceAsStream(
+                "build-label.txt")) {
+            return in == null ? "" : new String(in.readAllBytes(),
+                    java.nio.charset.StandardCharsets.UTF_8).trim();
+        } catch (java.io.IOException | RuntimeException e) {
+            return "";
+        }
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new BlastDesktop(new File(
@@ -189,7 +202,10 @@ public final class BlastDesktop implements SwingPane.Host {
 
     private void about(File home) {
         String html = "<html><body style='width:420px'><h2>Blast " + VERSION
-                + " for desktop</h2>"
+                + " for desktop</h2>" + (LABEL.isEmpty() ? ""
+                        : "<p><b>Test build (" + LABEL + "): for testing "
+                                + "only, not a release. Please don't pass "
+                                + "it on.</b></p>")
                 + "<p>S2 Underground. Bomb threat stand-off distances (DHS/DOJ"
                 + " card), military ordnance (ATP 4-32.2) and a nuclear "
                 + "planning reference, shared with ATAK Blast on the local "

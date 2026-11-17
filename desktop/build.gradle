@@ -10,6 +10,9 @@ plugins {
 }
 
 def appVersion = '1.2'
+// A test build's label (-PbuildLabel=test1): shown in the window title and
+// About, and in the file names. Empty for a release.
+def buildLabel = (project.findProperty('buildLabel') ?: '').trim()
 
 // Java 17 bytecode; builds with any JDK 17 or later.
 tasks.withType(JavaCompile).configureEach {
@@ -51,6 +54,13 @@ application {
 processResources {
     from('packaging/content/THIRD-PARTY-NOTICES.txt') {
         into 'com/atakmap/android/blast/plugin/desktop'
+    }
+    inputs.property('buildLabel', buildLabel)
+    doLast {
+        def f = new File(destinationDir,
+                'com/atakmap/android/blast/plugin/desktop/build-label.txt')
+        f.parentFile.mkdirs()
+        f.text = buildLabel
     }
 }
 
@@ -137,7 +147,7 @@ tasks.register('jpackageImage', Exec) {
 
 tasks.register('jpackage') {
     dependsOn 'jpackageImage'
-    def base = "Blast-Desktop-${appVersion}-${osName}-${arch}"
+    def base = "Blast-Desktop-${appVersion}${buildLabel ? '-' + buildLabel : ''}-${osName}-${arch}"
     doLast {
         def out = jpackageOut.get().asFile
         def d = dist.get().asFile

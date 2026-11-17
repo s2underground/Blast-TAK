@@ -1,4 +1,8 @@
-# Blast Desktop
+# Blast Desktop (test builds)
+
+**Not released.** Blast Desktop is in private testing; the desktop app is
+becoming its own project that will host Blast and other tools. Test
+builds show "(test…: not for release)" in the window title.
 
 Blast for Windows, macOS and Linux: the same cards, buttons, new-incident
 steps, forms, reports, exports and Reference tab as the ATAK plugin, on a
@@ -12,17 +16,16 @@ source zip.
 
 ## Install
 
-Download the file for your computer from the release:
+Testers get the file for their computer from S2 Underground:
 
 | Computer | File |
 |---|---|
-| Windows 10 / 11 (64-bit) | `Blast-Desktop-1.2-windows-x64.msi` (installer, no administrator needed) or `…-windows-x64-portable.zip` (unzip and run `Blast.exe`) |
-| Mac with Apple silicon (M1 and later) | `Blast-Desktop-1.2-macos-arm64.dmg` |
-| Mac with Intel | `Blast-Desktop-1.2-macos-x64.dmg` |
-| Linux (Debian, Ubuntu and similar, 64-bit) | `Blast-Desktop-1.2-linux-x64.deb` (`sudo apt install ./Blast-Desktop-1.2-linux-x64.deb`) or `…-linux-x64-portable.tar.gz` (unpack and run `Blast/bin/Blast`) |
+| Windows 10 / 11 (64-bit) | `Blast-Desktop-1.2-test1-windows-x64.msi` (installer, no administrator needed) or `…-windows-x64-portable.zip` (unzip and run `Blast.exe`) |
+| Mac with Apple silicon (M1 and later) | `Blast-Desktop-1.2-test1-macos-arm64.dmg` |
+| Mac with Intel | `Blast-Desktop-1.2-test1-macos-x64.dmg` |
+| Linux (Debian, Ubuntu and similar, 64-bit) | `Blast-Desktop-1.2-test1-linux-x64.deb` (`sudo apt install ./Blast-Desktop-1.2-test1-linux-x64.deb`) or `…-linux-x64-portable.tar.gz` (unpack and run `Blast/bin/Blast`) |
 
-Java comes with it; nothing else to install. `SHA256SUMS.txt` lists each
-file's checksum.
+Java comes with it; nothing else to install.
 
 The installers aren't code-signed, so the first start asks:
 
@@ -99,10 +102,10 @@ Installers are built with a JDK 21 `jpackage` on each operating system:
     gradle jpackage                          # msi / dmg / deb for this OS
     gradle jpackage -PinstallerType=app-image  # portable zip / tar.gz
 
-They land in `build/dist`. GitHub Actions builds all of them
-(`.github/workflows/desktop.yml`): push a tag `desktop-v<version>` and it
-drafts a release with the installers and their checksums, or run it from
-the Actions tab to get them as artifacts.
+They land in `build/dist`; `-PbuildLabel=test2` marks a test build.
+GitHub Actions builds all of them (`.github/workflows/desktop.yml`): run
+**Blast Desktop** from the Actions tab with a label, and the installers
+are the run's artifacts for 30 days.
 
 Third-party software and data: `packaging/content/THIRD-PARTY-NOTICES.txt`
 (shown in the app under About → Third-party notices).
