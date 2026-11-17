@@ -18,6 +18,11 @@ SQLite JDBC driver (org.xerial:sqlite-jdbc 3.50.3.0)
   META-INF/maven/org.xerial/sqlite-jdbc/ (LICENSE, LICENSE.zentus).
   Includes SQLite, which is in the public domain.
 
+FlatLaf (com.formdev:flatlaf 3.5.4)
+  The window's look: menus, the bar above the map, dialogs.
+  Apache License 2.0. Copyright 2019 FormDev Software GmbH.
+  https://www.formdev.com/flatlaf/
+
 World Magnetic Model 2025 (WMM2025)
   Magnetic declination for compass bearings. NOAA National Centers for
   Environmental Information and the British Geological Survey. A US

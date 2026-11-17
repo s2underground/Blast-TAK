@@ -318,6 +318,11 @@ public final class SwingScreen {
         a.setForeground(c);
         a.setFont(font(size, bold, mono));
         a.setBorder(null);
+        // Modern looks (FlatLaf, perhaps TAK-X's) pad text areas and give
+        // them a minimum width; wrapped text cells must shrink to their
+        // share of a row like the ATAK pane's.
+        a.setMargin(new Insets(0, 0, 0, 0));
+        a.putClientProperty("JComponent.minimumWidth", 0);
         a.setAlignmentX(Component.LEFT_ALIGNMENT);
         return a;
     }
@@ -517,9 +522,14 @@ public final class SwingScreen {
                 s.fill = GridBagConstraints.NONE;
                 s.insets = new Insets(0, 0, 0, 6);
                 r.add(sw, s);
-                for (int i = 0; i < l.cellCount(); i++)
+                for (int i = 0; i < l.cellCount(); i++) {
+                    GridBagConstraints c = cell(i + 1, l.weight(i), 0);
+                    // A gap, so a cell's text never runs into the next.
+                    if (i < l.cellCount() - 1)
+                        c.insets = new Insets(0, 0, 0, 8);
                     r.add(textArea(l.cell(i), l.size, color(l.tone),
-                            l.bold(i), false), cell(i + 1, l.weight(i), 0));
+                            l.bold(i), false), c);
+                }
                 add(into, tight(r));
             } else if (it instanceof KeyRow) {
                 add(into, keyRow((KeyRow) it));

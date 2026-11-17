@@ -27,6 +27,8 @@ repositories {
 dependencies {
     // Reads offline MBTiles maps (SQLite). Apache License 2.0.
     implementation 'org.xerial:sqlite-jdbc:3.50.3.0'
+    // The window's look (dark, modern menus and dialogs). Apache License 2.0.
+    implementation 'com.formdev:flatlaf:3.5.4'
     testImplementation 'junit:junit:4.13.2'
 }
 

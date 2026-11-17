@@ -52,6 +52,38 @@ public final class BlastDesktop implements SwingPane.Host {
     private final JLabel status = new JLabel(" ");
 
     static final String VERSION = "1.2";
+
+    /**
+     * FlatLaf's dark look, tuned to the Blast pane's colours, so menus,
+     * the bar above the map and dialogs match the pane instead of Swing's
+     * old grey Metal look.
+     */
+    static void look() {
+        try {
+            java.util.Map<String, String> extra = new java.util.HashMap<>();
+            extra.put("@accentColor", "#1565C0");
+            extra.put("@background", "#1E1E1E");
+            extra.put("@foreground", "#EEEEEE");
+            com.formdev.flatlaf.FlatLaf.setGlobalExtraDefaults(extra);
+            com.formdev.flatlaf.FlatDarkLaf.setup();
+            UIManager.put("Component.arc", 8);
+            UIManager.put("Button.arc", 8);
+            UIManager.put("TextComponent.arc", 6);
+            UIManager.put("ScrollBar.width", 12);
+            UIManager.put("ScrollBar.thumbArc", 999);
+            UIManager.put("ScrollBar.thumbInsets", new java.awt.Insets(2, 2,
+                    2, 2));
+            UIManager.put("PopupMenu.borderCornerRadius", 8);
+            UIManager.put("TitlePane.unifiedBackground", true);
+        } catch (RuntimeException | LinkageError e) {
+            try {
+                UIManager.setLookAndFeel(UIManager
+                        .getCrossPlatformLookAndFeelClassName());
+            } catch (Exception ex) {
+                // default look
+            }
+        }
+    }
     /** A test build's label from the jar ("test1"), or "". */
     static final String LABEL = label();
 
@@ -72,12 +104,7 @@ public final class BlastDesktop implements SwingPane.Host {
     }
 
     BlastDesktop(File home) {
-        try {
-            UIManager.setLookAndFeel(UIManager
-                    .getCrossPlatformLookAndFeelClassName());
-        } catch (Exception e) {
-            // default look
-        }
+        look();
         ports = new MemoryPorts(home, this::toast);
         MapBar.restoreMe(ports);
         // The map starts on the National Mall (no GPS assumed).
