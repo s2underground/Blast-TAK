@@ -1,4 +1,4 @@
-ZoneCalculator.parseQuantity: [37]=37 [1,000]=1000 [2.5]=2.5 []=NaN [abc]=NaN [1e3]=1000 [-5]=-5 [60001]=60001
+ZoneCalculator.parseQuantity: [37]=37 [1,000]=1000 [2.5]=2.5 []=NaN [abc]=NaN [1e3]=NaN [-5]=-5 [60001]=60001 [2,5]=2.5 [12.500,5]=12500.5
 
 === BLAST 1 Pipe Bomb
 cot: <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="PIPE_BOMB" lbl="Pipe Bomb" cap_lb="5" mand_ft="70" sip_ft="1199" pref_ft="1200" n="1" by="ALPHA-1" t="2026-11-01T14:52:05.000Z" st="ACTIVE"/>

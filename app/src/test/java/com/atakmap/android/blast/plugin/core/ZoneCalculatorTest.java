@@ -127,6 +127,23 @@ public class ZoneCalculatorTest {
         assertEquals(800, ZoneCalculator.parseQuantity(" 800 "), 0);
         assertEquals(1000, ZoneCalculator.parseQuantity("1,000"), 0);
         assertEquals(2.5, ZoneCalculator.parseQuantity("2.5"), 0);
+        // Decimal commas (many Android keyboards outside the US): 2,5 is
+        // 2.5, never 25.
+        assertEquals(2.5, ZoneCalculator.parseQuantity("2,5"), 0);
+        assertEquals(0.25, ZoneCalculator.parseQuantity("0,25"), 0);
+        assertEquals(12.5, ZoneCalculator.parseQuantity("12,50"), 0);
+        assertEquals(1000, ZoneCalculator.parseQuantity("1,000"), 0);
+        assertEquals(1000000, ZoneCalculator.parseQuantity("1,000,000"), 0);
+        assertEquals(12500.5, ZoneCalculator.parseQuantity("12,500.5"), 0);
+        assertEquals(12500.5, ZoneCalculator.parseQuantity("12.500,5"), 0);
+        assertEquals(1000, ZoneCalculator.parseQuantity("1\u00A0000"), 0);
+        assertEquals(0.5, ZoneCalculator.parseQuantity(".5"), 0);
+        assertEquals(5, ZoneCalculator.parseQuantity("5."), 0);
+        String[] bad = { "1,00,0", "1,2,3", "12,50.5", "1.2.3", "1e3", "0x10",
+                "2.5f", "NaN", "Infinity", ",", ".", "-", "1,000,00",
+                "12.50,5" };
+        for (String b : bad)
+            assertTrue(b, Double.isNaN(ZoneCalculator.parseQuantity(b)));
         assertTrue(Double.isNaN(ZoneCalculator.parseQuantity("")));
         assertTrue(Double.isNaN(ZoneCalculator.parseQuantity("abc")));
         assertTrue(Double.isNaN(ZoneCalculator.parseQuantity(null)));

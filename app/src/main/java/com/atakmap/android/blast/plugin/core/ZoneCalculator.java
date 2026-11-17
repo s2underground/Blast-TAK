@@ -143,12 +143,48 @@ public final class ZoneCalculator {
     /** Longest quantity text accepted (the pane limits input to this). */
     public static final int MAX_QUANTITY_CHARS = 12;
 
-    /** Parse a typed quantity ("800", "1,000", "2.5"); NaN if unusable. */
+    /**
+     * Parse a typed number; NaN if unusable. Plain digits with one decimal
+     * mark: "800", "2.5". A comma is a thousands separator only where it
+     * groups three digits ("1,000", "12,500.5", or "1.000,5" with dots
+     * grouping); any other comma is a decimal comma ("2,5" = 2.5), as
+     * many Android keyboards type it. Exponents, hex and the like are
+     * refused. The value used is always shown back to the user.
+     */
     public static double parseQuantity(String s) {
         if (s == null)
             return Double.NaN;
-        String t = s.trim().replace(",", "").replace(" ", "");
+        StringBuilder b = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c != ' ' && c != '\u00A0' && c != '\u202F' && c != '\t')
+                b.append(c);
+        }
+        String t = b.toString();
         if (t.isEmpty() || t.length() > MAX_QUANTITY_CHARS)
+            return Double.NaN;
+        int comma = t.lastIndexOf(','), dot = t.lastIndexOf('.');
+        if (comma >= 0 && dot >= 0) {
+            if (dot > comma) {
+                // 12,500.5: commas group thousands
+                if (!t.matches("[+-]?\\d{1,3}(,\\d{3})+\\.\\d*"))
+                    return Double.NaN;
+                t = t.replace(",", "");
+            } else {
+                // 12.500,5: dots group thousands, the comma is decimal
+                if (!t.matches("[+-]?\\d{1,3}(\\.\\d{3})+,\\d*"))
+                    return Double.NaN;
+                t = t.replace(".", "").replace(',', '.');
+            }
+        } else if (comma >= 0) {
+            if (t.matches("[+-]?\\d{1,3}(,\\d{3})+"))
+                t = t.replace(",", ""); // 1,000 and 1,000,000
+            else if (t.indexOf(',') == comma)
+                t = t.replace(',', '.'); // 2,5
+            else
+                return Double.NaN; // 1,00,0
+        }
+        if (!t.matches("[+-]?(\\d+\\.?\\d*|\\.\\d+)"))
             return Double.NaN;
         try {
             double v = Double.parseDouble(t);

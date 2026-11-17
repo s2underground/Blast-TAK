@@ -169,7 +169,7 @@ public class GoldenSnapshotTest {
                 .withNumber(n++).cleared("BRAVO-2", NOW));
         sb.append("ZoneCalculator.parseQuantity:");
         for (String q : new String[] { "37", "1,000", "2.5", "", "abc",
-                "1e3", "-5", "60001" })
+                "1e3", "-5", "60001", "2,5", "12.500,5" })
             sb.append(" [").append(q).append("]=")
                     .append(Golden.num(ZoneCalculator.parseQuantity(q), 4));
         sb.append("\n");
