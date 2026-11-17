@@ -429,8 +429,10 @@ final class MapPanel extends JPanel {
             for (int tx = x0; tx <= x1; tx++)
                 want.add(TileStore.keyOf(source, tz, Math.floorMod(tx, n), ty));
         tiles.want(want);
-        g.setColor(BACK);
+        // The grid shows wherever no tile has arrived (offline).
+        g.setColor(LAND);
         g.fillRect(0, 0, getWidth(), getHeight());
+        grid(g);
         for (int ty = y0; ty <= y1; ty++)
             for (int tx = x0; tx <= x1; tx++) {
                 int sx = (int) Math.floor(tx * tile - left),

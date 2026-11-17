@@ -140,6 +140,9 @@ public final class BlastDesktop implements SwingPane.Host {
         javax.swing.JButton people = new javax.swing.JButton("Contacts");
         people.addActionListener(e -> NetDialogs.contacts(frame, mesh));
         bar.component().add(people);
+        javax.swing.JButton about = new javax.swing.JButton("About");
+        about.addActionListener(e -> about(home));
+        bar.component().add(about);
         JPanel mapSide = new JPanel(new BorderLayout());
         mapSide.add(bar.component(), BorderLayout.NORTH);
         mapSide.add(map, BorderLayout.CENTER);
@@ -166,12 +169,48 @@ public final class BlastDesktop implements SwingPane.Host {
                 mesh.shutdown();
             }
         });
-        frame.setSize(1400, 900);
+        java.awt.Rectangle screen = java.awt.GraphicsEnvironment
+                .getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        frame.setSize(Math.min(1400, screen.width), Math.min(900,
+                screen.height));
+        frame.setLocationRelativeTo(null);
+        try {
+            frame.setIconImage(javax.imageio.ImageIO.read(BlastDesktop.class
+                    .getResource("blast.png")));
+        } catch (java.io.IOException | RuntimeException e) {
+            // default icon
+        }
         mesh.restart();
         new Timer(3000, e -> {
             pane.refresh();
             map.repaint();
         }).start();
+    }
+
+    private void about(File home) {
+        String html = "<html><body style='width:420px'><h2>Blast " + VERSION
+                + " for desktop</h2>"
+                + "<p>S2 Underground. Bomb threat stand-off distances (DHS/DOJ"
+                + " card), military ordnance (ATP 4-32.2) and a nuclear "
+                + "planning reference, shared with ATAK Blast on the local "
+                + "network.</p><p>Blast's distances are minimums, not "
+                + "guarantees, and the nuclear mode is a planning and "
+                + "training reference, not a prediction of a real event. It "
+                + "does not replace professional EOD, bomb squad, emergency "
+                + "management or department procedures.</p>"
+                + "<p>Your incidents, settings and map cache: "
+                + home.getAbsolutePath().replace("&", "&amp;").replace("<",
+                        "&lt;")
+                + "</p><p>Third-party software and data: "
+                + "THIRD-PARTY-NOTICES.txt in the installation folder. "
+                + "Sources: the Reference tab.</p></body></html>";
+        javax.swing.JOptionPane.showMessageDialog(frame, html, "About Blast",
+                javax.swing.JOptionPane.PLAIN_MESSAGE, frame
+                        .getIconImages().isEmpty() ? null
+                                : new javax.swing.ImageIcon(frame
+                                        .getIconImages().get(0)
+                                        .getScaledInstance(64, 64,
+                                                java.awt.Image.SCALE_SMOOTH)));
     }
 
     private static double number(String s, double def) {

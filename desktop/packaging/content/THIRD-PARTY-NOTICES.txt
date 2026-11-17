@@ -1,0 +1,39 @@
+Blast Desktop: third-party software and data
+=============================================
+
+Blast Desktop includes or uses the following. Their licences apply to
+those parts only.
+
+Java runtime (OpenJDK, Eclipse Temurin build)
+  A trimmed Java runtime is bundled so Java doesn't need installing.
+  GNU General Public License version 2 with the Classpath Exception.
+  Its licence and notices are in the runtime's "legal" folder inside this
+  installation (runtime/legal, or Contents/runtime/Contents/Home/legal on
+  macOS).
+
+SQLite JDBC driver (org.xerial:sqlite-jdbc 3.50.3.0)
+  Reads offline MBTiles map files.
+  Apache License 2.0; parts BSD-style (Copyright (c) 2006, David
+  Crawshaw). The full texts are in lib/app/sqlite-jdbc-3.50.3.0.jar under
+  META-INF/maven/org.xerial/sqlite-jdbc/ (LICENSE, LICENSE.zentus).
+  Includes SQLite, which is in the public domain.
+
+World Magnetic Model 2025 (WMM2025)
+  Magnetic declination for compass bearings. NOAA National Centers for
+  Environmental Information and the British Geological Survey. A US
+  Government work in the public domain.
+
+Map tiles (shown only when you choose them; not included)
+  OpenStreetMap: (c) OpenStreetMap contributors, data under the Open Data
+  Commons Open Database License (ODbL). Tiles from tile.openstreetmap.org
+  under the OpenStreetMap Foundation's tile usage policy: Blast identifies
+  itself, caches tiles, uses at most two connections and does not
+  download areas in bulk. https://www.openstreetmap.org/copyright
+  USGS The National Map basemaps: courtesy of the U.S. Geological Survey,
+  public domain.
+  Maps you add yourself (a tile address or an MBTiles file) are under
+  their own terms; use only services and files you are allowed to use.
+
+Blast's own reference data (bomb threat stand-off card, ordnance
+distances, the nuclear reference) and their sources are listed on the
+Reference tab and in the Blast user manual.

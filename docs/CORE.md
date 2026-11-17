@@ -12,7 +12,8 @@ Blast is split in two:
   passes the user's taps back to it, and provides a few services through
   small interfaces (the "ports"). Hosts in this repository:
   - `atak/` + `ui/` + `BlastPlugin`: the ATAK plugin (Android views).
-  - `desktop/`: a plain desktop app (Swing, an offline flat map).
+  - `desktop/`: Blast Desktop for Windows, macOS and Linux (Swing, a
+    tile map, sharing with ATAK on the local network).
   - `takx/`: the TAK-X plugin (Swing pane, TAK-X globe and CoT).
 
 The same core runs unchanged in all three. This guide is for anyone
@@ -50,7 +51,7 @@ These are checked by tests, not just conventions.
 
 | Package | What it holds | Reusable by other plugins? |
 |---|---|---|
-| `core` | Blast's domain: tables and models (`StandoffTable`, `UxoTable`, `NucModel`, `NucPresets`), records and their CoT codecs (`BlastRecord`/`BlastCodec`, `UxoRecord`/`UxoCodec`, `NucRecord`/`NucCodec`), text (`Labels`, `UxoText`, `NucText`, references, reports), exports (`Exports`: KML, KMZ, GPX, data packages), geodesy (`Geo`, `NucGeo`, `Polygons`), `CotEvents` (the CoT a host sends, for hosts that build CoT themselves) | Blast's own, but `Geo`, `Formats`, `Exports` (zip, data-package manifest) and `CotEvents` are good starting points |
+| `core` | Blast's domain: tables and models (`StandoffTable`, `UxoTable`, `NucModel`, `NucPresets`), records and their CoT codecs (`BlastRecord`/`BlastCodec`, `UxoRecord`/`UxoCodec`, `NucRecord`/`NucCodec`), text (`Labels`, `UxoText`, `NucText`, references, reports), exports (`Exports`: KML, KMZ, GPX, data packages), geodesy (`Geo`, `NucGeo`, `Polygons`), `Mgrs` (MGRS both ways, UTM and UPS, checked against GeoTrans and ATAK) and `Wmm` (World Magnetic Model 2025, for hosts without MGRS or declination of their own), `CotEvents` (the CoT a host sends, for hosts that build CoT themselves) | Blast's own, but `Geo`, `Mgrs`, `Wmm`, `Formats`, `Exports` (zip, data-package manifest) and `CotEvents` are good starting points |
 | `core/overlay` | **What to draw.** `OverlayShape` (CIRCLE with a radius, POLYGON, POLYLINE; an `id` suffix appended to the owner's uid; a title; a `Style`: stroke and fill ARGB, width, line DEFAULT / SOLID / DASHED / DOTTED). `Overlays` builds Blast's shapes per incident. | `OverlayShape` and `Style`: yes, copy as is. `Overlays` is Blast's. |
 | `core/screen` | **What a screen shows**, as data. Generic items: `Screen`, `Item`, `Text`, `Tone`, `Ink`, `Legend`, `KeyRow`, `Button`, `Buttons`, `TitleRow`, `ListRow`, `Section`, `Input`, `Check`, `Choice`, `EntryRow`, `FormValues`, `Dialog`. Blast's screens built from them: `StandoffCard`, `UxoCard`, `NucCard`, `WindPicker`, `NewIncident`, `IncidentList`, `MainPane`, `ReferenceTab`, `Live`, `CardActions` and the forms (`Nbc1Form`, `UxoReportForm`, `RangeBearingForm`, `PolarForm`). | The generic items: yes. The screens: as examples. |
 | `core/port` | **What a host provides.** `Incidents` (the incidents on the map: list, create, write, rename, delete, their CoT for a data package), `Share` (send to all, send to chosen contacts, delete for everyone), `Team` (own callsign, other contacts' positions), `PositionSource` (an optional fix: a desktop may have none), `MapControl` (map centre, MGRS, magnetic to true), `Clock`, `Clipboard`, `Files` (export folder), `Settings`. `Magnetic` is used inside the core (built from `MapControl`). | The pattern, and `PositionSource`, `Clock`, `Clipboard`, `Files`, `Settings` nearly as they are. |
@@ -127,7 +128,9 @@ Run them with the plugin's Gradle build (`testCivDebugUnitTest`).
 - ATAK plugin: the usual plugin build (`./gradlew assembleCivDebug`,
   tests `testCivDebugUnitTest`, lint `lintCivDebug`). The TAK.gov source
   archive leaves `desktop/` and `takx/` out (`.gitattributes`).
-- Desktop: `cd desktop && gradle run` (Java 17).
+- Desktop: `cd desktop && gradle run` (Java 17); installers with
+  `gradle jpackage` (JDK 21) or the `Blast Desktop` GitHub workflow (see
+  `desktop/README.md`).
 - TAK-X: `cd takx && gradle build -PtakxInstallDir=<TAK-X install>`. It
   compiles against jars from a TAK-X install, which are licensed and are
   never committed. Build with a JDK 17 compiler (see `takx/README.md`).

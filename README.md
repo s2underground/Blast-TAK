@@ -184,8 +184,8 @@ DEVELOPER NOTES
   BlastMenuHandler (radial button), Sharing, AtakPorts (the core's ports).
 - ui/: BlastPane draws the core's screens with Android views and carries
   out what the core returns.
-- desktop/ and takx/ run the same core as a desktop app and a TAK-X
-  plugin. They are separate Gradle builds, not part of the ATAK plugin
+- desktop/ (Blast Desktop for Windows, macOS and Linux, see
+  desktop/README.md) and takx/ (Blast for TAK-X) run the same core. They are separate Gradle builds, not part of the ATAK plugin
   or its TAK.gov source archive.
 - CoT detail:
   <__blast v="1" src="CISA-BTSOC" ed="2025-08" row="SUV_VAN" lbl="SUV/Van"
