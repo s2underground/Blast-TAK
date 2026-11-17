@@ -47,6 +47,13 @@ application {
     mainClass = 'com.atakmap.android.blast.plugin.desktop.BlastDesktop'
 }
 
+// The third-party notices ride in the jar too (shown from About).
+processResources {
+    from('packaging/content/THIRD-PARTY-NOTICES.txt') {
+        into 'com/atakmap/android/blast/plugin/desktop'
+    }
+}
+
 jar {
     archiveFileName = 'blast-desktop.jar'
     manifest {
@@ -95,12 +102,15 @@ tasks.register('jpackageImage', Exec) {
         '--main-jar', 'blast-desktop.jar',
         '--main-class', application.mainClass.get(),
         '--dest', out.path,
-        '--app-content', file('packaging/content/THIRD-PARTY-NOTICES.txt').path,
+        '--verbose',
         '--add-modules', 'java.base,java.desktop,java.net.http,java.sql,java.logging,java.xml,jdk.crypto.ec,jdk.accessibility',
         '--jlink-options', '--strip-debug --no-man-pages --no-header-files',
         '--java-options', '-Xmx1g',
     ]
     boolean pkg = installerType != 'app-image'
+    if (!os.macOsX)
+        a += ['--app-content',
+              file('packaging/content/THIRD-PARTY-NOTICES.txt').path]
     if (os.windows) {
         a += ['--icon', file('packaging/blast.ico').path]
         if (pkg)
@@ -109,6 +119,8 @@ tasks.register('jpackageImage', Exec) {
                   '--win-per-user-install',
                   '--win-upgrade-uuid', '6a7c3f1e-2b0d-4c5e-9f1a-b1a57de5c0a1']
     } else if (os.macOsX) {
+        // No --app-content: files loose in Blast.app/Contents break even
+        // the ad-hoc signature. The notices are in the jar (About).
         a += ['--icon', file('packaging/blast.icns').path,
               '--mac-package-identifier', 'com.s2underground.blast.desktop',
               '--mac-package-name', 'Blast']

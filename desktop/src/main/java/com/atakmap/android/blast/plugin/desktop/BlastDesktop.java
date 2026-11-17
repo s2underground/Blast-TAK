@@ -201,16 +201,37 @@ public final class BlastDesktop implements SwingPane.Host {
                 + "<p>Your incidents, settings and map cache: "
                 + home.getAbsolutePath().replace("&", "&amp;").replace("<",
                         "&lt;")
-                + "</p><p>Third-party software and data: "
-                + "THIRD-PARTY-NOTICES.txt in the installation folder. "
-                + "Sources: the Reference tab.</p></body></html>";
-        javax.swing.JOptionPane.showMessageDialog(frame, html, "About Blast",
-                javax.swing.JOptionPane.PLAIN_MESSAGE, frame
-                        .getIconImages().isEmpty() ? null
-                                : new javax.swing.ImageIcon(frame
-                                        .getIconImages().get(0)
-                                        .getScaledInstance(64, 64,
-                                                java.awt.Image.SCALE_SMOOTH)));
+                + "</p><p>Sources: the Reference tab.</p></body></html>";
+        Object[] opts = { "OK", "Third-party notices" };
+        java.awt.Image icon = frame.getIconImages().isEmpty() ? null
+                : frame.getIconImages().get(0);
+        int r = javax.swing.JOptionPane.showOptionDialog(frame, html,
+                "About Blast", javax.swing.JOptionPane.DEFAULT_OPTION,
+                javax.swing.JOptionPane.PLAIN_MESSAGE, icon == null ? null
+                        : new javax.swing.ImageIcon(icon.getScaledInstance(64,
+                                64, java.awt.Image.SCALE_SMOOTH)), opts,
+                opts[0]);
+        if (r == 1)
+            notices();
+    }
+
+    private void notices() {
+        String text;
+        try (java.io.InputStream in = BlastDesktop.class.getResourceAsStream(
+                "THIRD-PARTY-NOTICES.txt")) {
+            text = in == null ? "Not found." : new String(in.readAllBytes(),
+                    java.nio.charset.StandardCharsets.UTF_8);
+        } catch (java.io.IOException e) {
+            text = "Not found.";
+        }
+        javax.swing.JTextArea t = new javax.swing.JTextArea(text, 28, 76);
+        t.setEditable(false);
+        t.setFont(new java.awt.Font(java.awt.Font.MONOSPACED,
+                java.awt.Font.PLAIN, 12));
+        t.setCaretPosition(0);
+        javax.swing.JOptionPane.showMessageDialog(frame,
+                new javax.swing.JScrollPane(t), "Third-party notices",
+                javax.swing.JOptionPane.PLAIN_MESSAGE);
     }
 
     private static double number(String s, double def) {

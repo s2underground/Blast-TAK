@@ -105,4 +105,4 @@ drafts a release with the installers and their checksums, or run it from
 the Actions tab to get them as artifacts.
 
 Third-party software and data: `packaging/content/THIRD-PARTY-NOTICES.txt`
-(installed with the app).
+(shown in the app under About → Third-party notices).
