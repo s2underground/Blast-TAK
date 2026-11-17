@@ -19,9 +19,15 @@ repositories {
 dependencies {
     // Reads offline MBTiles maps (SQLite). Apache License 2.0.
     implementation 'org.xerial:sqlite-jdbc:3.50.3.0'
+    testImplementation 'junit:junit:4.13.2'
 }
 
 sourceSets {
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+    }
     main {
         java {
             srcDirs = ['src/main/java', '../app/src/main/java']

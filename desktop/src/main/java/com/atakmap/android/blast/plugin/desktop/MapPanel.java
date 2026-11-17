@@ -8,6 +8,7 @@ import com.atakmap.android.blast.plugin.core.overlay.Style;
 import com.atakmap.android.blast.plugin.core.port.PositionSource;
 import com.atakmap.android.blast.plugin.desktop.map.TileSource;
 import com.atakmap.android.blast.plugin.desktop.map.TileStore;
+import com.atakmap.android.blast.plugin.desktop.net.Mesh;
 import com.atakmap.android.blast.plugin.swing.MemoryPorts;
 import com.atakmap.android.blast.plugin.swing.SwingPane;
 import com.atakmap.android.blast.plugin.swing.SwingScreen;
@@ -60,6 +61,9 @@ final class MapPanel extends JPanel {
     private final TileStore tiles;
     private final BooleanSupplier labels;
     private final Consumer<String> open;
+    /** Other devices on the network. */
+    java.util.function.Supplier<List<Mesh.Contact>> team =
+            java.util.Collections::emptyList;
     /** Right-click: the host's menu for a point. */
     Consumer<MouseEvent> menu = e -> { };
     private TileSource source = TileSource.NONE;
@@ -371,6 +375,16 @@ final class MapPanel extends JPanel {
                 shape(g, s, sh, showLabels);
         for (MemoryPorts.Stored s : ports.stored())
             marker(g, s);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
+        for (Mesh.Contact c : team.get()) {
+            double px = x(c.lon), py = y(c.lat);
+            g.setColor(new Color(0x00BCD4));
+            g.fill(new Ellipse2D.Double(px - 5, py - 5, 10, 10));
+            g.setColor(Color.BLACK);
+            g.setStroke(new BasicStroke(1.5f));
+            g.draw(new Ellipse2D.Double(px - 5, py - 5, 10, 10));
+            outlined(g, c.callsign, (int) px + 8, (int) py + 4);
+        }
         PositionSource.Fix me = ports.fix();
         if (me != null) {
             double px = x(me.lon), py = y(me.lat);

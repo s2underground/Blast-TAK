@@ -9,6 +9,7 @@ import com.atakmap.android.blast.plugin.core.Wmm;
 import com.atakmap.android.blast.plugin.core.port.MapControl;
 import com.atakmap.android.blast.plugin.core.port.PositionSource;
 import com.atakmap.android.blast.plugin.desktop.map.TileStore;
+import com.atakmap.android.blast.plugin.desktop.net.Mesh;
 import com.atakmap.android.blast.plugin.swing.MemoryPorts;
 import com.atakmap.android.blast.plugin.swing.SwingPane;
 import com.atakmap.android.blast.plugin.swing.SwingScreen;
@@ -44,6 +45,7 @@ public final class BlastDesktop implements SwingPane.Host {
     private final BlastApp app;
     private final MapPanel map;
     private final TileStore tiles;
+    private final Mesh mesh;
     final SwingPane pane;
     final JFrame frame = new JFrame("Blast " + VERSION);
     private final JLabel status = new JLabel(" ");
@@ -88,8 +90,35 @@ public final class BlastDesktop implements SwingPane.Host {
                 return ((t % 360) + 360) % 360;
             }
         };
-        app = new BlastApp(ports, ports, ports, ports, ports, ports, ports,
+        BlastApp[] ap = new BlastApp[1];
+        mesh = new Mesh(ports, new Mesh.Hooks() {
+            @Override
+            public void toast(String s) {
+                BlastDesktop.this.toast(s);
+            }
+
+            @Override
+            public boolean labels() {
+                return ap[0] == null || ap[0].ringLabels();
+            }
+
+            @Override
+            public void changed() {
+                if (pane != null)
+                    pane.refresh();
+                if (m[0] != null)
+                    m[0].repaint();
+            }
+
+            @Override
+            public List<Mesh.Contact> pick(String what,
+                    List<Mesh.Contact> people) {
+                return NetDialogs.pick(frame, what, people);
+            }
+        });
+        app = new BlastApp(ports, mesh, mesh, ports, ports, ports, ports,
                 ports, mc);
+        ap[0] = app;
         MapPanel[] mp = new MapPanel[1];
         tiles = new TileStore(new File(home, "tiles"), MapBar.cacheCapMb(
                 ports) * 1_000_000L, () -> SwingUtilities.invokeLater(() -> {
@@ -100,7 +129,17 @@ public final class BlastDesktop implements SwingPane.Host {
                 this::openIncident);
         mp[0] = map;
         m[0] = map;
+        map.team = mesh::contacts;
         MapBar bar = new MapBar(ports, map, tiles, frame, this::toast);
+        bar.component().addSeparator();
+        javax.swing.JButton net = new javax.swing.JButton("Network\u2026");
+        net.setToolTipText("Share incidents with ATAK devices on this "
+                + "network");
+        net.addActionListener(e -> NetDialogs.settings(frame, ports, mesh));
+        bar.component().add(net);
+        javax.swing.JButton people = new javax.swing.JButton("Contacts");
+        people.addActionListener(e -> NetDialogs.contacts(frame, mesh));
+        bar.component().add(people);
         JPanel mapSide = new JPanel(new BorderLayout());
         mapSide.add(bar.component(), BorderLayout.NORTH);
         mapSide.add(map, BorderLayout.CENTER);
@@ -124,9 +163,11 @@ public final class BlastDesktop implements SwingPane.Host {
                 ports.putString("map.lat", Double.toString(c.lat));
                 ports.putString("map.lon", Double.toString(c.lon));
                 ports.putString("map.zoom", Double.toString(map.zoom()));
+                mesh.shutdown();
             }
         });
         frame.setSize(1400, 900);
+        mesh.restart();
         new Timer(3000, e -> {
             pane.refresh();
             map.repaint();
