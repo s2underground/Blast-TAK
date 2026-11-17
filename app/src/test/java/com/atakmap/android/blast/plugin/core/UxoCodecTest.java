@@ -75,10 +75,19 @@ public class UxoCodecTest {
     }
 
     @Test
-    public void unknownCategoryInKnownEditionIsRejected() {
+    public void unknownCategoryInKnownEditionUsesCarriedCordon() {
+        // A type a newer Blast added to the same edition: shown with the
+        // sender's cordon (within bounds) rather than dropped (1.2.1).
         Map<String, String> a = UxoCodec.encode(sample());
         a.put("cat", "TRUCK");
+        UxoRecord r = UxoCodec.decode(a);
+        assertNotNull(r);
+        assertEquals(Integer.parseInt(a.get("cord_m")), r.cordonM);
+        a.put("cord_m", "5");
         assertNull(UxoCodec.decode(a));
+        a.remove("cord_m");
+        assertNull(UxoCodec.decode(a));
+        a.put("cord_m", "300");
         a.remove("cat");
         assertNull(UxoCodec.decode(a));
     }

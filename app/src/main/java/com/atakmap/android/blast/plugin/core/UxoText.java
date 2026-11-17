@@ -39,6 +39,9 @@ public final class UxoText {
         if (!r.isKnownEdition())
             return "Distance as sent (" + r.sourceId + " " + r.edition
                     + "; not in this build).";
+        if (r.category() == null)
+            return "Distance as sent (" + r.doctrineLabel() + ": a type this "
+                    + "build doesn't have).";
         StringBuilder sb = new StringBuilder();
         UxoTable.Category c = r.category();
         if (c != null && c.isUnknown()) {

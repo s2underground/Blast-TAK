@@ -54,6 +54,10 @@ public final class UxoCard {
             s.add(Text.of("This build doesn't have " + r.sourceId + " "
                     + r.edition + ". Showing the distance the sender drew.",
                     12, Tone.AMBER, false));
+        else if (r.category() == null)
+            s.add(Text.of("This build doesn't have this type of item (a "
+                    + "newer Blast sent it). Showing the distance the sender "
+                    + "drew.", 12, Tone.AMBER, false));
         else if (r.receivedMismatch)
             s.add(Text.of("The sender's distance differs from this build's "
                     + "copy of the same table. This build's distance is "

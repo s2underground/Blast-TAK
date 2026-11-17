@@ -104,16 +104,17 @@ public final class UxoCodec {
         String label = BlastCodec.text(a.get("lbl"));
         int cordon;
         boolean mismatch = false;
-        if (UxoTable.isKnown(src, ed)) {
-            UxoTable.Category c = UxoTable.category(cat);
-            if (c == null)
-                return null;
+        UxoTable.Category c = UxoTable.isKnown(src, ed)
+                ? UxoTable.category(cat) : null;
+        if (c != null) {
             large = large && c.isUnknown();
             // This build's table is authoritative for its own edition.
             cordon = UxoTable.cordonM(c.id, multi, large);
             mismatch = carried > 0 && carried != cordon;
             label = c.doctrineLabel;
         } else {
+            // Another edition, or a category a newer Blast added: use the
+            // cordon the sender's Blast carried.
             if (carried < UxoTable.MIN_CORDON_M
                     || carried > UxoTable.MAX_CORDON_M)
                 return null;
