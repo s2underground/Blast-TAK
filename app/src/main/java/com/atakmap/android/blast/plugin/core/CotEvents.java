@@ -118,7 +118,7 @@ public final class CotEvents {
         boolean circle = sh.kind == OverlayShape.Kind.CIRCLE;
         double[] at = circle ? new double[] { lat, lon } : centre(sh);
         StringBuilder e = head(uid, circle ? CIRCLE_TYPE : OUTLINE_TYPE,
-                nowMs, nowMs + DAY_MS, "h-e", at[0], at[1]);
+                nowMs, nowMs + YEAR_MS, "h-e", at[0], at[1]);
         e.append("<detail>");
         Style st = sh.style;
         if (circle) {

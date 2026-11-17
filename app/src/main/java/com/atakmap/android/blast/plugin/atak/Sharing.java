@@ -47,10 +47,31 @@ public final class Sharing {
                 Log.w(TAG, "no CoT for " + mi.getUID());
                 continue;
             }
+            // ATAK writes drawn circles and outlines with a one-day stale
+            // time; TAK-X, WinTAK and TAK Server then drop an incident's
+            // rings after a day while its marker (one year) stays. Send
+            // every part with the marker's year.
+            keepAYear(ev);
             d.dispatchToBroadcast(ev);
             n++;
         }
         return n;
+    }
+
+    /** Give an event the marker's one-year stale time (rings, outlines). */
+    static void keepAYear(CotEvent ev) {
+        try {
+            CoordinatedTime t = ev.getTime();
+            if (t == null)
+                return;
+            CoordinatedTime year = t.addDays(365);
+            CoordinatedTime stale = ev.getStale();
+            if (stale == null || stale.getMilliseconds() < year
+                    .getMilliseconds())
+                ev.setStale(year);
+        } catch (RuntimeException | LinkageError e) {
+            Log.w(TAG, "stale time not extended", e);
+        }
     }
 
     /** Open ATAK's contact picker with the marker and both rings. */

@@ -194,8 +194,12 @@ public final class AtakPorts {
                     return cot;
                 for (MapItem mi : store.items(m)) {
                     CotEvent ev = CotEventFactory.createCotEvent(mi);
-                    if (ev != null && ev.isValid())
+                    if (ev != null && ev.isValid()) {
+                        // Rings last as long as the marker in packages
+                        // opened days later (TAK-X, WinTAK drop stale).
+                        Sharing.keepAYear(ev);
                         cot.put(mi.getUID(), ev.toString());
+                    }
                 }
                 return cot;
             }

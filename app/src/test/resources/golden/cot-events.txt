@@ -17,7 +17,7 @@
 </event>
 --- s1.mand (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='s1.mand' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='s1.mand' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -48,7 +48,7 @@
 </event>
 --- s1.pref (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='s1.pref' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='s1.pref' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -96,7 +96,7 @@
 </event>
 --- s2.mand (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='s2.mand' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='s2.mand' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -127,7 +127,7 @@
 </event>
 --- s2.pref (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='s2.pref' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='s2.pref' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -175,7 +175,7 @@
 </event>
 --- u1.cordon (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='u1.cordon' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='u1.cordon' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -223,7 +223,7 @@
 </event>
 --- n1.sdz (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.sdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.sdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -254,7 +254,7 @@
 </event>
 --- n1.mdz (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.mdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.mdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -285,7 +285,7 @@
 </event>
 --- n1.ldz (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.ldz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.ldz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -316,7 +316,7 @@
 </event>
 --- n1.burn (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.burn' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.burn' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -347,7 +347,7 @@
 </event>
 --- n1.rad (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.rad' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.rad' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -378,7 +378,7 @@
 </event>
 --- n1.gi (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.gi' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.gi' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -409,7 +409,7 @@
 </event>
 --- n1.fo3000 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.fo3000' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.fo3000' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0405942' lon='-84.4741048' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='38.0398834,-84.5037'/>
@@ -464,7 +464,7 @@
 </event>
 --- n1.fo1000 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.fo1000' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.fo1000' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0405793' lon='-84.4476902' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='38.0389839,-84.5037'/>
@@ -519,7 +519,7 @@
 </event>
 --- n1.fo300 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.fo300' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.fo300' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0404707' lon='-84.3637612' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='38.0362214,-84.5037'/>
@@ -574,7 +574,7 @@
 </event>
 --- n1.fo100 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.fo100' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.fo100' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0400944' lon='-84.2266245' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='38.0331634,-84.5037'/>
@@ -629,7 +629,7 @@
 </event>
 --- n1.fo30 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.fo30' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.fo30' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0389659' lon='-84.0047117' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='38.030724,-84.5037'/>
@@ -684,7 +684,7 @@
 </event>
 --- n1.fo10 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.fo10' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.fo10' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0369235' lon='-83.7546972' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='38.0279288,-84.5037'/>
@@ -739,7 +739,7 @@
 </event>
 --- n1.fo3 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.fo3' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.fo3' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0348556' lon='-83.5676617' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='38.0240157,-84.5037'/>
@@ -794,7 +794,7 @@
 </event>
 --- n1.fo1 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n1.fo1' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n1.fo1' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0303881' lon='-83.2572021' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='38.0126489,-84.5037'/>
@@ -866,7 +866,7 @@
 </event>
 --- n2.sdz (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n2.sdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n2.sdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -897,7 +897,7 @@
 </event>
 --- n2.mdz (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n2.mdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n2.mdz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -928,7 +928,7 @@
 </event>
 --- n2.ldz (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n2.ldz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n2.ldz' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -959,7 +959,7 @@
 </event>
 --- n2.burn (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n2.burn' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n2.burn' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -990,7 +990,7 @@
 </event>
 --- n2.rad (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n2.rad' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n2.rad' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -1021,7 +1021,7 @@
 </event>
 --- n2.gi (u-d-c-c)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n2.gi' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n2.gi' type='u-d-c-c' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0406' lon='-84.5037' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <shape>
@@ -1052,7 +1052,7 @@
 </event>
 --- n2.z1 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n2.z1' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n2.z1' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0405149' lon='-84.4209549' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='37.9859989,-84.3146843'/>
@@ -1119,7 +1119,7 @@
 </event>
 --- n2.z2 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n2.z2' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n2.z2' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0401874' lon='-84.208357' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='37.9310939,-84.1259493'/>
@@ -1186,7 +1186,7 @@
 </event>
 --- n2.toa1 (u-d-f)
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<event version='2.0' uid='n2.toa1' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2026-11-02T14:53:05.000Z' how='h-e' access='Undefined'>
+<event version='2.0' uid='n2.toa1' type='u-d-f' time='2026-11-01T14:53:05.000Z' start='2026-11-01T14:53:05.000Z' stale='2027-11-01T14:53:05.000Z' how='h-e' access='Undefined'>
 <point lat='38.0402925' lon='-84.2349455' hae='9999999.0' ce='9999999.0' le='9999999.0' />
 <detail>
 <link point='37.965932,-84.2455509'/>
