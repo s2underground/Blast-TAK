@@ -71,7 +71,12 @@ public final class BlastPlugin implements IPlugin {
                 .setListener(new ToolbarItemAdapter() {
                     @Override
                     public void onClick(ToolbarItem item) {
-                        showPane();
+                        safe("open the pane", new Runnable() {
+                            @Override
+                            public void run() {
+                                showPane();
+                            }
+                        });
                     }
                 }).setIdentifier(pluginContext.getPackageName())
                 .build();
@@ -84,6 +89,15 @@ public final class BlastPlugin implements IPlugin {
 
     @Override
     public void onStart() {
+        try {
+            start();
+        } catch (RuntimeException | LinkageError e) {
+            // A plugin that fails to start must not take ATAK down.
+            Log.e(TAG, "Blast could not start", e);
+        }
+    }
+
+    private void start() {
         mapView = MapView.getMapView();
         store = new BlastStore(mapView);
         sharing = new Sharing(store);
@@ -95,8 +109,7 @@ public final class BlastPlugin implements IPlugin {
             detailHandler.setOnChange(new Runnable() {
                 @Override
                 public void run() {
-                    if (controller != null)
-                        controller.onShow();
+                    refreshPane();
                 }
             });
             CotDetailManager.getInstance().registerHandler(detailHandler);
@@ -108,8 +121,7 @@ public final class BlastPlugin implements IPlugin {
             uxoHandler.setOnChange(new Runnable() {
                 @Override
                 public void run() {
-                    if (controller != null)
-                        controller.onShow();
+                    refreshPane();
                 }
             });
             CotDetailManager.getInstance().registerHandler(uxoHandler);
@@ -121,8 +133,7 @@ public final class BlastPlugin implements IPlugin {
             nucHandler.setOnChange(new Runnable() {
                 @Override
                 public void run() {
-                    if (controller != null)
-                        controller.onShow();
+                    refreshPane();
                 }
             });
             CotDetailManager.getInstance().registerHandler(nucHandler);
@@ -135,15 +146,25 @@ public final class BlastPlugin implements IPlugin {
                     pluginContext, R.drawable.ic_blast_radial,
                     store, new BlastMenuHandler.Listener() {
                         @Override
-                        public void openZone(Marker zone) {
-                            if (showPane())
-                                controller.openZone(zone);
+                        public void openZone(final Marker zone) {
+                            safe("open an incident", new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (showPane())
+                                        controller.openZone(zone);
+                                }
+                            });
                         }
 
                         @Override
-                        public void placeAt(Marker target) {
-                            if (showPane())
-                                controller.placeAt(target);
+                        public void placeAt(final Marker target) {
+                            safe("place at a marker", new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (showPane())
+                                        controller.placeAt(target);
+                                }
+                            });
                         }
                     });
             MapMenuReceiver.getInstance().registerMapMenuHandler(menuHandler);
@@ -165,13 +186,17 @@ public final class BlastPlugin implements IPlugin {
                             BlastStore.META_FLAG, false))
                             || BlastStore.isRing(item))
                         store.partRemoved(item.getUID());
-                } catch (RuntimeException e) {
+                } catch (RuntimeException | LinkageError e) {
                     Log.e(TAG, "incident cleanup failed", e);
                 }
             }
         };
-        mapView.getMapEventDispatcher().addMapEventListener(
-                MapEvent.ITEM_REMOVED, removeListener);
+        try {
+            mapView.getMapEventDispatcher().addMapEventListener(
+                    MapEvent.ITEM_REMOVED, removeListener);
+        } catch (RuntimeException e) {
+            Log.e(TAG, "remove listener registration failed", e);
+        }
 
         // Incidents loaded before the plugin: adopt their stored detail and
         // make sure the rings exist.
@@ -186,10 +211,22 @@ public final class BlastPlugin implements IPlugin {
 
     @Override
     public void onStop() {
+        try {
+            stop();
+        } catch (RuntimeException | LinkageError e) {
+            Log.e(TAG, "Blast did not stop cleanly", e);
+        }
+    }
+
+    private void stop() {
         if (uiService != null) {
-            if (pane != null && uiService.isPaneVisible(pane))
-                uiService.closePane(pane);
-            uiService.removeToolbarItem(toolbarItem);
+            try {
+                if (pane != null && uiService.isPaneVisible(pane))
+                    uiService.closePane(pane);
+                uiService.removeToolbarItem(toolbarItem);
+            } catch (RuntimeException e) {
+                Log.e(TAG, "pane or toolbar removal failed", e);
+            }
         }
         if (menuHandler != null) {
             try {
@@ -228,17 +265,64 @@ public final class BlastPlugin implements IPlugin {
             nucHandler = null;
         }
         if (removeListener != null && mapView != null) {
-            mapView.getMapEventDispatcher().removeMapEventListener(
-                    MapEvent.ITEM_REMOVED, removeListener);
+            try {
+                mapView.getMapEventDispatcher().removeMapEventListener(
+                        MapEvent.ITEM_REMOVED, removeListener);
+            } catch (RuntimeException e) {
+                Log.e(TAG, "remove listener unregister failed", e);
+            }
             removeListener = null;
         }
         if (controller != null) {
-            controller.dispose();
+            try {
+                controller.dispose();
+            } catch (RuntimeException e) {
+                Log.e(TAG, "pane dispose failed", e);
+            }
             controller = null;
             pane = null;
         }
-        if (store != null)
-            store.dispose();
+        if (store != null) {
+            try {
+                store.dispose();
+            } catch (RuntimeException e) {
+                Log.e(TAG, "store dispose failed", e);
+            }
+        }
+    }
+
+    /** An incident arrived or changed: redraw the open pane. */
+    private void refreshPane() {
+        safe("refresh", new Runnable() {
+            @Override
+            public void run() {
+                if (controller != null)
+                    controller.onShow();
+            }
+        });
+    }
+
+    /**
+     * Run something ATAK asked of Blast (toolbar, radial menu, received
+     * incidents). A Blast error is logged and reported, never passed back:
+     * an exception on ATAK's main thread closes ATAK.
+     */
+    private void safe(String what, Runnable r) {
+        try {
+            r.run();
+        } catch (RuntimeException | LinkageError e) {
+            Log.e(TAG, "Blast error: " + what, e);
+            try {
+                if (mapView != null)
+                    android.widget.Toast.makeText(mapView.getContext(),
+                            "Blast hit an error and stopped (" + what
+                                    + "). If it happens again, please "
+                                    + "report it.",
+                            android.widget.Toast.LENGTH_SHORT).show();
+            } catch (RuntimeException ex) {
+                Log.e(TAG, "error toast failed", ex);
+            }
+        }
     }
 
     /** Show the pane; false if ATAK offers no UI service. */

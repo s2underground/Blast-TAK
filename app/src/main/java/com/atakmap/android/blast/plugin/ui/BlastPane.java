@@ -496,8 +496,24 @@ public final class BlastPane {
         d.clearListeners(MapEvent.MAP_LONG_PRESS);
         pickListener = new MapEventDispatcher.MapEventDispatchListener() {
             @Override
-            public void onMapEvent(MapEvent event) {
-                onPicked(event);
+            public void onMapEvent(final MapEvent event) {
+                final boolean[] done = { false };
+                guarded("map tap", new Runnable() {
+                    @Override
+                    public void run() {
+                        onPicked(event);
+                        done[0] = true;
+                    }
+                });
+                // After an error, never leave ATAK's map listeners pushed
+                // (map taps would stop working in ATAK).
+                if (!done[0]) {
+                    try {
+                        stopListening();
+                    } catch (RuntimeException | LinkageError e) {
+                        Log.e(TAG, "could not stop listening", e);
+                    }
+                }
             }
         };
         d.addMapEventListener(MapEvent.MAP_CLICK, pickListener);
@@ -560,7 +576,7 @@ public final class BlastPane {
     private void refresh() {
         try {
             refreshCardAndList();
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | LinkageError e) {
             Log.e(TAG, "refresh failed", e);
         }
     }
@@ -698,10 +714,15 @@ public final class BlastPane {
             b.setItems(d.items.toArray(new String[0]),
                     new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface di, int w) {
-                            handle(app.choose(d, d.itemAction,
-                                    new FormValues().put(Dialog.ITEM,
-                                            Integer.toString(w))));
+                        public void onClick(DialogInterface di, final int w) {
+                            guarded(d.itemAction, new Runnable() {
+                                @Override
+                                public void run() {
+                                    handle(app.choose(d, d.itemAction,
+                                            new FormValues().put(Dialog.ITEM,
+                                                    Integer.toString(w))));
+                                }
+                            });
                         }
                     });
         final EditText input = field;
@@ -726,12 +747,17 @@ public final class BlastPane {
         return new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface di, int w) {
-                FormValues v = new FormValues();
-                if (input != null)
-                    v.put(Dialog.FIELD, input.getText().toString());
-                for (int i = 0; i < ticks.length; i++)
-                    v.put(Dialog.option(i), ticks[i]);
-                handle(app.choose(d, action, v));
+                guarded(action, new Runnable() {
+                    @Override
+                    public void run() {
+                        FormValues v = new FormValues();
+                        if (input != null)
+                            v.put(Dialog.FIELD, input.getText().toString());
+                        for (int i = 0; i < ticks.length; i++)
+                            v.put(Dialog.option(i), ticks[i]);
+                        handle(app.choose(d, action, v));
+                    }
+                });
             }
         };
     }
@@ -754,9 +780,14 @@ public final class BlastPane {
             public void run() {
                 if (fv[0] == null)
                     return;
-                for (java.util.Map.Entry<String, String> e : f.live(
-                        fv[0].values()).entrySet())
-                    fv[0].set(e.getKey(), e.getValue());
+                try {
+                    for (java.util.Map.Entry<String, String> e : f.live(
+                            fv[0].values()).entrySet())
+                        fv[0].set(e.getKey(), e.getValue());
+                } catch (RuntimeException | LinkageError e) {
+                    // A live line is a convenience: keep the form usable.
+                    Log.e(TAG, "form live line failed", e);
+                }
             }
         };
         fv[0] = renderForm(f.form, ctx, box, live);
@@ -779,7 +810,12 @@ public final class BlastPane {
         return new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface di, int w) {
-                handle(f.press(button, fv[0].values()));
+                guarded(button, new Runnable() {
+                    @Override
+                    public void run() {
+                        handle(f.press(button, fv[0].values()));
+                    }
+                });
             }
         };
     }
@@ -833,8 +869,20 @@ public final class BlastPane {
         /** True while the host sets a box or check (no change action). */
         boolean quiet;
 
-        Rendered(ScreenAction actions) {
-            this.actions = actions;
+        Rendered(final ScreenAction actions) {
+            // Every button, tick and box change on a rendered screen goes
+            // through the guard: a Blast error never reaches ATAK.
+            this.actions = actions == null ? null : new ScreenAction() {
+                @Override
+                public void run(final String action) {
+                    guarded(action, new Runnable() {
+                        @Override
+                        public void run() {
+                            actions.run(action);
+                        }
+                    });
+                }
+            };
         }
 
         /** What is typed in the entry boxes and ticked in the checks. */
@@ -1360,11 +1408,16 @@ public final class BlastPane {
                     bs.get(i).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            value[0] = c.tap(k, value[0]);
-                            for (int j = 0; j < bs.size(); j++)
-                                tint(bs.get(j), c.code(j).equals(value[0])
-                                        ? sel : BTN);
-                            onChange.run();
+                            guarded(c.id, new Runnable() {
+                                @Override
+                                public void run() {
+                                    value[0] = c.tap(k, value[0]);
+                                    for (int j = 0; j < bs.size(); j++)
+                                        tint(bs.get(j), c.code(j).equals(
+                                                value[0]) ? sel : BTN);
+                                    onChange.run();
+                                }
+                            });
                         }
                     });
                     tint(bs.get(i), c.code(i).equals(value[0]) ? sel : BTN);
@@ -1449,6 +1502,32 @@ public final class BlastPane {
 
     private void toast(String s) {
         Toast.makeText(mapView.getContext(), s, Toast.LENGTH_SHORT).show();
+    }
+
+    private long lastErrorToast;
+
+    /**
+     * Run what a tap, tick or typed change asks for. A Blast error is
+     * logged and reported here, never passed on: an exception that reaches
+     * ATAK's main thread closes ATAK. An API missing from the running ATAK
+     * (LinkageError) is caught the same way.
+     */
+    void guarded(String what, Runnable r) {
+        try {
+            r.run();
+        } catch (RuntimeException | LinkageError e) {
+            Log.e(TAG, "Blast error in " + what, e);
+            long now = android.os.SystemClock.uptimeMillis();
+            if (now - lastErrorToast < 4000)
+                return;
+            lastErrorToast = now;
+            try {
+                toast("Blast hit an error and stopped that action. "
+                        + "If it happens again, please report it.");
+            } catch (RuntimeException ex) {
+                Log.e(TAG, "error toast failed", ex);
+            }
+        }
     }
 
     private int dp(float v) {
