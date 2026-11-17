@@ -662,6 +662,11 @@ final class MapPanel extends JPanel {
             box(g, fm, attr, getWidth() - 6, getHeight() - 6, true);
         String problem = source.kind == TileSource.Kind.NONE ? null
                 : tiles.problem();
+        int loading = source.kind == TileSource.Kind.ONLINE ? tiles.loading()
+                : 0;
+        if (problem == null && loading > 0)
+            problem = "Loading " + loading + (loading == 1 ? " map square"
+                    : " map squares") + "…";
         if (problem != null) {
             g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
             box(g, g.getFontMetrics(), problem, getWidth() - 6,

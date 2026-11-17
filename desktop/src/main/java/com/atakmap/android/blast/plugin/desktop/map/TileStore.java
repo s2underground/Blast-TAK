@@ -55,10 +55,16 @@ public final class TileStore {
     private static final long FRESH_MS = 7L * 24 * 3600 * 1000;
     /** Retry a failed tile after 2 s, 6 s, 18 s, then every minute. */
     private static final long RETRY_FIRST_MS = 2_000, RETRY_MAX_MS = 60_000;
-    /** A tile the server doesn't have (404): ask again after 10 min. */
-    private static final long MISSING_MS = 10 * 60_000;
-    /** Downloads at once: OSM's policy allows 2; other servers get 6. */
-    private static final int OSM_CONNECTIONS = 2, OTHER_CONNECTIONS = 6;
+    /** A tile the server doesn't have (404): ask again after a minute
+     * (some servers make tiles on request and have them later). */
+    private static final long MISSING_MS = 60_000;
+    /** A tile still loading after this long is asked for again. */
+    private static final long STUCK_MS = 45_000;
+    /** Downloads at once: OSM's policy allows 2; other servers get 8. */
+    private static final int OSM_CONNECTIONS = 2, OTHER_CONNECTIONS = 8;
+    /** A tile that hasn't arrived in this long is given up and retried,
+     * so a few hung requests can't hold up the rest. */
+    private static final Duration TILE_TIMEOUT = Duration.ofSeconds(10);
     private static final int MEMORY_TILES = 600;
     private static final DateTimeFormatter HTTP_DATE = DateTimeFormatter
             .ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
@@ -78,7 +84,9 @@ public final class TileStore {
             return size() > MEMORY_TILES;
         }
     };
-    private final Set<String> pending = new HashSet<>();
+    /** Tiles being loaded, and since when. */
+    private final Map<String, Long> pending = new HashMap<>();
+    private final TileLog log;
     /** Failed tiles: when to ask again, and how many failures so far. */
     private final Map<String, long[]> failed = new HashMap<>();
     private final Map<String, java.util.concurrent.Semaphore> slots =
@@ -105,8 +113,11 @@ public final class TileStore {
                 return t;
             });
     private final HttpClient http = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(10))
+            .connectTimeout(Duration.ofSeconds(6))
             .followRedirects(HttpClient.Redirect.NORMAL)
+            // HTTP/1.1: separate connections. Java's HTTP/2 puts every tile
+            // on one connection, and some tile servers stall it.
+            .version(HttpClient.Version.HTTP_1_1)
             .proxy(ProxySelector.getDefault()).build();
     private final Map<File, Connection> mbtiles = new HashMap<>();
 
@@ -114,6 +125,12 @@ public final class TileStore {
     private volatile long problemAt;
 
     public TileStore(File cacheRoot, long capBytes, Runnable repaint) {
+        this(cacheRoot, capBytes, repaint, new TileLog(null));
+    }
+
+    public TileStore(File cacheRoot, long capBytes, Runnable repaint,
+            TileLog log) {
+        this.log = log;
         this.cacheRoot = cacheRoot;
         this.capBytes = capBytes;
         this.repaint = repaint;
@@ -134,14 +151,28 @@ public final class TileStore {
         String k = key(s, z, x, y);
         synchronized (this) {
             BufferedImage img = memory.get(k);
-            if (img != null || pending.contains(k))
+            if (img != null)
                 return img;
+            Long since = pending.get(k);
+            if (since != null) {
+                if (System.currentTimeMillis() - since < STUCK_MS)
+                    return null;
+                log.add("still loading after " + STUCK_MS / 1000
+                        + " s, asking again: " + k);
+            }
             long[] f = failed.get(k);
             if (f != null && System.currentTimeMillis() < f[0])
                 return null;
-            pending.add(k);
+            pending.put(k, System.currentTimeMillis());
         }
-        disk.execute(() -> loadLocal(s, z, x, y, k));
+        disk.execute(() -> {
+            try {
+                loadLocal(s, z, x, y, k);
+            } catch (RuntimeException | Error e) {
+                log.add("error loading " + k + ": " + e);
+                done(k, null);
+            }
+        });
         return null;
     }
 
@@ -153,6 +184,19 @@ public final class TileStore {
 
     public static String keyOf(TileSource s, int z, int x, int y) {
         return key(s, z, x, y);
+    }
+
+    public TileLog log() {
+        return log;
+    }
+
+    /** How many wanted tiles are loading now. */
+    public synchronized int loading() {
+        int n = 0;
+        for (String k : pending.keySet())
+            if (wanted.contains(k))
+                n++;
+        return n;
     }
 
     /** What went wrong recently ("offline", a file error), or null. */
@@ -192,7 +236,7 @@ public final class TileStore {
             }
         }
         repaint.run();
-        if (wait > 0 && wait < MISSING_MS)
+        if (wait > 0)
             later.schedule(repaint, wait + 50, TimeUnit.MILLISECONDS);
     }
 
@@ -275,7 +319,7 @@ public final class TileStore {
                 return;
             }
             HttpRequest.Builder b = HttpRequest.newBuilder(URI.create(s.url(z,
-                    x, y))).timeout(Duration.ofSeconds(20))
+                    x, y))).timeout(TILE_TIMEOUT)
                     .header("User-Agent", USER_AGENT);
             if (have)
                 b.header("If-Modified-Since", HTTP_DATE.format(Instant
@@ -287,6 +331,9 @@ public final class TileStore {
                 drop(k);
                 return;
             }
+            if (r.statusCode() != 200)
+                log.add(s.name + " answered " + r.statusCode() + " for "
+                        + z + "/" + x + "/" + y);
             if (r.statusCode() == 404 || r.statusCode() == 204) {
                 // No tile here (outside the map's area or zooms): the
                 // lower zoom's tile stands in.
@@ -308,6 +355,10 @@ public final class TileStore {
             }
             BufferedImage img = decode(r.body());
             if (img == null) {
+                log.add(s.name + " sent " + r.body().length + " bytes that "
+                        + "aren't an image (" + r.headers().firstValue(
+                                "Content-Type").orElse("no type") + ") for "
+                        + z + "/" + x + "/" + y);
                 problem(s.name + " sent something that isn't an image");
                 done(k, null);
                 return;
@@ -318,7 +369,8 @@ public final class TileStore {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             drop(k);
-        } catch (IOException | IllegalArgumentException e) {
+        } catch (IOException | RuntimeException e) {
+            log.add(s.name + " " + z + "/" + x + "/" + y + ": " + e);
             problem((e instanceof java.net.http.HttpTimeoutException
                     ? s.name + " is slow to answer (retrying)"
                     : "Can't reach " + s.name + " (offline?)") + reason(e));

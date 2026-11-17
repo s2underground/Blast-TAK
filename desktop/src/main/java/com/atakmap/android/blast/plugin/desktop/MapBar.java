@@ -182,6 +182,9 @@ final class MapBar {
         JMenuItem cache = new JMenuItem("Map cache…");
         cache.addActionListener(e -> cacheDialog());
         m.add(cache);
+        JMenuItem log = new JMenuItem("Map download log…");
+        log.addActionListener(e -> logDialog());
+        m.add(log);
         return m;
     }
 
@@ -284,6 +287,30 @@ final class MapBar {
             tiles.clearCache();
             toast.accept("Map cache emptied.");
         }
+    }
+
+    /** Problems loading tiles, to read or copy into a bug report. */
+    private void logDialog() {
+        javax.swing.JTextArea t = new javax.swing.JTextArea(tiles.log()
+                .text(), 24, 90);
+        t.setEditable(false);
+        t.setFont(new java.awt.Font(java.awt.Font.MONOSPACED,
+                java.awt.Font.PLAIN, 12));
+        t.setCaretPosition(t.getDocument().getLength());
+        java.io.File f = tiles.log().file();
+        Object[] msg = { new JLabel("<html>Problems loading map tiles (newest "
+                + "last). Also saved in " + (f == null ? "memory only"
+                        : f.getAbsolutePath().replace("&", "&amp;")
+                                .replace("<", "&lt;"))
+                + ".<br>It names the map squares you viewed, so it shows "
+                + "roughly where you looked.</html>"),
+                new javax.swing.JScrollPane(t) };
+        Object[] opts = { "Copy", "Close" };
+        int r = JOptionPane.showOptionDialog(owner, msg, "Map download log",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+                opts, opts[1]);
+        if (r == 0)
+            copy(t.getText());
     }
 
     static long cacheCapMb(MemoryPorts ports) {

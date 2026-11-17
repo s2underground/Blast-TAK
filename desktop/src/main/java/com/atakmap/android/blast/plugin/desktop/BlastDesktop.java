@@ -168,7 +168,8 @@ public final class BlastDesktop implements SwingPane.Host {
                 ports) * 1_000_000L, () -> SwingUtilities.invokeLater(() -> {
                     if (mp[0] != null)
                         mp[0].repaint();
-                }));
+                }), new com.atakmap.android.blast.plugin.desktop.map.TileLog(
+                        new File(home, "tiles.log")));
         map = new MapPanel(ports, tiles, lat, lon, zoom, app::ringLabels,
                 this::openIncident);
         mp[0] = map;
