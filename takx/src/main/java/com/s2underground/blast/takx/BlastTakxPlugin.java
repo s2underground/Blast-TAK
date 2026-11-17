@@ -1,6 +1,8 @@
 package com.s2underground.blast.takx;
 
 import com.atakmap.android.blast.plugin.core.CotEvents;
+import com.atakmap.android.blast.plugin.core.Mgrs;
+import com.atakmap.android.blast.plugin.core.Wmm;
 import com.atakmap.android.blast.plugin.core.app.BlastApp;
 import com.atakmap.android.blast.plugin.core.port.MapControl;
 import com.atakmap.android.blast.plugin.core.port.PositionSource;
@@ -210,8 +212,12 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
             listenToNetwork();
             listenForDeletes();
             timer = new Timer(3000, e -> {
-                checkMarkers();
-                pane.refresh();
+                try {
+                    checkMarkers();
+                    pane.refresh();
+                } catch (RuntimeException | LinkageError ex) {
+                    LOG.warn("refresh failed", ex);
+                }
             });
             timer.start();
         } catch (RuntimeException | LinkageError e) {
@@ -253,9 +259,13 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     /** Bring the globe's shapes, markers and labels up to date. */
     private void redraw() {
-        shapes.sync();
-        if (labels != null)
-            labels.refresh();
+        try {
+            shapes.sync();
+            if (labels != null)
+                labels.refresh();
+        } catch (RuntimeException | LinkageError e) {
+            LOG.warn("could not draw the incidents", e);
+        }
     }
 
     /** Clicks on the globe: place (when the core asked) or open a card. */
@@ -265,14 +275,21 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         selectListener = new IMapObjectSelectListener() {
             @Override
             public void selected(MapObjectSelectEvent e) {
-                if (picking != null || !e.isLeftClick() || !e.hasMapObjects())
-                    return;
-                for (IMapObject o : e.getMapObjects()) {
-                    String uid = shapes.incidentOf(o);
-                    if (uid != null) {
-                        SwingUtilities.invokeLater(() -> pane.open(uid));
+                try {
+                    if (picking != null || !e.isLeftClick()
+                            || !e.hasMapObjects())
                         return;
+                    for (IMapObject o : e.getMapObjects()) {
+                        String uid = shapes.incidentOf(o);
+                        if (uid != null) {
+                            SwingUtilities.invokeLater(() -> pane.guarded(
+                                    "open " + uid, () -> pane.open(uid)));
+                            return;
+                        }
                     }
+                } catch (RuntimeException | LinkageError ex) {
+                    // Never throw into TAK-X's own event handling.
+                    LOG.warn("globe selection not handled", ex);
                 }
             }
         };
@@ -280,17 +297,23 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         clickListener = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (picking == null || e.getButton() != MouseEvent.BUTTON1)
-                    return;
-                gov.nasa.worldwind.WorldWindow w = window();
-                gov.nasa.worldwind.geom.Position p = w == null ? null
-                        : w.getCurrentPosition();
-                SwingPane.Picked done = picking;
-                stopPick();
-                e.consume();
-                done.at(p == null ? null : PositionSource.Fix.at(
-                        p.getLatitude().degrees, p.getLongitude().degrees),
-                        false);
+                try {
+                    if (picking == null
+                            || e.getButton() != MouseEvent.BUTTON1)
+                        return;
+                    gov.nasa.worldwind.WorldWindow w = window();
+                    gov.nasa.worldwind.geom.Position p = w == null ? null
+                            : w.getCurrentPosition();
+                    SwingPane.Picked done = picking;
+                    stopPick();
+                    e.consume();
+                    done.at(p == null ? null : PositionSource.Fix.at(
+                            p.getLatitude().degrees, p.getLongitude().degrees),
+                            false);
+                } catch (RuntimeException | LinkageError ex) {
+                    LOG.warn("globe click not handled", ex);
+                    stopPick();
+                }
             }
         };
         gov.nasa.worldwind.WorldWindow w = window();
@@ -314,12 +337,16 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
             @Override
             public void clientMapObjectRemoved(IMapObject o) {
                 SwingUtilities.invokeLater(() -> {
-                    if (shapes == null || !shapes.isIncidentMarker(o))
-                        return;
-                    // Check once TAK-X has finished removing it.
-                    Timer t = new Timer(500, e -> checkMarkers());
-                    t.setRepeats(false);
-                    t.start();
+                    try {
+                        if (shapes == null || !shapes.isIncidentMarker(o))
+                            return;
+                        // Check once TAK-X has finished removing it.
+                        Timer t = new Timer(500, e -> checkMarkers());
+                        t.setRepeats(false);
+                        t.start();
+                    } catch (RuntimeException | LinkageError ex) {
+                        LOG.warn("removal not handled", ex);
+                    }
                 });
             }
 
@@ -349,7 +376,7 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
                     toast("Deleted " + s.name + " (its marker was "
                             + "deleted).");
             }
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | LinkageError e) {
             LOG.warn("could not check the incident markers", e);
         }
     }
@@ -433,24 +460,42 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
         return new MapControl() {
             @Override
             public PositionSource.Fix center() {
-                if (globe == null)
+                try {
+                    if (globe == null)
+                        return null;
+                    GeoPoint c = globe.getCenterLocation();
+                    return c == null || !c.isValid() ? null
+                            : PositionSource.Fix.at(c.getLatitude(),
+                                    c.getLongitude());
+                } catch (RuntimeException | LinkageError e) {
+                    LOG.warn("no globe centre", e);
                     return null;
-                GeoPoint c = globe.getCenterLocation();
-                return c == null || !c.isValid() ? null
-                        : PositionSource.Fix.at(c.getLatitude(),
-                                c.getLongitude());
+                }
             }
 
             @Override
             public String mgrs(double lat, double lon) {
-                return new MGRSPoint(lat, lon).getFormattedString();
+                try {
+                    return new MGRSPoint(lat, lon).getFormattedString();
+                } catch (RuntimeException | LinkageError e) {
+                    // TAK-X's converter missing or failing: Blast's own
+                    // (the same grid within 2 cm ties).
+                    return Mgrs.of(lat, lon);
+                }
             }
 
             @Override
             public double magneticToTrue(double lat, double lon,
                     double magneticDeg) {
-                float decl = new GeomagneticField((float) lat, (float) lon,
-                        0f, System.currentTimeMillis()).getDeclination();
+                double decl;
+                try {
+                    decl = new GeomagneticField((float) lat, (float) lon,
+                            0f, System.currentTimeMillis()).getDeclination();
+                } catch (RuntimeException | LinkageError e) {
+                    // Blast's own World Magnetic Model 2025.
+                    decl = Wmm.declination(lat, lon, 0, Wmm.decimalYear(
+                            System.currentTimeMillis()));
+                }
                 double t = (magneticDeg + decl) % 360;
                 return t < 0 ? t + 360 : t;
             }
@@ -459,6 +504,11 @@ public class BlastTakxPlugin extends AAppPlugin implements SwingPane.Host {
 
     // ------------------------------------------------------------------
     // SwingPane.Host
+
+    @Override
+    public void error(String what, Throwable t) {
+        LOG.error("Blast error in {}", what, t);
+    }
 
     @Override
     public void toast(String s) {

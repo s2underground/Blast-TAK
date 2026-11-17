@@ -66,6 +66,12 @@ public final class SwingPane {
 
         /** The window dialogs belong to (may be null). */
         Window owner();
+
+        /** Log an error Blast caught (the user gets a short message). */
+        default void error(String what, Throwable t) {
+            System.err.println("Blast error in " + what);
+            t.printStackTrace();
+        }
     }
 
     /** A map click for the core. */
@@ -178,15 +184,44 @@ public final class SwingPane {
     }
 
     public void tap(String action, FormValues v) {
-        Outcome o = app.tap(action, v);
-        if (o != null)
-            handle(o);
+        guarded(action, () -> {
+            Outcome o = app.tap(action, v);
+            if (o != null)
+                handle(o);
+        });
     }
 
     public void newAction(String action) {
-        Outcome o = app.tapNew(action, newView.values());
-        if (o != null)
-            handle(o);
+        guarded(action, () -> {
+            Outcome o = app.tapNew(action, newView.values());
+            if (o != null)
+                handle(o);
+        });
+    }
+
+    private long lastError;
+
+    /**
+     * Run what a click or typed change asks for. A Blast error is logged and
+     * reported, never passed on into the host's event handling (a host API
+     * missing from the running TAK-X, LinkageError, is caught too).
+     */
+    public void guarded(String what, Runnable r) {
+        try {
+            r.run();
+        } catch (RuntimeException | LinkageError e) {
+            try {
+                host.error(what, e);
+                long now = System.currentTimeMillis();
+                if (now - lastError > 4000) {
+                    lastError = now;
+                    host.toast("Blast hit an error and stopped that action. "
+                            + "If it happens again, please report it.");
+                }
+            } catch (RuntimeException | LinkageError ex) {
+                // nothing more to do
+            }
+        }
     }
 
     private void showTab(boolean reference, String section) {
@@ -240,8 +275,8 @@ public final class SwingPane {
             host.stopPick();
         if (o.pick != null)
             host.startPick(o.pick, (at, onMarker) -> SwingUtilities
-                    .invokeLater(() -> handle(app.picked(at, onMarker,
-                            newView.values()))));
+                    .invokeLater(() -> guarded("map click", () -> handle(app
+                            .picked(at, onMarker, newView.values())))));
         if (o.newIncident)
             renderNew();
         if (o.focus != null) {
@@ -434,8 +469,9 @@ public final class SwingPane {
                     return;
                 int i = list.getSelectedIndex();
                 w.dispose();
-                handle(app.choose(d, d.itemAction, new FormValues().put(
-                        Dialog.ITEM, Integer.toString(i))));
+                guarded(d.itemAction, () -> handle(app.choose(d, d.itemAction,
+                        new FormValues().put(Dialog.ITEM, Integer.toString(
+                                i)))));
             });
             JScrollPane sp = new JScrollPane(list);
             sp.setPreferredSize(new Dimension(560, Math.min(420,
@@ -466,7 +502,7 @@ public final class SwingPane {
                 v.put(Dialog.FIELD, input.getText());
             for (int i = 0; i < ticks.size(); i++)
                 v.put(Dialog.option(i), ticks.get(i).isSelected());
-            handle(app.choose(d, action, v));
+            guarded(action, () -> handle(app.choose(d, action, v)));
         });
         bar.add(b);
     }
@@ -481,9 +517,14 @@ public final class SwingPane {
         Runnable live = () -> {
             if (fv[0] == null)
                 return;
-            for (Map.Entry<String, String> e : f.live(fv[0].values())
-                    .entrySet())
-                fv[0].set(e.getKey(), e.getValue());
+            try {
+                for (Map.Entry<String, String> e : f.live(fv[0].values())
+                        .entrySet())
+                    fv[0].set(e.getKey(), e.getValue());
+            } catch (RuntimeException | LinkageError e) {
+                // A live line is a convenience: keep the form usable.
+                host.error("form live line", e);
+            }
         };
         fv[0] = SwingScreen.form(f.form, box, live);
         live.run();
@@ -510,7 +551,8 @@ public final class SwingPane {
             JButton b = dialogButton(btn[0]);
             b.addActionListener(e -> {
                 w.dispose();
-                handle(f.press(btn[1], fv[0].values()));
+                guarded(btn[1], () -> handle(f.press(btn[1], fv[0]
+                        .values())));
             });
             bar.add(b);
         }
