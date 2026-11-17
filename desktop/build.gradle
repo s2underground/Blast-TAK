@@ -12,6 +12,15 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Reads offline MBTiles maps (SQLite). Apache License 2.0.
+    implementation 'org.xerial:sqlite-jdbc:3.50.3.0'
+}
+
 sourceSets {
     main {
         java {

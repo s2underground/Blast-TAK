@@ -4,8 +4,11 @@ import com.atakmap.android.blast.plugin.core.NucText;
 import com.atakmap.android.blast.plugin.core.app.BlastApp;
 import com.atakmap.android.blast.plugin.core.overlay.OverlayShape;
 import com.atakmap.android.blast.plugin.core.overlay.Overlays;
+import com.atakmap.android.blast.plugin.core.Mgrs;
+import com.atakmap.android.blast.plugin.core.Wmm;
 import com.atakmap.android.blast.plugin.core.port.MapControl;
 import com.atakmap.android.blast.plugin.core.port.PositionSource;
+import com.atakmap.android.blast.plugin.desktop.map.TileStore;
 import com.atakmap.android.blast.plugin.swing.MemoryPorts;
 import com.atakmap.android.blast.plugin.swing.SwingPane;
 import com.atakmap.android.blast.plugin.swing.SwingScreen;
@@ -22,6 +25,7 @@ import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -30,17 +34,21 @@ import javax.swing.WindowConstants;
 
 /**
  * Blast on a desktop, without ATAK: the core behind the shared Swing pane
- * ({@link SwingPane}) and a plain offline map. Only the window, the map
- * and the ports are this host's own.
+ * ({@link SwingPane}) and a tile map (online with a cache, MBTiles files or
+ * none). Only the window, the map and the ports are this host's own; MGRS
+ * and declination come from the core ({@link Mgrs}, {@link Wmm}).
  */
 public final class BlastDesktop implements SwingPane.Host {
 
     private final MemoryPorts ports;
     private final BlastApp app;
     private final MapPanel map;
+    private final TileStore tiles;
     final SwingPane pane;
-    final JFrame frame = new JFrame("Blast (desktop test host)");
+    final JFrame frame = new JFrame("Blast " + VERSION);
     private final JLabel status = new JLabel(" ");
+
+    static final String VERSION = "1.2";
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new BlastDesktop(new File(
@@ -56,9 +64,11 @@ public final class BlastDesktop implements SwingPane.Host {
             // default look
         }
         ports = new MemoryPorts(home, this::toast);
+        MapBar.restoreMe(ports);
         // The map starts on the National Mall (no GPS assumed).
-        double lat = Double.parseDouble(ports.getString("map.lat", "38.8895"));
-        double lon = Double.parseDouble(ports.getString("map.lon", "-77.0353"));
+        double lat = number(ports.getString("map.lat", ""), 38.8895);
+        double lon = number(ports.getString("map.lon", ""), -77.0353);
+        double zoom = number(ports.getString("map.zoom", ""), 15);
         MapPanel[] m = new MapPanel[1];
         MapControl mc = new MapControl() {
             @Override
@@ -68,26 +78,37 @@ public final class BlastDesktop implements SwingPane.Host {
 
             @Override
             public String mgrs(double la, double lo) {
-                // No MGRS library here: the core falls back to lat / lon.
-                throw new UnsupportedOperationException("no MGRS");
+                return Mgrs.of(la, lo);
             }
 
             @Override
             public double magneticToTrue(double la, double lo, double deg) {
-                // No declination model here: the core asks for true bearings.
-                throw new UnsupportedOperationException("no declination");
+                double t = deg + Wmm.declination(la, lo, 0,
+                        Wmm.decimalYear(System.currentTimeMillis()));
+                return ((t % 360) + 360) % 360;
             }
         };
         app = new BlastApp(ports, ports, ports, ports, ports, ports, ports,
                 ports, mc);
-        map = new MapPanel(ports, lat, lon, app::ringLabels,
+        MapPanel[] mp = new MapPanel[1];
+        tiles = new TileStore(new File(home, "tiles"), MapBar.cacheCapMb(
+                ports) * 1_000_000L, () -> SwingUtilities.invokeLater(() -> {
+                    if (mp[0] != null)
+                        mp[0].repaint();
+                }));
+        map = new MapPanel(ports, tiles, lat, lon, zoom, app::ringLabels,
                 this::openIncident);
+        mp[0] = map;
         m[0] = map;
+        MapBar bar = new MapBar(ports, map, tiles, frame, this::toast);
+        JPanel mapSide = new JPanel(new BorderLayout());
+        mapSide.add(bar.component(), BorderLayout.NORTH);
+        mapSide.add(map, BorderLayout.CENTER);
         ports.changed = map::repaint;
         pane = new SwingPane(app, this);
 
-        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, map,
-                pane.component());
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                mapSide, pane.component());
         split.setResizeWeight(1);
         status.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
         status.setOpaque(true);
@@ -102,6 +123,7 @@ public final class BlastDesktop implements SwingPane.Host {
                 PositionSource.Fix c = map.center();
                 ports.putString("map.lat", Double.toString(c.lat));
                 ports.putString("map.lon", Double.toString(c.lon));
+                ports.putString("map.zoom", Double.toString(map.zoom()));
             }
         });
         frame.setSize(1400, 900);
@@ -109,6 +131,15 @@ public final class BlastDesktop implements SwingPane.Host {
             pane.refresh();
             map.repaint();
         }).start();
+    }
+
+    private static double number(String s, double def) {
+        try {
+            double d = Double.parseDouble(s);
+            return Double.isNaN(d) || Double.isInfinite(d) ? def : d;
+        } catch (NumberFormatException e) {
+            return def;
+        }
     }
 
     /** A marker was clicked on the map. */
