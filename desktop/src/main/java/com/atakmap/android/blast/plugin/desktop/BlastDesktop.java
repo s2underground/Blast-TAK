@@ -98,6 +98,10 @@ public final class BlastDesktop implements SwingPane.Host {
     }
 
     public static void main(String[] args) {
+        // The computer's proxy settings, also when run without the
+        // installer (gradle run); set before anything asks for a proxy.
+        if (System.getProperty("java.net.useSystemProxies") == null)
+            System.setProperty("java.net.useSystemProxies", "true");
         SwingUtilities.invokeLater(() -> new BlastDesktop(new File(
                 System.getProperty("user.home"), ".blast-desktop"))
                         .frame.setVisible(true));

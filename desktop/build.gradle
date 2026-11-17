@@ -118,6 +118,8 @@ tasks.register('jpackageImage', Exec) {
         '--add-modules', 'java.base,java.desktop,java.net.http,java.sql,java.logging,java.xml,jdk.crypto.ec,jdk.accessibility',
         '--jlink-options', '--strip-debug --no-man-pages --no-header-files',
         '--java-options', '-Xmx1g',
+        // Use the computer's proxy settings (work networks, some VPNs).
+        '--java-options', '-Djava.net.useSystemProxies=true',
     ]
     boolean pkg = installerType != 'app-image'
     if (!os.macOsX)

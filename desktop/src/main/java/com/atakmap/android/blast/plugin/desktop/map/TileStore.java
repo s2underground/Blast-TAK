@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.imageio.ImageIO;
@@ -52,7 +53,12 @@ public final class TileStore {
     public static final String USER_AGENT =
             "BlastDesktop/1.2 (+https://github.com/s2underground/Blast-TAK)";
     private static final long FRESH_MS = 7L * 24 * 3600 * 1000;
-    private static final long RETRY_MS = 60_000;
+    /** Retry a failed tile after 2 s, 6 s, 18 s, then every minute. */
+    private static final long RETRY_FIRST_MS = 2_000, RETRY_MAX_MS = 60_000;
+    /** A tile the server doesn't have (404): ask again after 10 min. */
+    private static final long MISSING_MS = 10 * 60_000;
+    /** Downloads at once: OSM's policy allows 2; other servers get 6. */
+    private static final int OSM_CONNECTIONS = 2, OTHER_CONNECTIONS = 6;
     private static final int MEMORY_TILES = 600;
     private static final DateTimeFormatter HTTP_DATE = DateTimeFormatter
             .ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
@@ -73,10 +79,20 @@ public final class TileStore {
         }
     };
     private final Set<String> pending = new HashSet<>();
-    private final Map<String, Long> failed = new HashMap<>();
+    /** Failed tiles: when to ask again, and how many failures so far. */
+    private final Map<String, long[]> failed = new HashMap<>();
+    private final Map<String, java.util.concurrent.Semaphore> slots =
+            new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.concurrent.ScheduledExecutorService later =
+            Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread t = new Thread(r, "blast-tile-retry");
+                t.setDaemon(true);
+                return t;
+            });
     private volatile Set<String> wanted = Collections.emptySet();
 
-    private final ExecutorService net = Executors.newFixedThreadPool(2, r -> {
+    private final ExecutorService net = Executors.newFixedThreadPool(
+            OTHER_CONNECTIONS + 2, r -> {
         Thread t = new Thread(r, "blast-tiles");
         t.setDaemon(true);
         return t;
@@ -120,8 +136,8 @@ public final class TileStore {
             BufferedImage img = memory.get(k);
             if (img != null || pending.contains(k))
                 return img;
-            Long f = failed.get(k);
-            if (f != null && System.currentTimeMillis() - f < RETRY_MS)
+            long[] f = failed.get(k);
+            if (f != null && System.currentTimeMillis() < f[0])
                 return null;
             pending.add(k);
         }
@@ -151,16 +167,39 @@ public final class TileStore {
     }
 
     private void done(String k, BufferedImage img) {
+        done(k, img, false);
+    }
+
+    /**
+     * A tile arrived, or failed ({@code img} null). A failed tile is asked
+     * for again later (sooner at first), and the map is repainted then so
+     * it does, without waiting for the user to pan.
+     */
+    private void done(String k, BufferedImage img, boolean missing) {
+        long wait = 0;
         synchronized (this) {
             pending.remove(k);
             if (img != null) {
                 memory.put(k, img);
                 failed.remove(k);
             } else {
-                failed.put(k, System.currentTimeMillis());
+                long[] f = failed.get(k);
+                long n = f == null ? 1 : f[1] + 1;
+                wait = missing ? MISSING_MS : Math.min(RETRY_MAX_MS,
+                        RETRY_FIRST_MS * (long) Math.pow(3, n - 1));
+                failed.put(k, new long[] { System.currentTimeMillis() + wait,
+                        n });
             }
         }
         repaint.run();
+        if (wait > 0 && wait < MISSING_MS)
+            later.schedule(repaint, wait + 50, TimeUnit.MILLISECONDS);
+    }
+
+    private java.util.concurrent.Semaphore slots(TileSource s) {
+        return slots.computeIfAbsent(s.id, id -> new java.util.concurrent
+                .Semaphore(s == TileSource.OSM ? OSM_CONNECTIONS
+                        : OTHER_CONNECTIONS));
     }
 
     private void drop(String k) {
@@ -221,7 +260,20 @@ public final class TileStore {
             drop(k);
             return;
         }
+        java.util.concurrent.Semaphore slot = slots(s);
         try {
+            slot.acquire();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            drop(k);
+            return;
+        }
+        try {
+            // Still on screen after waiting for a slot?
+            if (!wanted.contains(k)) {
+                drop(k);
+                return;
+            }
             HttpRequest.Builder b = HttpRequest.newBuilder(URI.create(s.url(z,
                     x, y))).timeout(Duration.ofSeconds(20))
                     .header("User-Agent", USER_AGENT);
@@ -235,8 +287,19 @@ public final class TileStore {
                 drop(k);
                 return;
             }
+            if (r.statusCode() == 404 || r.statusCode() == 204) {
+                // No tile here (outside the map's area or zooms): the
+                // lower zoom's tile stands in.
+                if (have)
+                    drop(k);
+                else
+                    done(k, null, true);
+                return;
+            }
             if (r.statusCode() != 200) {
-                problem(s.name + " answered " + r.statusCode());
+                problem(s.name + " answered " + r.statusCode()
+                        + (r.statusCode() == 429 || r.statusCode() == 503
+                                ? " (busy: retrying)" : ""));
                 if (have)
                     drop(k);
                 else
@@ -256,12 +319,26 @@ public final class TileStore {
             Thread.currentThread().interrupt();
             drop(k);
         } catch (IOException | IllegalArgumentException e) {
-            problem("Can't reach " + s.name + " (offline?)");
+            problem((e instanceof java.net.http.HttpTimeoutException
+                    ? s.name + " is slow to answer (retrying)"
+                    : "Can't reach " + s.name + " (offline?)") + reason(e));
             if (have)
                 drop(k);
             else
                 done(k, null);
+        } finally {
+            slot.release();
         }
+    }
+
+    /** The cause in a few words, for the map's message. */
+    private static String reason(Exception e) {
+        String m = e.getMessage();
+        String n = e.getClass().getSimpleName();
+        if (e instanceof java.net.http.HttpTimeoutException)
+            return "";
+        return ": " + n + (m == null || m.isEmpty() ? "" : " " + (m.length()
+                > 80 ? m.substring(0, 80) + "\u2026" : m));
     }
 
     private static BufferedImage decode(byte[] data) throws IOException {
